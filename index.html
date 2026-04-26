@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Angel Moment</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="stage" aria-label="Escena interactiva con dos figuras">
+      <canvas id="confetti" aria-hidden="true"></canvas>
+
+      <div class="scene">
+        <div class="moon" aria-hidden="true"></div>
+        <div class="string string-a" aria-hidden="true"></div>
+        <div class="string string-b" aria-hidden="true"></div>
+
+        <article class="doll doll-left" data-person="blonde" tabindex="0" aria-label="Figura rubia con gafas">
+          <div class="bubble">Ay Angel estoy cansada</div>
+          <div class="head">
+            <div class="hair hair-curly"></div>
+            <div class="face">
+              <span class="glasses left-lens"></span>
+              <span class="glasses right-lens"></span>
+              <span class="bridge"></span>
+              <span class="eye eye-left"></span>
+              <span class="eye eye-right"></span>
+              <span class="smile"></span>
+            </div>
+          </div>
+          <div class="torso cream">
+            <span class="collar"></span>
+          </div>
+          <div class="arm arm-left"></div>
+          <div class="arm arm-right"></div>
+          <div class="leg leg-left"></div>
+          <div class="leg leg-right"></div>
+        </article>
+
+        <article class="doll doll-right" data-person="brunette" tabindex="0" aria-label="Figura morena con camiseta de rayas">
+          <div class="bubble">Ja ja, Angel calvo. Aupa!</div>
+          <div class="earring earring-left"></div>
+          <div class="earring earring-right"></div>
+          <div class="head">
+            <div class="hair hair-pigtails"></div>
+            <div class="face">
+              <span class="eye eye-left"></span>
+              <span class="eye eye-right"></span>
+              <span class="smile"></span>
+            </div>
+          </div>
+          <div class="torso striped"></div>
+          <div class="arm arm-left stripe-arm"></div>
+          <div class="arm arm-right stripe-arm"></div>
+          <div class="leg leg-left"></div>
+          <div class="leg leg-right"></div>
+        </article>
+
+        <div class="caption" aria-hidden="true">mueve las figuras y toca sus caras</div>
+      </div>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
