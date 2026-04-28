@@ -70,17 +70,49 @@ const flagCounts = {
   brunette: 0,
 };
 let poopTimer = 0;
-const mazeGrid = [
-  "#############",
-  "#A..#....#.E#",
-  "#.#.#.##.#..#",
-  "#.#...#..##.#",
-  "#.###.#.###.#",
-  "#...#.#.....#",
-  "###.#.###.#.#",
-  "#L....#...#E#",
-  "#############",
+const mazeLevels = [
+  [
+    "#################",
+    "#A..#.....#....E#",
+    "###.#.###.#.###.#",
+    "#...#...#.#...#.#",
+    "#.#####.#.###.#.#",
+    "#.#.....#.....#.#",
+    "#.#.#########.#.#",
+    "#.#.....#.....#.#",
+    "#.#####.#.#####.#",
+    "#L..........#..E#",
+    "#################",
+  ],
+  [
+    "#################",
+    "#A....#...#....E#",
+    "#.###.#.#.#.###.#",
+    "#...#...#...#...#",
+    "###.#####.###.#.#",
+    "#...#.....#...#.#",
+    "#.###.#####.###.#",
+    "#.#...#.....#...#",
+    "#.#.###.#####.#.#",
+    "#L#...........#E#",
+    "#################",
+  ],
+  [
+    "#################",
+    "#A....#.......#E#",
+    "#.###.#.#####.#.#",
+    "#...#.#.....#...#",
+    "###.#.#####.###.#",
+    "#...#.....#.....#",
+    "#.#######.#####.#",
+    "#.#.....#.......#",
+    "#.#.###.#######.#",
+    "#L....#........E#",
+    "#################",
+  ],
 ];
+let currentMazeIndex = 0;
+let mazeRoundLocked = false;
 const mazePlayers = {
   blonde: { col: 1, row: 1, done: false },
   brunette: { col: 1, row: 7, done: false },
@@ -126,10 +158,17 @@ function updateDoll(doll) {
 function speak(doll) {
   const bubble = doll.querySelector(".bubble");
   const options = lines[doll.dataset.person];
-  bubble.textContent = options[Math.floor(Math.random() * options.length)];
+  sayText(doll, options[Math.floor(Math.random() * options.length)]);
+}
+
+function sayText(doll, text, duration = 900) {
+  const bubble = doll.querySelector(".bubble");
+  bubble.textContent = text;
   doll.classList.add("talking", "popped");
   clearTimeout(doll._popTimer);
+  clearTimeout(doll._talkTimer);
   doll._popTimer = setTimeout(() => doll.classList.remove("popped"), 520);
+  doll._talkTimer = setTimeout(() => doll.classList.remove("talking"), duration);
 }
 
 function burst(x, y, person, amount = 12) {
@@ -170,15 +209,32 @@ function placeAnimation(person) {
 
 function clearGameObjects() {
   document.querySelectorAll(".poop, .flag-target").forEach((item) => item.remove());
-  dolls.forEach((doll) => doll.classList.remove("strained"));
+  dolls.forEach((doll) => doll.classList.remove("strained", "maze-step", "maze-winner", "maze-loser"));
   mazeBoard.innerHTML = "";
   mazeBoard.setAttribute("aria-hidden", "true");
+  mazeRoundLocked = false;
+}
+
+function getMazeGrid() {
+  return mazeLevels[currentMazeIndex];
+}
+
+function findMazeCell(symbol) {
+  const grid = getMazeGrid();
+  for (let row = 0; row < grid.length; row += 1) {
+    const col = grid[row].indexOf(symbol);
+    if (col !== -1) return { col, row, done: false };
+  }
+  return { col: 1, row: 1, done: false };
 }
 
 function buildMaze() {
+  const grid = getMazeGrid();
   mazeBoard.innerHTML = "";
   mazeBoard.setAttribute("aria-hidden", "false");
-  mazeGrid.forEach((row, rowIndex) => {
+  mazeBoard.style.setProperty("--maze-cols", grid[0].length);
+  mazeBoard.style.setProperty("--maze-rows", grid.length);
+  grid.forEach((row, rowIndex) => {
     [...row].forEach((cell, colIndex) => {
       const tile = document.createElement("span");
       tile.className = "maze-cell";
@@ -194,18 +250,21 @@ function buildMaze() {
 }
 
 function placeMazePlayers() {
-  mazePlayers.blonde = { col: 1, row: 1, done: false };
-  mazePlayers.brunette = { col: 1, row: 7, done: false };
+  mazeRoundLocked = false;
+  dolls.forEach((doll) => doll.classList.remove("maze-step", "maze-winner", "maze-loser"));
+  mazePlayers.blonde = findMazeCell("A");
+  mazePlayers.brunette = findMazeCell("L");
   updateMazeDoll("blonde");
   updateMazeDoll("brunette");
 }
 
-function updateMazeDoll(person) {
+function updateMazeDoll(person, step = false, dc = 0) {
   const doll = dolls.find((item) => item.dataset.person === person);
   const player = mazePlayers[person];
+  const grid = getMazeGrid();
   const board = mazeBoard.getBoundingClientRect();
-  const cellW = board.width / 13;
-  const cellH = board.height / 9;
+  const cellW = board.width / grid[0].length;
+  const cellH = board.height / grid.length;
   const x = board.left + (player.col + 0.5) * cellW - innerWidth / 2;
   const y = board.top + (player.row + 0.5) * cellH - innerHeight / 2;
   const item = state.get(doll);
@@ -214,33 +273,49 @@ function updateMazeDoll(person) {
   item.vx = 0;
   item.vy = 0;
   item.vr = 0;
-  item.r = person === "blonde" ? -4 : 4;
+  item.r = dc === 0 ? (person === "blonde" ? -4 : 4) : dc * 7;
   updateDoll(doll);
+  if (!step) return;
+  doll.classList.remove("maze-step");
+  void doll.offsetWidth;
+  doll.classList.add("maze-step");
+  clearTimeout(doll._stepTimer);
+  doll._stepTimer = setTimeout(() => doll.classList.remove("maze-step"), 260);
 }
 
 function moveMazePlayer(person, dc, dr) {
-  if (activeGame !== "flags") return;
+  if (activeGame !== "flags" || mazeRoundLocked) return;
   const player = mazePlayers[person];
   if (player.done) return;
   const nextCol = player.col + dc;
   const nextRow = player.row + dr;
-  const cell = mazeGrid[nextRow]?.[nextCol];
+  const cell = getMazeGrid()[nextRow]?.[nextCol];
   if (!cell || cell === "#") return;
 
   player.col = nextCol;
   player.row = nextRow;
-  updateMazeDoll(person);
+  updateMazeDoll(person, true, dc);
 
   if (cell === "E") {
+    mazeRoundLocked = true;
     player.done = true;
     flagCounts[person] += 1;
     flagCountNodes[person].textContent = flagCounts[person];
     const doll = dolls.find((item) => item.dataset.person === person);
+    const loserPerson = person === "blonde" ? "brunette" : "blonde";
+    const loser = dolls.find((item) => item.dataset.person === loserPerson);
     const rect = doll.getBoundingClientRect();
+    doll.classList.add("maze-winner");
+    loser.classList.add("maze-loser");
+    sayText(doll, "Yupi", 1300);
+    sayText(loser, "Me cago", 1300);
     burst(rect.left + rect.width / 2, rect.top + rect.height / 2, person, 18);
     setTimeout(() => {
-      if (activeGame === "flags") placeMazePlayers();
-    }, 900);
+      if (activeGame !== "flags") return;
+      currentMazeIndex = (currentMazeIndex + 1) % mazeLevels.length;
+      buildMaze();
+      requestAnimationFrame(placeMazePlayers);
+    }, 1250);
   }
 }
 
