@@ -355,7 +355,7 @@ function updateMazeDoll(person, step = false, dc = 0) {
   const cellW = board.width / grid[0].length;
   const cellH = board.height / grid.length;
   const x = board.left + (player.col + 0.5) * cellW - innerWidth / 2;
-  const y = board.top + (player.row + 0.5) * cellH - innerHeight / 2;
+  const y = board.top + (player.row + 0.5) * cellH - innerHeight / 2 + cellH * 0.65;
   const item = state.get(doll);
   item.x = x;
   item.y = y;

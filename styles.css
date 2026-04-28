@@ -676,9 +676,10 @@ body {
 .stage.flag-mode .doll {
   z-index: 14;
   top: 50%;
-  --scale: 0.34;
+  --scale: 0.24;
   cursor: default;
   filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.42)) saturate(1.08);
+  transform-origin: 50% 50%;
 }
 
 .stage.flag-mode .doll.maze-step .head {
@@ -2386,11 +2387,11 @@ body {
 
   .stage.flag-mode .doll {
     top: 50%;
-    --scale: 0.34;
+    --scale: 0.18;
   }
 
   .maze-board {
-    top: 51%;
+    top: 47%;
     width: min(94vw, 540px);
     gap: 3px;
     padding: 6px;
@@ -2544,11 +2545,11 @@ body {
   }
 
   .stage.flag-mode .doll {
-    --scale: 0.3;
+    --scale: 0.15;
   }
 
   .maze-board {
-    top: 50%;
+    top: 45%;
     width: min(96vw, 390px);
     gap: 2px;
     padding: 5px;
