@@ -694,6 +694,7 @@ body {
 }
 
 .stage.flag-mode .doll.maze-winner {
+  z-index: 19;
   filter: drop-shadow(0 0 24px rgba(255, 209, 102, 0.5)) saturate(1.22);
 }
 
@@ -703,6 +704,40 @@ body {
 
 .stage.flag-mode .doll.maze-loser .head {
   animation: loserSquash 520ms ease-out 2;
+}
+
+.stage.flag-mode .bubble {
+  top: -96px;
+  max-width: 118px;
+  padding: 9px 12px;
+  border-width: 2px;
+  font-size: 1.02rem;
+  transform: translateX(-50%) rotate(-2deg) scale(2.45);
+  transform-origin: 50% 100%;
+}
+
+.stage.flag-mode .doll:hover .bubble,
+.stage.flag-mode .doll.talking .bubble {
+  transform: translateX(-50%) translateY(-7px) rotate(-2deg) scale(2.45);
+}
+
+.stage.flag-mode .doll.popped .bubble {
+  animation: mazeBubblePop 460ms ease-out;
+}
+
+.stage.flag-mode .doll.maze-winner .bubble {
+  left: auto;
+  right: 50%;
+  transform: rotate(-2deg) scale(2.45);
+  transform-origin: 100% 100%;
+}
+
+.stage.flag-mode .doll.maze-winner.talking .bubble {
+  transform: translateY(-7px) rotate(-2deg) scale(2.45);
+}
+
+.stage.flag-mode .doll.maze-winner.popped .bubble {
+  animation: winnerBubblePop 460ms ease-out;
 }
 
 .maze-board {
@@ -1899,6 +1934,18 @@ body {
 @keyframes bubblePop {
   50% {
     transform: translateX(-50%) translateY(-10px) rotate(2deg) scale(1.06);
+  }
+}
+
+@keyframes mazeBubblePop {
+  50% {
+    transform: translateX(-50%) translateY(-12px) rotate(2deg) scale(2.72);
+  }
+}
+
+@keyframes winnerBubblePop {
+  50% {
+    transform: translateY(-12px) rotate(2deg) scale(2.72);
   }
 }
 
