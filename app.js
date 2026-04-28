@@ -4,12 +4,8 @@ const outfitButtons = [...document.querySelectorAll(".outfit-button")];
 const mazeButtons = [...document.querySelectorAll(".maze-pad button")];
 const poopToggle = document.querySelector("#poopToggle");
 const flagToggle = document.querySelector("#flagToggle");
-const chessToggle = document.querySelector("#chessToggle");
-const chessBoard = document.querySelector("#chessBoard");
-const chessStatus = document.querySelector("#chessStatus");
-const chessCaptures = document.querySelector("#chessCaptures");
-const chessReset = document.querySelector("#chessReset");
 const mazeBoard = document.querySelector("#mazeBoard");
+const mazeStatus = document.querySelector("#mazeStatus");
 const poopCountNodes = {
   blonde: document.querySelector("#poopCountAlba"),
   brunette: document.querySelector("#poopCountLaino"),
@@ -79,28 +75,28 @@ let audioContext = null;
 const mazeLevels = [
   [
     "#################",
-    "#A..#.....#....E#",
-    "###.#.###.#.###.#",
+    "#A.............E#",
+    "#.###.###.###.#.#",
     "#...#...#.#...#.#",
-    "#.#####.#.###.#.#",
-    "#.#.....#.....#.#",
-    "#.#.#########.#.#",
-    "#.#.....#.....#.#",
-    "#.#####.#.#####.#",
-    "#L..........#..E#",
+    "###.#.#.#.#.#.###",
+    "#...#.#...#.#...#",
+    "#.###.#####.###.#",
+    "#...#...#...#...#",
+    "#.#.###.###.###.#",
+    "#L.............E#",
     "#################",
   ],
   [
     "#################",
-    "#A....#...#....E#",
-    "#.###.#.#.#.###.#",
-    "#...#...#...#...#",
-    "###.#####.###.#.#",
-    "#...#.....#...#.#",
+    "#A.............E#",
     "#.###.#####.###.#",
-    "#.#...#.....#...#",
-    "#.#.###.#####.#.#",
-    "#L#...........#E#",
+    "#...#.....#.....#",
+    "###.#.###.#####.#",
+    "#...#...#.......#",
+    "#.#####.###.###.#",
+    "#.....#.....#...#",
+    "#.###.#####.###.#",
+    "#L.............E#",
     "#################",
   ],
   [
@@ -119,36 +115,10 @@ const mazeLevels = [
 ];
 let currentMazeIndex = 0;
 let mazeRoundLocked = false;
-let chessGame = null;
-let selectedSquare = null;
-let legalTargets = [];
+let mazeHoldTimer = 0;
 const mazePlayers = {
   blonde: { col: 1, row: 1, done: false },
   brunette: { col: 1, row: 7, done: false },
-};
-
-const chessPieces = {
-  wp: "♙",
-  wn: "♘",
-  wb: "♗",
-  wr: "♖",
-  wq: "♕",
-  wk: "♔",
-  bp: "♟",
-  bn: "♞",
-  bb: "♝",
-  br: "♜",
-  bq: "♛",
-  bk: "♚",
-};
-
-const pieceNames = {
-  p: "peon",
-  n: "caballo",
-  b: "alfil",
-  r: "torre",
-  q: "reina",
-  k: "rey",
 };
 
 const state = new Map(
@@ -314,103 +284,6 @@ function clearGameObjects() {
   mazeRoundLocked = false;
 }
 
-function setupChess() {
-  if (chessGame || !window.Chess) return;
-  chessGame = new window.Chess();
-  renderChess();
-}
-
-function resetChess() {
-  if (!window.Chess) {
-    chessStatus.textContent = "No se ha cargado el motor de ajedrez";
-    return;
-  }
-  chessGame = new window.Chess();
-  selectedSquare = null;
-  legalTargets = [];
-  renderChess();
-}
-
-function getChessStatus() {
-  if (!chessGame) return "Cargando ajedrez";
-  const turnName = chessGame.turn() === "w" ? "Blancas" : "Negras";
-  if (chessGame.in_checkmate()) return `Jaque mate. Ganan ${chessGame.turn() === "w" ? "negras" : "blancas"}`;
-  if (chessGame.in_stalemate()) return "Tablas por ahogado";
-  if (chessGame.in_draw()) return "Tablas";
-  if (chessGame.in_check()) return `${turnName} en jaque`;
-  return `${turnName} mueven`;
-}
-
-function renderChess() {
-  if (!chessGame) return;
-  chessBoard.innerHTML = "";
-  chessStatus.textContent = getChessStatus();
-  const board = chessGame.board();
-
-  board.forEach((row, rowIndex) => {
-    row.forEach((piece, colIndex) => {
-      const file = String.fromCharCode(97 + colIndex);
-      const rank = 8 - rowIndex;
-      const square = `${file}${rank}`;
-      const cell = document.createElement("button");
-      cell.type = "button";
-      cell.className = `chess-square ${(rowIndex + colIndex) % 2 ? "dark" : "light"}`;
-      cell.dataset.square = square;
-      cell.setAttribute("aria-label", piece ? `${pieceNames[piece.type]} ${piece.color === "w" ? "blanco" : "negro"} en ${square}` : `Casilla ${square}`);
-      if (selectedSquare === square) cell.classList.add("selected");
-      if (legalTargets.includes(square)) cell.classList.add("legal");
-      if (piece) {
-        cell.textContent = chessPieces[`${piece.color}${piece.type}`];
-        cell.classList.add(piece.color === "w" ? "white-piece" : "black-piece");
-      }
-      chessBoard.appendChild(cell);
-    });
-  });
-
-  const history = chessGame.history({ verbose: true });
-  const captures = history.filter((move) => move.captured).slice(-8);
-  chessCaptures.textContent = captures.length
-    ? `Capturas: ${captures.map((move) => `${move.color === "w" ? "Blancas" : "Negras"} ${pieceNames[move.captured]}`).join(", ")}`
-    : "Toca una pieza para ver sus movimientos";
-}
-
-function selectChessSquare(square) {
-  if (!chessGame || chessGame.game_over()) return;
-  const piece = chessGame.get(square);
-  if (!piece || piece.color !== chessGame.turn()) return;
-  selectedSquare = square;
-  legalTargets = chessGame.moves({ square, verbose: true }).map((move) => move.to);
-  renderChess();
-}
-
-function playChessMove(square) {
-  if (!selectedSquare) {
-    selectChessSquare(square);
-    return;
-  }
-
-  if (square === selectedSquare) {
-    selectedSquare = null;
-    legalTargets = [];
-    renderChess();
-    return;
-  }
-
-  if (!legalTargets.includes(square)) {
-    selectChessSquare(square);
-    return;
-  }
-
-  const move = chessGame.move({ from: selectedSquare, to: square, promotion: "q" });
-  selectedSquare = null;
-  legalTargets = [];
-  renderChess();
-  if (!move) return;
-  const cell = chessBoard.querySelector(`[data-square="${square}"]`);
-  cell?.classList.add("just-moved");
-  if (move.captured || move.flags.includes("p")) burst(innerWidth / 2, innerHeight / 2, chessGame.turn() === "w" ? "brunette" : "blonde", 12);
-}
-
 function getMazeGrid() {
   return mazeLevels[currentMazeIndex];
 }
@@ -428,6 +301,7 @@ function buildMaze() {
   const grid = getMazeGrid();
   mazeBoard.innerHTML = "";
   mazeBoard.setAttribute("aria-hidden", "false");
+  mazeStatus.textContent = `Nivel ${currentMazeIndex + 1}`;
   mazeBoard.style.setProperty("--maze-cols", grid[0].length);
   mazeBoard.style.setProperty("--maze-rows", grid.length);
   grid.forEach((row, rowIndex) => {
@@ -543,7 +417,7 @@ function moveMazePlayer(person, dc, dr) {
 }
 
 function handleMazeKey(event) {
-  if (activeGame !== "flags" || event.repeat) return;
+  if (activeGame !== "flags") return;
   const key = event.key.toLowerCase();
   const moves = {
     w: ["blonde", 0, -1],
@@ -565,22 +439,18 @@ function setGame(nextGame) {
   activeGame = activeGame === nextGame ? null : nextGame;
   const isBathroom = activeGame === "bathroom";
   const isFlags = activeGame === "flags";
-  const isChess = activeGame === "chess";
 
   document.querySelector(".stage").classList.toggle("bathroom-mode", isBathroom);
   document.querySelector(".stage").classList.toggle("flag-mode", isFlags);
-  document.querySelector(".stage").classList.toggle("chess-mode", isChess);
   poopToggle.classList.toggle("active", isBathroom);
   flagToggle.classList.toggle("active", isFlags);
-  chessToggle.classList.toggle("active", isChess);
   poopToggle.setAttribute("aria-pressed", String(isBathroom));
   flagToggle.setAttribute("aria-pressed", String(isFlags));
-  chessToggle.setAttribute("aria-pressed", String(isChess));
   poopToggle.textContent = isBathroom ? "Baño activo" : "Baño";
   flagToggle.textContent = isFlags ? "Laberinto activo" : "Laberinto";
-  chessToggle.textContent = isChess ? "Ajedrez activo" : "Ajedrez";
 
   clearTimeout(poopTimer);
+  clearInterval(mazeHoldTimer);
   clearGameObjects();
 
   if (isBathroom) schedulePoop();
@@ -588,7 +458,6 @@ function setGame(nextGame) {
     buildMaze();
     requestAnimationFrame(placeMazePlayers);
   }
-  if (isChess) setupChess();
 }
 
 function schedulePoop() {
@@ -728,7 +597,7 @@ function animate(time = 0) {
   lastTime = time;
 
   dolls.forEach((doll) => {
-    if (activeGame === "flags" || activeGame === "chess" || doll === activeDoll) return;
+    if (activeGame === "flags" || doll === activeDoll) return;
     const item = state.get(doll);
     item.vy += 0.28 * dt;
     item.x += item.vx * dt;
@@ -762,7 +631,7 @@ function animate(time = 0) {
 
 dolls.forEach((doll) => {
   doll.addEventListener("pointerdown", (event) => {
-    if (activeGame === "flags" || activeGame === "chess") return;
+    if (activeGame === "flags") return;
     event.preventDefault();
     beginDrag(event, doll);
   });
@@ -788,30 +657,26 @@ outfitButtons.forEach((button) => {
 });
 
 mazeButtons.forEach((button) => {
-  button.addEventListener("pointerdown", (event) => event.stopPropagation());
-  button.addEventListener("click", () => {
-    moveMazePlayer(
-      button.dataset.person,
-      Number.parseInt(button.dataset.dc, 10),
-      Number.parseInt(button.dataset.dr, 10),
-    );
+  const moveFromButton = () => {
+    moveMazePlayer(button.dataset.person, Number.parseInt(button.dataset.dc, 10), Number.parseInt(button.dataset.dr, 10));
+  };
+  button.addEventListener("pointerdown", (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    moveFromButton();
+    clearInterval(mazeHoldTimer);
+    mazeHoldTimer = setInterval(moveFromButton, 170);
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach((eventName) => {
+    button.addEventListener(eventName, () => clearInterval(mazeHoldTimer));
   });
 });
 
-[poopToggle, flagToggle, chessToggle].forEach((button) => {
+[poopToggle, flagToggle].forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
 });
 poopToggle.addEventListener("click", () => setGame("bathroom"));
 flagToggle.addEventListener("click", () => setGame("flags"));
-chessToggle.addEventListener("click", () => setGame("chess"));
-chessReset.addEventListener("pointerdown", (event) => event.stopPropagation());
-chessReset.addEventListener("click", resetChess);
-chessBoard.addEventListener("pointerdown", (event) => event.stopPropagation());
-chessBoard.addEventListener("click", (event) => {
-  const square = event.target.closest(".chess-square");
-  if (!square) return;
-  playChessMove(square.dataset.square);
-});
 
 window.addEventListener("pointermove", moveDrag);
 window.addEventListener("pointerup", endDrag);
