@@ -70,6 +70,7 @@ const flagCounts = {
   brunette: 0,
 };
 let poopTimer = 0;
+let audioContext = null;
 const mazeLevels = [
   [
     "#################",
@@ -192,6 +193,72 @@ function burst(x, y, person, amount = 12) {
   }
 }
 
+function playVictoryMusic(person) {
+  audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+  audioContext.resume?.();
+  const now = audioContext.currentTime;
+  const notes = person === "blonde" ? [523.25, 659.25, 783.99, 1046.5, 880, 1046.5] : [392, 493.88, 587.33, 783.99, 659.25, 783.99];
+
+  notes.forEach((frequency, index) => {
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.type = index % 2 ? "square" : "triangle";
+    osc.frequency.setValueAtTime(frequency, now + index * 0.16);
+    gain.gain.setValueAtTime(0, now + index * 0.16);
+    gain.gain.linearRampToValueAtTime(0.08, now + index * 0.16 + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.16 + 0.18);
+    osc.connect(gain).connect(audioContext.destination);
+    osc.start(now + index * 0.16);
+    osc.stop(now + index * 0.16 + 0.2);
+  });
+
+  const bass = audioContext.createOscillator();
+  const bassGain = audioContext.createGain();
+  bass.type = "sawtooth";
+  bass.frequency.setValueAtTime(person === "blonde" ? 130.81 : 98, now);
+  bass.frequency.exponentialRampToValueAtTime(person === "blonde" ? 196 : 146.83, now + 0.8);
+  bassGain.gain.setValueAtTime(0.055, now);
+  bassGain.gain.exponentialRampToValueAtTime(0.001, now + 1.15);
+  bass.connect(bassGain).connect(audioContext.destination);
+  bass.start(now);
+  bass.stop(now + 1.18);
+}
+
+function showVictoryJumpscare(person) {
+  const winner = dolls.find((item) => item.dataset.person === person);
+  const overlay = document.createElement("div");
+  const clone = winner.cloneNode(true);
+  const words = person === "blonde"
+    ? ["YUPI", "PALENCIA", "ETRUSCOS", "FOMO", "ALBA"]
+    : ["YUPI", "DONOSTI", "ARTE", "KAIXO", "LAINO"];
+
+  overlay.className = `victory-jumpscare ${person === "blonde" ? "alba" : "laino"}`;
+  overlay.setAttribute("aria-hidden", "true");
+  clone.classList.remove("dragging", "maze-step", "maze-winner", "maze-loser", "maze-caught");
+  clone.classList.add("victory-doll");
+  clone.removeAttribute("tabindex");
+  clone.querySelector(".bubble").textContent = "Yupi";
+  overlay.appendChild(clone);
+
+  for (let i = 0; i < 34; i += 1) {
+    const bit = document.createElement("span");
+    bit.className = "victory-bit";
+    bit.textContent = words[i % words.length];
+    bit.style.left = `${8 + Math.random() * 84}%`;
+    bit.style.top = `${10 + Math.random() * 78}%`;
+    bit.style.setProperty("--spin", `${-28 + Math.random() * 56}deg`);
+    bit.style.setProperty("--delay", `${Math.random() * 0.5}s`);
+    overlay.appendChild(bit);
+  }
+
+  scene.appendChild(overlay);
+  playVictoryMusic(person);
+  for (let i = 0; i < 5; i += 1) {
+    setTimeout(() => burst(innerWidth / 2, innerHeight / 2, person, 18), i * 420);
+  }
+  setTimeout(() => overlay.remove(), 3000);
+}
+
 function placeAnimation(person) {
   const card = document.createElement("div");
   const isBlonde = person === "blonde";
@@ -208,7 +275,7 @@ function placeAnimation(person) {
 }
 
 function clearGameObjects() {
-  document.querySelectorAll(".poop, .flag-target").forEach((item) => item.remove());
+  document.querySelectorAll(".poop, .flag-target, .victory-jumpscare").forEach((item) => item.remove());
   dolls.forEach((doll) => doll.classList.remove("strained", "maze-step", "maze-winner", "maze-loser"));
   mazeBoard.innerHTML = "";
   mazeBoard.setAttribute("aria-hidden", "true");
@@ -336,12 +403,13 @@ function moveMazePlayer(person, dc, dr) {
     sayText(doll, "Yupi", 1300);
     sayText(loser, "Me cago", 1300);
     burst(rect.left + rect.width / 2, rect.top + rect.height / 2, person, 18);
+    showVictoryJumpscare(person);
     setTimeout(() => {
       if (activeGame !== "flags") return;
       currentMazeIndex = (currentMazeIndex + 1) % mazeLevels.length;
       buildMaze();
       requestAnimationFrame(placeMazePlayers);
-    }, 1250);
+    }, 3000);
   }
 }
 

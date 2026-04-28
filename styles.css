@@ -764,6 +764,84 @@ body {
   animation: caughtBubblePop 460ms ease-out;
 }
 
+.victory-jumpscare {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(255, 209, 102, 0.36), transparent 20rem),
+    radial-gradient(circle at 30% 24%, rgba(255, 111, 145, 0.34), transparent 16rem),
+    radial-gradient(circle at 72% 28%, rgba(73, 215, 184, 0.34), transparent 15rem),
+    rgba(10, 8, 9, 0.32);
+  animation: victoryFlash 3s ease-out forwards;
+}
+
+.victory-jumpscare::before,
+.victory-jumpscare::after {
+  content: "";
+  position: absolute;
+  width: 72vmin;
+  aspect-ratio: 1;
+  border: 5px dashed rgba(255, 248, 232, 0.72);
+  border-radius: 50%;
+  animation: victoryRing 1.2s linear infinite;
+}
+
+.victory-jumpscare::after {
+  width: 48vmin;
+  border-style: solid;
+  animation-direction: reverse;
+}
+
+.stage.flag-mode .victory-jumpscare .victory-doll {
+  position: relative;
+  left: auto;
+  top: auto;
+  z-index: 3;
+  --x: 0px;
+  --y: 0px;
+  --r: 0deg;
+  --scale: clamp(2.8, 10vw, 4.8);
+  cursor: default;
+  filter: drop-shadow(0 42px 42px rgba(0, 0, 0, 0.48)) saturate(1.22);
+  transform-origin: 50% 50%;
+  animation: victoryDance 420ms cubic-bezier(0.2, 1.4, 0.4, 1) infinite alternate;
+}
+
+.stage.flag-mode .victory-jumpscare .victory-doll .bubble {
+  top: -84px;
+  opacity: 1;
+  transform: translateX(-50%) rotate(-5deg) scale(1.28);
+  animation: victoryBubble 520ms ease-in-out infinite alternate;
+}
+
+.stage.flag-mode .victory-jumpscare .victory-doll .arm-left {
+  animation: victoryArmLeft 360ms ease-in-out infinite alternate;
+}
+
+.stage.flag-mode .victory-jumpscare .victory-doll .arm-right {
+  animation: victoryArmRight 360ms ease-in-out infinite alternate;
+}
+
+.victory-bit {
+  position: absolute;
+  z-index: 2;
+  padding: 6px 9px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: clamp(0.78rem, 2.5vw, 1.3rem);
+  font-weight: 950;
+  transform: rotate(var(--spin));
+  opacity: 0;
+  animation: victoryBit 920ms ease-out var(--delay) infinite;
+}
+
 .maze-board {
   position: absolute;
   left: 50%;
@@ -1976,6 +2054,75 @@ body {
 @keyframes caughtBubblePop {
   50% {
     transform: translateY(-12px) rotate(2deg) scale(2.5);
+  }
+}
+
+@keyframes victoryFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+
+  9%,
+  86% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes victoryDance {
+  0% {
+    transform: translateY(-9vh) rotate(-8deg) scale(var(--scale));
+  }
+
+  100% {
+    transform: translateY(-13vh) rotate(8deg) scale(var(--scale));
+  }
+}
+
+@keyframes victoryRing {
+  to {
+    transform: rotate(360deg) scale(1.08);
+  }
+}
+
+@keyframes victoryBubble {
+  to {
+    transform: translateX(-50%) translateY(-9px) rotate(5deg) scale(1.38);
+  }
+}
+
+@keyframes victoryArmLeft {
+  to {
+    transform: rotate(32deg);
+  }
+}
+
+@keyframes victoryArmRight {
+  to {
+    transform: rotate(-32deg);
+  }
+}
+
+@keyframes victoryBit {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) rotate(var(--spin)) scale(0.7);
+  }
+
+  28%,
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-36px) rotate(var(--spin)) scale(1.15);
   }
 }
 
