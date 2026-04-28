@@ -2,7 +2,10 @@ const scene = document.querySelector(".scene");
 const dolls = [...document.querySelectorAll(".doll")];
 const outfitButtons = [...document.querySelectorAll(".outfit-button")];
 const poopToggle = document.querySelector("#poopToggle");
-const poopCountNode = document.querySelector("#poopCount");
+const poopCountNodes = {
+  blonde: document.querySelector("#poopCountAlba"),
+  brunette: document.querySelector("#poopCountLaino"),
+};
 const canvas = document.querySelector("#confetti");
 const ctx = canvas.getContext("2d");
 
@@ -51,7 +54,10 @@ let pointer = null;
 let particles = [];
 let lastTime = 0;
 let poopGameActive = false;
-let poopCount = 0;
+const poopCounts = {
+  blonde: 0,
+  brunette: 0,
+};
 let poopTimer = 0;
 
 const state = new Map(
@@ -163,6 +169,7 @@ function dropPoop() {
   const doll = dolls[Math.floor(Math.random() * dolls.length)];
   const rect = doll.getBoundingClientRect();
   const poop = document.createElement("button");
+  const person = doll.dataset.person;
   poop.type = "button";
   poop.className = "poop";
   poop.setAttribute("aria-label", "Caca");
@@ -177,8 +184,8 @@ function dropPoop() {
   poop.addEventListener("click", () => {
     if (poop.classList.contains("collected")) return;
     poop.classList.add("collected");
-    poopCount += 1;
-    poopCountNode.textContent = poopCount;
+    poopCounts[person] += 1;
+    poopCountNodes[person].textContent = poopCounts[person];
     setTimeout(() => poop.remove(), 280);
   });
 
