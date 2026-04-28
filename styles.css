@@ -631,12 +631,32 @@ body {
   display: none;
 }
 
+.stage.flag-mode .cafe-bg,
+.stage.flag-mode .moon,
+.stage.flag-mode .pisa-gag,
+.stage.flag-mode .string,
+.stage.flag-mode .caption,
+.stage.flag-mode .place-flyby,
+.stage.flag-mode .wardrobe {
+  display: none;
+}
+
 .stage.bathroom-mode {
   background:
     linear-gradient(rgba(255, 248, 232, 0.07) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 248, 232, 0.07) 1px, transparent 1px),
     linear-gradient(145deg, #1c2426 0%, #22201d 52%, #151515 100%);
   background-size: 48px 48px, 48px 48px, auto;
+}
+
+.stage.flag-mode {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 209, 102, 0.16), transparent 18rem),
+    radial-gradient(circle at 86% 18%, rgba(73, 215, 184, 0.16), transparent 18rem),
+    linear-gradient(rgba(255, 248, 232, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 248, 232, 0.06) 1px, transparent 1px),
+    linear-gradient(145deg, #171b1b 0%, #201b24 54%, #121313 100%);
+  background-size: auto, auto, 44px 44px, 44px 44px, auto;
 }
 
 .stage.bathroom-mode .doll {
@@ -654,7 +674,126 @@ body {
 }
 
 .stage.flag-mode .doll {
-  top: 47%;
+  z-index: 14;
+  top: 50%;
+  --scale: 0.42;
+  cursor: default;
+  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.42)) saturate(1.08);
+}
+
+.maze-board {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  z-index: 5;
+  display: none;
+  grid-template-columns: repeat(13, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  gap: 4px;
+  width: min(86vw, 780px);
+  aspect-ratio: 13 / 9;
+  padding: 8px;
+  border: 3px solid rgba(255, 248, 232, 0.66);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 248, 232, 0.13), rgba(255, 248, 232, 0.03)),
+    rgba(12, 14, 14, 0.7);
+  box-shadow:
+    inset 0 0 0 1px rgba(25, 23, 22, 0.7),
+    0 28px 70px rgba(0, 0, 0, 0.38);
+  transform: translate(-50%, -50%);
+}
+
+.stage.flag-mode .maze-board {
+  display: grid;
+}
+
+.maze-cell {
+  min-width: 0;
+  border-radius: 5px;
+  background: rgba(255, 248, 232, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 232, 0.04);
+}
+
+.maze-cell.wall {
+  background:
+    linear-gradient(135deg, rgba(255, 248, 232, 0.16), transparent),
+    #312820;
+  box-shadow:
+    inset 0 -5px 0 rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 248, 232, 0.08);
+}
+
+.maze-cell.exit {
+  background:
+    repeating-linear-gradient(45deg, #ffd166 0 9px, #49d7b8 9px 18px);
+  box-shadow:
+    0 0 18px rgba(255, 209, 102, 0.38),
+    inset 0 0 0 2px rgba(25, 23, 22, 0.5);
+}
+
+.maze-cell.start.alba {
+  background: rgba(255, 111, 145, 0.38);
+}
+
+.maze-cell.start.laino {
+  background: rgba(73, 215, 184, 0.38);
+}
+
+.maze-controls {
+  position: absolute;
+  inset: auto clamp(12px, 2.8vw, 32px) clamp(14px, 3vw, 28px) clamp(12px, 2.8vw, 32px);
+  z-index: 18;
+  display: none;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.stage.flag-mode .maze-controls {
+  display: flex;
+}
+
+.maze-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 42px);
+  grid-template-rows: repeat(3, 42px);
+  gap: 5px;
+  pointer-events: auto;
+}
+
+.maze-pad button {
+  border: 1px solid rgba(255, 248, 232, 0.26);
+  border-radius: 8px;
+  background: rgba(17, 15, 14, 0.76);
+  color: var(--paper);
+  font-size: 0.8rem;
+  font-weight: 950;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+}
+
+.maze-pad button:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.maze-pad button:nth-child(1) {
+  grid-column: 2;
+}
+
+.maze-pad button:nth-child(2) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.maze-pad button:nth-child(3) {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.maze-pad button:nth-child(4) {
+  grid-column: 3;
+  grid-row: 2;
 }
 
 .doll {
@@ -1933,6 +2072,32 @@ body {
     top: 43%;
   }
 
+  .stage.flag-mode .doll {
+    top: 50%;
+    --scale: 0.34;
+  }
+
+  .maze-board {
+    top: 51%;
+    width: min(94vw, 540px);
+    gap: 3px;
+    padding: 6px;
+  }
+
+  .maze-controls {
+    bottom: max(10px, env(safe-area-inset-bottom));
+  }
+
+  .maze-pad {
+    grid-template-columns: repeat(3, 36px);
+    grid-template-rows: repeat(3, 36px);
+    gap: 4px;
+  }
+
+  .maze-pad button {
+    font-size: 0.72rem;
+  }
+
   .stage.bathroom-mode .games-menu,
   .stage.flag-mode .games-menu {
     top: 56px;
@@ -2057,6 +2222,22 @@ body {
   .bathroom-scores,
   .flag-scores {
     grid-template-columns: 92px 92px;
+  }
+
+  .stage.flag-mode .doll {
+    --scale: 0.3;
+  }
+
+  .maze-board {
+    top: 50%;
+    width: min(96vw, 390px);
+    gap: 2px;
+    padding: 5px;
+  }
+
+  .maze-pad {
+    grid-template-columns: repeat(3, 32px);
+    grid-template-rows: repeat(3, 32px);
   }
 
   .bath-score,

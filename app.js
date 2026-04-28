@@ -1,8 +1,10 @@
 const scene = document.querySelector(".scene");
 const dolls = [...document.querySelectorAll(".doll")];
 const outfitButtons = [...document.querySelectorAll(".outfit-button")];
+const mazeButtons = [...document.querySelectorAll(".maze-pad button")];
 const poopToggle = document.querySelector("#poopToggle");
 const flagToggle = document.querySelector("#flagToggle");
+const mazeBoard = document.querySelector("#mazeBoard");
 const poopCountNodes = {
   blonde: document.querySelector("#poopCountAlba"),
   brunette: document.querySelector("#poopCountLaino"),
@@ -68,7 +70,21 @@ const flagCounts = {
   brunette: 0,
 };
 let poopTimer = 0;
-let flagTimer = 0;
+const mazeGrid = [
+  "#############",
+  "#A..#....#.E#",
+  "#.#.#.##.#..#",
+  "#.#...#..##.#",
+  "#.###.#.###.#",
+  "#...#.#.....#",
+  "###.#.###.#.#",
+  "#L....#...#E#",
+  "#############",
+];
+const mazePlayers = {
+  blonde: { col: 1, row: 1, done: false },
+  brunette: { col: 1, row: 7, done: false },
+};
 
 const state = new Map(
   dolls.map((doll) => [
@@ -155,6 +171,96 @@ function placeAnimation(person) {
 function clearGameObjects() {
   document.querySelectorAll(".poop, .flag-target").forEach((item) => item.remove());
   dolls.forEach((doll) => doll.classList.remove("strained"));
+  mazeBoard.innerHTML = "";
+  mazeBoard.setAttribute("aria-hidden", "true");
+}
+
+function buildMaze() {
+  mazeBoard.innerHTML = "";
+  mazeBoard.setAttribute("aria-hidden", "false");
+  mazeGrid.forEach((row, rowIndex) => {
+    [...row].forEach((cell, colIndex) => {
+      const tile = document.createElement("span");
+      tile.className = "maze-cell";
+      if (cell === "#") tile.classList.add("wall");
+      if (cell === "E") tile.classList.add("exit");
+      if (cell === "A") tile.classList.add("start", "alba");
+      if (cell === "L") tile.classList.add("start", "laino");
+      tile.style.gridColumn = colIndex + 1;
+      tile.style.gridRow = rowIndex + 1;
+      mazeBoard.appendChild(tile);
+    });
+  });
+}
+
+function placeMazePlayers() {
+  mazePlayers.blonde = { col: 1, row: 1, done: false };
+  mazePlayers.brunette = { col: 1, row: 7, done: false };
+  updateMazeDoll("blonde");
+  updateMazeDoll("brunette");
+}
+
+function updateMazeDoll(person) {
+  const doll = dolls.find((item) => item.dataset.person === person);
+  const player = mazePlayers[person];
+  const board = mazeBoard.getBoundingClientRect();
+  const cellW = board.width / 13;
+  const cellH = board.height / 9;
+  const x = board.left + (player.col + 0.5) * cellW - innerWidth / 2;
+  const y = board.top + (player.row + 0.5) * cellH - innerHeight / 2;
+  const item = state.get(doll);
+  item.x = x;
+  item.y = y;
+  item.vx = 0;
+  item.vy = 0;
+  item.vr = 0;
+  item.r = person === "blonde" ? -4 : 4;
+  updateDoll(doll);
+}
+
+function moveMazePlayer(person, dc, dr) {
+  if (activeGame !== "flags") return;
+  const player = mazePlayers[person];
+  if (player.done) return;
+  const nextCol = player.col + dc;
+  const nextRow = player.row + dr;
+  const cell = mazeGrid[nextRow]?.[nextCol];
+  if (!cell || cell === "#") return;
+
+  player.col = nextCol;
+  player.row = nextRow;
+  updateMazeDoll(person);
+
+  if (cell === "E") {
+    player.done = true;
+    flagCounts[person] += 1;
+    flagCountNodes[person].textContent = flagCounts[person];
+    const doll = dolls.find((item) => item.dataset.person === person);
+    const rect = doll.getBoundingClientRect();
+    burst(rect.left + rect.width / 2, rect.top + rect.height / 2, person, 18);
+    setTimeout(() => {
+      if (activeGame === "flags") placeMazePlayers();
+    }, 900);
+  }
+}
+
+function handleMazeKey(event) {
+  if (activeGame !== "flags" || event.repeat) return;
+  const key = event.key.toLowerCase();
+  const moves = {
+    w: ["blonde", 0, -1],
+    a: ["blonde", -1, 0],
+    s: ["blonde", 0, 1],
+    d: ["blonde", 1, 0],
+    arrowup: ["brunette", 0, -1],
+    arrowleft: ["brunette", -1, 0],
+    arrowdown: ["brunette", 0, 1],
+    arrowright: ["brunette", 1, 0],
+  };
+  const move = moves[key];
+  if (!move) return;
+  event.preventDefault();
+  moveMazePlayer(move[0], move[1], move[2]);
 }
 
 function setGame(nextGame) {
@@ -169,14 +275,16 @@ function setGame(nextGame) {
   poopToggle.setAttribute("aria-pressed", String(isBathroom));
   flagToggle.setAttribute("aria-pressed", String(isFlags));
   poopToggle.textContent = isBathroom ? "Baño activo" : "Baño";
-  flagToggle.textContent = isFlags ? "Banderas activo" : "Banderas";
+  flagToggle.textContent = isFlags ? "Laberinto activo" : "Laberinto";
 
   clearTimeout(poopTimer);
-  clearTimeout(flagTimer);
   clearGameObjects();
 
   if (isBathroom) schedulePoop();
-  if (isFlags) scheduleFlag();
+  if (isFlags) {
+    buildMaze();
+    requestAnimationFrame(placeMazePlayers);
+  }
 }
 
 function schedulePoop() {
@@ -185,15 +293,6 @@ function schedulePoop() {
   poopTimer = setTimeout(() => {
     dropPoop();
     schedulePoop();
-  }, delay);
-}
-
-function scheduleFlag() {
-  if (activeGame !== "flags") return;
-  const delay = 900 + Math.random() * 1300;
-  flagTimer = setTimeout(() => {
-    dropFlag();
-    scheduleFlag();
   }, delay);
 }
 
@@ -227,39 +326,6 @@ function dropPoop() {
   }, 5200);
 }
 
-function dropFlag() {
-  const person = Math.random() > 0.5 ? "blonde" : "brunette";
-  const flag = document.createElement("div");
-  flag.className = `flag-target ${person}`;
-  flag.dataset.person = person;
-  flag.textContent = person === "blonde" ? "A" : "L";
-  flag.style.left = `${48 + Math.random() * (innerWidth - 124)}px`;
-  flag.style.top = `${118 + Math.random() * Math.max(160, innerHeight * 0.48)}px`;
-  scene.appendChild(flag);
-  setTimeout(() => flag.remove(), 5200);
-}
-
-function captureFlags() {
-  if (activeGame !== "flags") return;
-  document.querySelectorAll(".flag-target").forEach((flag) => {
-    const flagRect = flag.getBoundingClientRect();
-    const flagPerson = flag.dataset.person;
-    const doll = dolls.find((item) => item.dataset.person === flagPerson);
-    const dollRect = doll.getBoundingClientRect();
-    const touches =
-      dollRect.left < flagRect.right &&
-      dollRect.right > flagRect.left &&
-      dollRect.top < flagRect.bottom &&
-      dollRect.bottom > flagRect.top;
-
-    if (!touches || flag.classList.contains("captured")) return;
-    flag.classList.add("captured");
-    flagCounts[flagPerson] += 1;
-    flagCountNodes[flagPerson].textContent = flagCounts[flagPerson];
-    burst(flagRect.left + flagRect.width / 2, flagRect.top + flagRect.height / 2, flagPerson, 12);
-    setTimeout(() => flag.remove(), 280);
-  });
-}
 
 function setOutfit(person, outfit) {
   const doll = dolls.find((item) => item.dataset.person === person);
@@ -358,7 +424,7 @@ function animate(time = 0) {
   lastTime = time;
 
   dolls.forEach((doll) => {
-    if (doll === activeDoll) return;
+    if (activeGame === "flags" || doll === activeDoll) return;
     const item = state.get(doll);
     item.vy += 0.28 * dt;
     item.x += item.vx * dt;
@@ -371,8 +437,6 @@ function animate(time = 0) {
     keepInBounds(item, doll);
     updateDoll(doll);
   });
-
-  captureFlags();
 
   ctx.clearRect(0, 0, innerWidth, innerHeight);
   particles = particles.filter((p) => p.y < innerHeight + 30);
@@ -394,6 +458,7 @@ function animate(time = 0) {
 
 dolls.forEach((doll) => {
   doll.addEventListener("pointerdown", (event) => {
+    if (activeGame === "flags") return;
     event.preventDefault();
     beginDrag(event, doll);
   });
@@ -418,6 +483,17 @@ outfitButtons.forEach((button) => {
   button.addEventListener("click", () => setOutfit(button.dataset.person, button.dataset.outfit));
 });
 
+mazeButtons.forEach((button) => {
+  button.addEventListener("pointerdown", (event) => event.stopPropagation());
+  button.addEventListener("click", () => {
+    moveMazePlayer(
+      button.dataset.person,
+      Number.parseInt(button.dataset.dc, 10),
+      Number.parseInt(button.dataset.dr, 10),
+    );
+  });
+});
+
 [poopToggle, flagToggle].forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
 });
@@ -427,7 +503,11 @@ flagToggle.addEventListener("click", () => setGame("flags"));
 window.addEventListener("pointermove", moveDrag);
 window.addEventListener("pointerup", endDrag);
 window.addEventListener("pointercancel", endDrag);
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("keydown", handleMazeKey);
+window.addEventListener("resize", () => {
+  resizeCanvas();
+  if (activeGame === "flags") requestAnimationFrame(placeMazePlayers);
+});
 
 resizeCanvas();
 dolls.forEach(updateDoll);

@@ -98,7 +98,7 @@
         <details class="games-menu">
           <summary>Juegos</summary>
           <button id="poopToggle" class="game-button" type="button" aria-pressed="false">Baño</button>
-          <button id="flagToggle" class="game-button" type="button" aria-pressed="false">Banderas</button>
+          <button id="flagToggle" class="game-button" type="button" aria-pressed="false">Laberinto</button>
         </details>
 
         <section class="bathroom-scores" aria-label="Marcador del baño">
@@ -106,9 +106,25 @@
           <div class="bath-score bath-score-laino"><span id="poopCountLaino">0</span> Cacas Laino</div>
         </section>
 
-        <section class="flag-scores" aria-label="Marcador de banderas">
-          <div class="flag-score flag-score-alba"><span id="flagCountAlba">0</span> Banderas Alba</div>
-          <div class="flag-score flag-score-laino"><span id="flagCountLaino">0</span> Banderas Laino</div>
+        <section class="flag-scores" aria-label="Marcador del laberinto">
+          <div class="flag-score flag-score-alba"><span id="flagCountAlba">0</span> Salidas Alba</div>
+          <div class="flag-score flag-score-laino"><span id="flagCountLaino">0</span> Salidas Laino</div>
+        </section>
+
+        <div id="mazeBoard" class="maze-board" aria-hidden="true"></div>
+        <section class="maze-controls" aria-label="Controles del laberinto">
+          <div class="maze-pad maze-pad-alba" aria-label="Alba">
+            <button type="button" data-person="blonde" data-dc="0" data-dr="-1">W</button>
+            <button type="button" data-person="blonde" data-dc="-1" data-dr="0">A</button>
+            <button type="button" data-person="blonde" data-dc="0" data-dr="1">S</button>
+            <button type="button" data-person="blonde" data-dc="1" data-dr="0">D</button>
+          </div>
+          <div class="maze-pad maze-pad-laino" aria-label="Laino">
+            <button type="button" data-person="brunette" data-dc="0" data-dr="-1">↑</button>
+            <button type="button" data-person="brunette" data-dc="-1" data-dr="0">←</button>
+            <button type="button" data-person="brunette" data-dc="0" data-dr="1">↓</button>
+            <button type="button" data-person="brunette" data-dc="1" data-dr="0">→</button>
+          </div>
         </section>
 
         <div class="caption" aria-hidden="true">mueve las figuras y toca sus caras</div>
