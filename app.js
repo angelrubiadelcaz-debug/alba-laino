@@ -1,5 +1,6 @@
 const scene = document.querySelector(".scene");
 const dolls = [...document.querySelectorAll(".doll")];
+const outfitButtons = [...document.querySelectorAll(".outfit-button")];
 const canvas = document.querySelector("#confetti");
 const ctx = canvas.getContext("2d");
 
@@ -130,6 +131,25 @@ function placeAnimation(person) {
   setTimeout(() => card.remove(), 3200);
 }
 
+function setOutfit(person, outfit) {
+  const doll = dolls.find((item) => item.dataset.person === person);
+  if (!doll) return;
+
+  doll.classList.toggle("outfit-normal", outfit === "normal");
+  doll.classList.toggle("outfit-traditional", outfit === "traditional");
+
+  outfitButtons
+    .filter((button) => button.dataset.person === person)
+    .forEach((button) => {
+      const isActive = button.dataset.outfit === outfit;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+
+  const center = doll.getBoundingClientRect();
+  burst(center.left + center.width / 2, center.top + center.height / 2, person, 10);
+}
+
 function beginDrag(event, doll) {
   activeDoll = doll;
   pointer = {
@@ -257,6 +277,12 @@ dolls.forEach((doll) => {
     if (event.key === "ArrowDown") item.vy += 4;
     if (event.key === " ") speak(doll);
   });
+});
+
+outfitButtons.forEach((button) => {
+  button.setAttribute("aria-pressed", String(button.classList.contains("active")));
+  button.addEventListener("pointerdown", (event) => event.stopPropagation());
+  button.addEventListener("click", () => setOutfit(button.dataset.person, button.dataset.outfit));
 });
 
 window.addEventListener("pointermove", moveDrag);

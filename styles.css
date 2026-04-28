@@ -84,6 +84,60 @@ body {
   transform: rotate(5deg);
 }
 
+.wardrobe {
+  position: absolute;
+  left: 50%;
+  top: clamp(12px, 2.4vw, 28px);
+  z-index: 18;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(190px, 1fr));
+  gap: 10px;
+  width: min(92vw, 520px);
+  transform: translateX(-50%);
+}
+
+.wardrobe-card {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(255, 248, 232, 0.2);
+  border-radius: 8px;
+  background: rgba(17, 15, 14, 0.66);
+  color: var(--paper);
+  font-weight: 900;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+}
+
+.wardrobe-card span {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.wardrobe-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.outfit-button {
+  min-width: 0;
+  min-height: 36px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255, 248, 232, 0.12);
+  color: var(--paper);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.outfit-button.active {
+  background: var(--sun);
+  color: var(--ink);
+}
+
 .doll {
   --x: 0px;
   --y: 0px;
@@ -293,6 +347,84 @@ body {
   background:
     repeating-linear-gradient(0deg, #4c2c28 0 12px, #fff6e6 12px 17px),
     #4c2c28;
+}
+
+.outfit-traditional[data-person="blonde"] .torso {
+  background:
+    linear-gradient(90deg, transparent 0 25%, #1f1918 25% 75%, transparent 75%),
+    linear-gradient(#fff6e6 0 36%, #cf3341 36% 100%);
+}
+
+.outfit-traditional[data-person="blonde"] .collar {
+  width: 68px;
+  height: 34px;
+  border-radius: 0 0 34px 34px;
+  background: #fff6e6;
+}
+
+.outfit-traditional[data-person="blonde"] .torso::before,
+.outfit-traditional[data-person="brunette"] .torso::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -34px;
+  width: 128px;
+  height: 74px;
+  border: 3px solid var(--ink);
+  border-radius: 0 0 36px 36px;
+  transform: translateX(-50%);
+}
+
+.outfit-traditional[data-person="blonde"] .torso::before {
+  background:
+    linear-gradient(90deg, transparent 0 34%, rgba(255, 246, 230, 0.9) 34% 66%, transparent 66%),
+    repeating-linear-gradient(90deg, #7d1821 0 13px, #cf3341 13px 26px);
+}
+
+.outfit-traditional[data-person="blonde"] .arm {
+  background: #fff6e6;
+}
+
+.outfit-traditional[data-person="blonde"] .leg {
+  background: #191716;
+}
+
+.outfit-traditional[data-person="brunette"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  z-index: 5;
+  width: 74px;
+  height: 20px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: #201a1b;
+  transform: translateX(-50%) rotate(-5deg);
+}
+
+.outfit-traditional[data-person="brunette"] .torso {
+  background:
+    linear-gradient(90deg, transparent 0 43%, #cf3341 43% 57%, transparent 57%),
+    linear-gradient(#fff6e6 0 56%, #1f2526 56% 100%);
+}
+
+.outfit-traditional[data-person="brunette"] .torso::before {
+  background:
+    linear-gradient(90deg, transparent 0 42%, #cf3341 42% 58%, transparent 58%),
+    #1f2526;
+}
+
+.outfit-traditional[data-person="brunette"] .arm {
+  background: #fff6e6;
+}
+
+.outfit-traditional[data-person="brunette"] .leg {
+  background: #171819;
+}
+
+.outfit-traditional .stripe-arm {
+  background: #fff6e6;
 }
 
 .arm,
@@ -845,6 +977,29 @@ body {
     background-size: 38px 38px;
   }
 
+  .wardrobe {
+    top: 10px;
+    grid-template-columns: 1fr;
+    width: min(92vw, 330px);
+    gap: 7px;
+  }
+
+  .wardrobe-card {
+    grid-template-columns: 64px 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 7px;
+  }
+
+  .wardrobe-card span {
+    font-size: 0.7rem;
+  }
+
+  .outfit-button {
+    min-height: 32px;
+    font-size: 0.7rem;
+  }
+
   .moon {
     right: -26px;
     bottom: 78px;
@@ -866,7 +1021,7 @@ body {
 
   .doll {
     --scale: 0.84;
-    top: 52%;
+    top: 56%;
   }
 
   .bubble {
@@ -928,7 +1083,7 @@ body {
 
   .doll {
     --scale: 0.76;
-    top: 53%;
+    top: 57%;
   }
 
   .doll-left {
