@@ -798,14 +798,14 @@ body {
 }
 
 .stage.flag-mode .victory-jumpscare .victory-doll {
-  position: relative;
-  left: auto;
-  top: auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
   z-index: 3;
   --x: 0px;
   --y: 0px;
   --r: 0deg;
-  --scale: clamp(2.8, 10vw, 4.8);
+  --scale: 1.85;
   cursor: default;
   filter: drop-shadow(0 42px 42px rgba(0, 0, 0, 0.48)) saturate(1.22);
   transform-origin: 50% 50%;
@@ -2077,11 +2077,11 @@ body {
 
 @keyframes victoryDance {
   0% {
-    transform: translateY(-9vh) rotate(-8deg) scale(var(--scale));
+    transform: translate(-50%, -50%) translateY(16px) rotate(-8deg) scale(var(--scale));
   }
 
   100% {
-    transform: translateY(-13vh) rotate(8deg) scale(var(--scale));
+    transform: translate(-50%, -50%) translateY(-24px) rotate(8deg) scale(var(--scale));
   }
 }
 
