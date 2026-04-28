@@ -251,11 +251,30 @@ function buildMaze() {
 
 function placeMazePlayers() {
   mazeRoundLocked = false;
-  dolls.forEach((doll) => doll.classList.remove("maze-step", "maze-winner", "maze-loser"));
+  dolls.forEach((doll) => doll.classList.remove("maze-step", "maze-winner", "maze-loser", "maze-caught"));
   mazePlayers.blonde = findMazeCell("A");
   mazePlayers.brunette = findMazeCell("L");
   updateMazeDoll("blonde");
   updateMazeDoll("brunette");
+}
+
+function resetMazeAfterCatch() {
+  mazeRoundLocked = true;
+  mazePlayers.blonde = findMazeCell("A");
+  mazePlayers.brunette = findMazeCell("L");
+  updateMazeDoll("blonde");
+  updateMazeDoll("brunette");
+  dolls.forEach((doll) => {
+    doll.classList.remove("maze-step");
+    doll.classList.add("maze-caught");
+  });
+  sayText(dolls.find((item) => item.dataset.person === "blonde"), "Odio la tecnologia", 3600);
+  sayText(dolls.find((item) => item.dataset.person === "brunette"), "Laguntza", 3600);
+  setTimeout(() => {
+    if (activeGame !== "flags") return;
+    dolls.forEach((doll) => doll.classList.remove("maze-caught"));
+    mazeRoundLocked = false;
+  }, 900);
 }
 
 function updateMazeDoll(person, step = false, dc = 0) {
@@ -295,6 +314,13 @@ function moveMazePlayer(person, dc, dr) {
   player.col = nextCol;
   player.row = nextRow;
   updateMazeDoll(person, true, dc);
+
+  const otherPerson = person === "blonde" ? "brunette" : "blonde";
+  const otherPlayer = mazePlayers[otherPerson];
+  if (!otherPlayer.done && player.col === otherPlayer.col && player.row === otherPlayer.row) {
+    resetMazeAfterCatch();
+    return;
+  }
 
   if (cell === "E") {
     mazeRoundLocked = true;

@@ -706,6 +706,14 @@ body {
   animation: loserSquash 520ms ease-out 2;
 }
 
+.stage.flag-mode .doll.maze-caught {
+  filter: drop-shadow(0 0 22px rgba(255, 111, 145, 0.44)) saturate(1.18);
+}
+
+.stage.flag-mode .doll.maze-caught .head {
+  animation: caughtShake 420ms ease-in-out 2;
+}
+
 .stage.flag-mode .bubble {
   top: -96px;
   max-width: 118px;
@@ -738,6 +746,22 @@ body {
 
 .stage.flag-mode .doll.maze-winner.popped .bubble {
   animation: winnerBubblePop 460ms ease-out;
+}
+
+.stage.flag-mode .doll.maze-caught .bubble {
+  left: 50%;
+  right: auto;
+  max-width: 148px;
+  transform: rotate(-2deg) scale(2.25);
+  transform-origin: 0 100%;
+}
+
+.stage.flag-mode .doll.maze-caught.talking .bubble {
+  transform: translateY(-7px) rotate(-2deg) scale(2.25);
+}
+
+.stage.flag-mode .doll.maze-caught.popped .bubble {
+  animation: caughtBubblePop 460ms ease-out;
 }
 
 .maze-board {
@@ -1946,6 +1970,22 @@ body {
 @keyframes winnerBubblePop {
   50% {
     transform: translateY(-12px) rotate(2deg) scale(2.72);
+  }
+}
+
+@keyframes caughtBubblePop {
+  50% {
+    transform: translateY(-12px) rotate(2deg) scale(2.5);
+  }
+}
+
+@keyframes caughtShake {
+  20% {
+    transform: translateX(calc(-50% - 6px)) rotate(-7deg);
+  }
+
+  60% {
+    transform: translateX(calc(-50% + 6px)) rotate(7deg);
   }
 }
 
