@@ -2,9 +2,14 @@ const scene = document.querySelector(".scene");
 const dolls = [...document.querySelectorAll(".doll")];
 const outfitButtons = [...document.querySelectorAll(".outfit-button")];
 const poopToggle = document.querySelector("#poopToggle");
+const pintxoToggle = document.querySelector("#pintxoToggle");
 const poopCountNodes = {
   blonde: document.querySelector("#poopCountAlba"),
   brunette: document.querySelector("#poopCountLaino"),
+};
+const pintxoCountNodes = {
+  blonde: document.querySelector("#pintxoCountAlba"),
+  brunette: document.querySelector("#pintxoCountLaino"),
 };
 const canvas = document.querySelector("#confetti");
 const ctx = canvas.getContext("2d");
@@ -53,12 +58,17 @@ let activeDoll = null;
 let pointer = null;
 let particles = [];
 let lastTime = 0;
-let poopGameActive = false;
+let activeGame = null;
 const poopCounts = {
   blonde: 0,
   brunette: 0,
 };
+const pintxoCounts = {
+  blonde: 0,
+  brunette: 0,
+};
 let poopTimer = 0;
+let pintxoTimer = 0;
 
 const state = new Map(
   dolls.map((doll) => [
@@ -142,26 +152,48 @@ function placeAnimation(person) {
   setTimeout(() => card.remove(), 3200);
 }
 
-function setPoopGame(active) {
-  poopGameActive = active;
-  document.querySelector(".stage").classList.toggle("bathroom-mode", active);
-  poopToggle.classList.toggle("active", active);
-  poopToggle.setAttribute("aria-pressed", String(active));
-  poopToggle.textContent = active ? "Baño activo" : "Baño";
+function clearGameObjects() {
+  document.querySelectorAll(".poop, .pintxo").forEach((item) => item.remove());
+  dolls.forEach((doll) => doll.classList.remove("strained", "snacking"));
+}
+
+function setGame(nextGame) {
+  activeGame = activeGame === nextGame ? null : nextGame;
+  const isBathroom = activeGame === "bathroom";
+  const isPintxos = activeGame === "pintxos";
+
+  document.querySelector(".stage").classList.toggle("bathroom-mode", isBathroom);
+  document.querySelector(".stage").classList.toggle("pintxo-mode", isPintxos);
+  poopToggle.classList.toggle("active", isBathroom);
+  pintxoToggle.classList.toggle("active", isPintxos);
+  poopToggle.setAttribute("aria-pressed", String(isBathroom));
+  pintxoToggle.setAttribute("aria-pressed", String(isPintxos));
+  poopToggle.textContent = isBathroom ? "Baño activo" : "Baño";
+  pintxoToggle.textContent = isPintxos ? "Pintxos activo" : "Pintxos";
+
   clearTimeout(poopTimer);
-  if (!active) {
-    document.querySelectorAll(".poop").forEach((poop) => poop.remove());
-    dolls.forEach((doll) => doll.classList.remove("strained"));
-  }
-  if (active) schedulePoop();
+  clearTimeout(pintxoTimer);
+  clearGameObjects();
+
+  if (isBathroom) schedulePoop();
+  if (isPintxos) schedulePintxo();
 }
 
 function schedulePoop() {
-  if (!poopGameActive) return;
+  if (activeGame !== "bathroom") return;
   const delay = 2400 + Math.random() * 2600;
   poopTimer = setTimeout(() => {
     dropPoop();
     schedulePoop();
+  }, delay);
+}
+
+function schedulePintxo() {
+  if (activeGame !== "pintxos") return;
+  const delay = 1500 + Math.random() * 1800;
+  pintxoTimer = setTimeout(() => {
+    dropPintxo();
+    schedulePintxo();
   }, delay);
 }
 
@@ -193,6 +225,69 @@ function dropPoop() {
   setTimeout(() => {
     if (!poop.classList.contains("collected")) poop.remove();
   }, 5200);
+}
+
+function dropPintxo() {
+  const doll = dolls[Math.floor(Math.random() * dolls.length)];
+  const rect = doll.getBoundingClientRect();
+  const pintxo = document.createElement("button");
+  const person = doll.dataset.person;
+  const x = Math.max(56, Math.min(innerWidth - 56, rect.left + rect.width * (0.24 + Math.random() * 0.52)));
+  const y = Math.max(118, rect.top - 34 - Math.random() * 80);
+
+  pintxo.type = "button";
+  pintxo.className = "pintxo";
+  pintxo.setAttribute("aria-label", "Pintxo");
+  pintxo.style.left = `${x - 36}px`;
+  pintxo.style.top = `${y}px`;
+
+  doll.classList.add("snacking");
+  clearTimeout(doll._snackTimer);
+  doll._snackTimer = setTimeout(() => doll.classList.remove("snacking"), 900);
+
+  const collectPintxo = () => {
+    if (pintxo.classList.contains("collected")) return;
+    pintxo.classList.add("collected");
+    pintxoCounts[person] += 1;
+    pintxoCountNodes[person].textContent = pintxoCounts[person];
+    burst(x, y, person, 8);
+    setTimeout(() => pintxo.remove(), 260);
+  };
+
+  pintxo.addEventListener("pointerdown", (event) => {
+    event.stopPropagation();
+    collectPintxo();
+  });
+  pintxo.addEventListener("mousedown", (event) => {
+    event.stopPropagation();
+    collectPintxo();
+  });
+  pintxo.addEventListener("click", collectPintxo);
+  pintxo.collect = collectPintxo;
+  pintxo.onclick = collectPintxo;
+  pintxo.onmousedown = (event) => {
+    event.stopPropagation();
+    collectPintxo();
+  };
+
+  scene.appendChild(pintxo);
+  setTimeout(() => {
+    if (!pintxo.classList.contains("collected")) pintxo.remove();
+  }, 4200);
+}
+
+function collectNearbyPintxo(event) {
+  if (activeGame !== "pintxos") return;
+  const match = [...document.querySelectorAll(".pintxo")].find((pintxo) => {
+    const rect = pintxo.getBoundingClientRect();
+    return (
+      event.clientX >= rect.left - 18 &&
+      event.clientX <= rect.right + 18 &&
+      event.clientY >= rect.top - 18 &&
+      event.clientY <= rect.bottom + 18
+    );
+  });
+  if (match?.collect) match.collect();
 }
 
 function setOutfit(person, outfit) {
@@ -350,10 +445,15 @@ outfitButtons.forEach((button) => {
   button.addEventListener("click", () => setOutfit(button.dataset.person, button.dataset.outfit));
 });
 
-poopToggle.addEventListener("pointerdown", (event) => event.stopPropagation());
-poopToggle.addEventListener("click", () => setPoopGame(!poopGameActive));
+[poopToggle, pintxoToggle].forEach((button) => {
+  button.addEventListener("pointerdown", (event) => event.stopPropagation());
+});
+poopToggle.addEventListener("click", () => setGame("bathroom"));
+pintxoToggle.addEventListener("click", () => setGame("pintxos"));
 
 window.addEventListener("pointermove", moveDrag);
+window.addEventListener("pointerdown", collectNearbyPintxo);
+window.addEventListener("click", collectNearbyPintxo);
 window.addEventListener("pointerup", endDrag);
 window.addEventListener("pointercancel", endDrag);
 window.addEventListener("resize", resizeCanvas);
