@@ -673,28 +673,48 @@ body {
 
 .outfit-traditional[data-person="brunette"] .torso {
   background:
-    radial-gradient(circle at 32% 22%, rgba(255, 248, 232, 0.95) 0 13%, transparent 14%),
-    radial-gradient(circle at 68% 22%, rgba(255, 248, 232, 0.95) 0 13%, transparent 14%),
-    linear-gradient(90deg, transparent 0 18%, #a85a32 18% 82%, transparent 82%),
-    linear-gradient(#fff6e6 0 34%, #a85a32 34% 100%);
+    linear-gradient(122deg, transparent 0 31%, #fff6e6 31% 39%, transparent 39%),
+    linear-gradient(238deg, transparent 0 31%, #fff6e6 31% 39%, transparent 39%),
+    linear-gradient(90deg, #fff6e6 0 16%, #a85a32 16% 84%, #fff6e6 84% 100%),
+    linear-gradient(#a85a32 0 100%);
+}
+
+.outfit-traditional[data-person="brunette"] .torso::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  z-index: 4;
+  width: 30px;
+  height: 60px;
+  border: 3px solid var(--ink);
+  border-top: 0;
+  border-bottom: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 8px, #fff6e6 8px 11px, transparent 11px 17px),
+    #7a3a25;
+  clip-path: polygon(0 0, 100% 0, 82% 100%, 18% 100%);
+  transform: translateX(-50%);
 }
 
 .outfit-traditional[data-person="brunette"] .torso::before {
   background:
-    linear-gradient(90deg, transparent 0 20%, rgba(255, 246, 230, 0.94) 20% 80%, transparent 80%),
-    linear-gradient(0deg, #c34632 0 15%, transparent 15%),
-    radial-gradient(circle at 16% 80%, #fff6e6 0 3px, transparent 4px),
-    radial-gradient(circle at 34% 78%, #fff6e6 0 3px, transparent 4px),
-    radial-gradient(circle at 52% 80%, #fff6e6 0 3px, transparent 4px),
-    radial-gradient(circle at 70% 78%, #fff6e6 0 3px, transparent 4px),
-    repeating-linear-gradient(90deg, #161819 0 16px, #312326 16px 29px);
+    linear-gradient(90deg, transparent 0 14%, rgba(255, 246, 230, 0.98) 14% 86%, transparent 86%),
+    linear-gradient(0deg, #c34632 0 16%, transparent 16%),
+    radial-gradient(circle at 18% 78%, #fff6e6 0 3px, transparent 4px),
+    radial-gradient(circle at 34% 80%, #fff6e6 0 3px, transparent 4px),
+    radial-gradient(circle at 50% 78%, #fff6e6 0 3px, transparent 4px),
+    radial-gradient(circle at 66% 80%, #fff6e6 0 3px, transparent 4px),
+    radial-gradient(circle at 82% 78%, #fff6e6 0 3px, transparent 4px),
+    repeating-linear-gradient(90deg, #151819 0 14px, #342528 14px 28px);
 }
 
 .outfit-traditional[data-person="brunette"] .arm {
-  width: 32px;
-  border-radius: 50% 50% 16px 16px;
+  width: 34px;
+  border-radius: 42% 42% 16px 16px;
   background:
-    linear-gradient(#fff6e6 0 78%, #a85a32 78% 100%);
+    radial-gradient(circle at 50% 20%, #fff8e8 0 42%, transparent 43%),
+    linear-gradient(#fff6e6 0 74%, #a85a32 74% 100%);
 }
 
 .outfit-traditional[data-person="brunette"] .leg {
