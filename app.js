@@ -138,10 +138,15 @@ function placeAnimation(person) {
 
 function setPoopGame(active) {
   poopGameActive = active;
+  document.querySelector(".stage").classList.toggle("bathroom-mode", active);
   poopToggle.classList.toggle("active", active);
   poopToggle.setAttribute("aria-pressed", String(active));
-  poopToggle.textContent = active ? "Juego activo" : "Juego cacas";
+  poopToggle.textContent = active ? "Baño activo" : "Baño";
   clearTimeout(poopTimer);
+  if (!active) {
+    document.querySelectorAll(".poop").forEach((poop) => poop.remove());
+    dolls.forEach((doll) => doll.classList.remove("strained"));
+  }
   if (active) schedulePoop();
 }
 
@@ -162,11 +167,11 @@ function dropPoop() {
   poop.className = "poop";
   poop.setAttribute("aria-label", "Caca");
   poop.style.left = `${rect.left + rect.width / 2}px`;
-  poop.style.top = `${rect.top + rect.height * 0.82}px`;
+  poop.style.top = `${rect.top + rect.height * 0.9}px`;
 
   doll.classList.add("strained");
   clearTimeout(doll._strainTimer);
-  doll._strainTimer = setTimeout(() => doll.classList.remove("strained"), 1200);
+  doll._strainTimer = setTimeout(() => doll.classList.remove("strained"), 1600);
 
   poop.addEventListener("pointerdown", (event) => event.stopPropagation());
   poop.addEventListener("click", () => {
