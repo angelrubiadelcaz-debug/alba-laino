@@ -507,7 +507,8 @@ body {
 .stage.bathroom-mode .pisa-gag,
 .stage.bathroom-mode .string,
 .stage.bathroom-mode .caption,
-.stage.bathroom-mode .place-flyby {
+.stage.bathroom-mode .place-flyby,
+.stage.bathroom-mode .wardrobe {
   display: none;
 }
 
