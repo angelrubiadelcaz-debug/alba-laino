@@ -1,6 +1,8 @@
 const scene = document.querySelector(".scene");
 const dolls = [...document.querySelectorAll(".doll")];
 const outfitButtons = [...document.querySelectorAll(".outfit-button")];
+const poopToggle = document.querySelector("#poopToggle");
+const poopCountNode = document.querySelector("#poopCount");
 const canvas = document.querySelector("#confetti");
 const ctx = canvas.getContext("2d");
 
@@ -48,6 +50,9 @@ let activeDoll = null;
 let pointer = null;
 let particles = [];
 let lastTime = 0;
+let poopGameActive = false;
+let poopCount = 0;
+let poopTimer = 0;
 
 const state = new Map(
   dolls.map((doll) => [
@@ -129,6 +134,53 @@ function placeAnimation(person) {
   `;
   scene.appendChild(card);
   setTimeout(() => card.remove(), 3200);
+}
+
+function setPoopGame(active) {
+  poopGameActive = active;
+  poopToggle.classList.toggle("active", active);
+  poopToggle.setAttribute("aria-pressed", String(active));
+  poopToggle.textContent = active ? "Juego activo" : "Juego cacas";
+  clearTimeout(poopTimer);
+  if (active) schedulePoop();
+}
+
+function schedulePoop() {
+  if (!poopGameActive) return;
+  const delay = 2400 + Math.random() * 2600;
+  poopTimer = setTimeout(() => {
+    dropPoop();
+    schedulePoop();
+  }, delay);
+}
+
+function dropPoop() {
+  const doll = dolls[Math.floor(Math.random() * dolls.length)];
+  const rect = doll.getBoundingClientRect();
+  const poop = document.createElement("button");
+  poop.type = "button";
+  poop.className = "poop";
+  poop.setAttribute("aria-label", "Caca");
+  poop.style.left = `${rect.left + rect.width / 2}px`;
+  poop.style.top = `${rect.top + rect.height * 0.82}px`;
+
+  doll.classList.add("strained");
+  clearTimeout(doll._strainTimer);
+  doll._strainTimer = setTimeout(() => doll.classList.remove("strained"), 1200);
+
+  poop.addEventListener("pointerdown", (event) => event.stopPropagation());
+  poop.addEventListener("click", () => {
+    if (poop.classList.contains("collected")) return;
+    poop.classList.add("collected");
+    poopCount += 1;
+    poopCountNode.textContent = poopCount;
+    setTimeout(() => poop.remove(), 280);
+  });
+
+  scene.appendChild(poop);
+  setTimeout(() => {
+    if (!poop.classList.contains("collected")) poop.remove();
+  }, 5200);
 }
 
 function setOutfit(person, outfit) {
@@ -285,6 +337,9 @@ outfitButtons.forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
   button.addEventListener("click", () => setOutfit(button.dataset.person, button.dataset.outfit));
 });
+
+poopToggle.addEventListener("pointerdown", (event) => event.stopPropagation());
+poopToggle.addEventListener("click", () => setPoopGame(!poopGameActive));
 
 window.addEventListener("pointermove", moveDrag);
 window.addEventListener("pointerup", endDrag);
