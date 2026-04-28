@@ -99,6 +99,7 @@
           <summary>Juegos</summary>
           <button id="poopToggle" class="game-button" type="button" aria-pressed="false">Baño</button>
           <button id="flagToggle" class="game-button" type="button" aria-pressed="false">Laberinto</button>
+          <button id="chessToggle" class="game-button" type="button" aria-pressed="false">Ajedrez</button>
         </details>
 
         <section class="bathroom-scores" aria-label="Marcador del baño">
@@ -127,10 +128,23 @@
           </div>
         </section>
 
+        <section class="chess-panel" aria-label="Juego de ajedrez">
+          <div class="chess-topbar">
+            <div>
+              <span class="chess-label">Ajedrez</span>
+              <strong id="chessStatus">Blancas mueven</strong>
+            </div>
+            <button id="chessReset" class="chess-reset" type="button">Reiniciar</button>
+          </div>
+          <div id="chessBoard" class="chess-board" aria-label="Tablero de ajedrez"></div>
+          <div id="chessCaptures" class="chess-captures" aria-live="polite"></div>
+        </section>
+
         <div class="caption" aria-hidden="true">mueve las figuras y toca sus caras</div>
       </div>
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
