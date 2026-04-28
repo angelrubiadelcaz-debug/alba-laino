@@ -137,6 +137,7 @@ function setOutfit(person, outfit) {
 
   doll.classList.toggle("outfit-normal", outfit === "normal");
   doll.classList.toggle("outfit-traditional", outfit === "traditional");
+  doll.classList.toggle("outfit-clown", outfit === "clown");
 
   outfitButtons
     .filter((button) => button.dataset.person === person)

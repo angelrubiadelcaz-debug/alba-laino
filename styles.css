@@ -89,7 +89,7 @@ body {
   right: clamp(-26px, 3vw, 40px);
   bottom: clamp(42px, 7vh, 78px);
   z-index: 0;
-  width: clamp(280px, 34vw, 520px);
+  width: clamp(210px, 24vw, 360px);
   height: clamp(260px, 35vw, 520px);
   opacity: 0.58;
   pointer-events: none;
@@ -115,7 +115,7 @@ body {
 }
 
 .pisa-gag::after {
-  content: "aguanta";
+  content: "Pisa mood";
   position: absolute;
   left: 11%;
   bottom: 47%;
@@ -132,7 +132,7 @@ body {
 
 .pisa-tower {
   position: absolute;
-  right: 13%;
+  right: 34%;
   bottom: 15%;
   width: 31%;
   height: 82%;
@@ -211,90 +211,6 @@ body {
   top: 67%;
 }
 
-.pisa-person {
-  position: absolute;
-  left: 7%;
-  bottom: 12%;
-  width: 54%;
-  height: 44%;
-  transform: perspective(420px) rotateX(56deg) rotateZ(-6deg);
-  transform-origin: 50% 100%;
-  animation: pisaPush 2.1s ease-in-out infinite;
-}
-
-.pisa-head {
-  position: absolute;
-  left: 50%;
-  top: 22%;
-  z-index: 4;
-  width: 18%;
-  aspect-ratio: 1;
-  border: 3px solid var(--ink);
-  border-radius: 50%;
-  background: #f4b892;
-  box-shadow: inset 0 8px 0 #241716;
-}
-
-.pisa-body {
-  position: absolute;
-  left: 39%;
-  top: 36%;
-  z-index: 3;
-  width: 32%;
-  height: 34%;
-  border: 3px solid var(--ink);
-  border-radius: 18px 18px 14px 14px;
-  background:
-    linear-gradient(90deg, transparent 0 44%, #56a3ff 44% 56%, transparent 56%),
-    #201a1b;
-}
-
-.pisa-arm,
-.pisa-leg {
-  position: absolute;
-  border: 3px solid var(--ink);
-  border-radius: 999px;
-  background: #f4b892;
-}
-
-.pisa-arm {
-  z-index: 2;
-  top: 28%;
-  width: 9%;
-  height: 54%;
-  transform-origin: 50% 100%;
-}
-
-.pisa-arm.arm-a {
-  left: 66%;
-  transform: rotate(56deg);
-  animation: pushArmA 1.6s ease-in-out infinite;
-}
-
-.pisa-arm.arm-b {
-  left: 73%;
-  transform: rotate(68deg);
-  animation: pushArmB 1.6s ease-in-out infinite;
-}
-
-.pisa-leg {
-  bottom: 6%;
-  width: 10%;
-  height: 52%;
-  background: #56a3ff;
-  transform-origin: 50% 0;
-}
-
-.pisa-leg.leg-a {
-  left: 26%;
-  transform: rotate(58deg);
-}
-
-.pisa-leg.leg-b {
-  left: 14%;
-  transform: rotate(78deg);
-}
-
 .wardrobe {
   position: absolute;
   left: clamp(10px, 2.2vw, 24px);
@@ -365,7 +281,7 @@ body {
 
 .wardrobe-buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
 }
 
@@ -723,6 +639,92 @@ body {
 
 .outfit-traditional .stripe-arm {
   background: #fff6e6;
+}
+
+.outfit-clown .face::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 45px;
+  width: 12px;
+  aspect-ratio: 1;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: #e53242;
+  transform: translateX(-50%);
+}
+
+.outfit-clown .torso {
+  background:
+    radial-gradient(circle at 50% 18%, #e53242 0 6px, transparent 7px),
+    radial-gradient(circle at 50% 42%, #56a3ff 0 6px, transparent 7px),
+    radial-gradient(circle at 50% 66%, #ffd166 0 6px, transparent 7px),
+    linear-gradient(90deg, #fff6e6 0 50%, #49d7b8 50% 100%);
+}
+
+.outfit-clown[data-person="brunette"] .torso {
+  background:
+    radial-gradient(circle at 50% 18%, #ffd166 0 6px, transparent 7px),
+    radial-gradient(circle at 50% 42%, #e53242 0 6px, transparent 7px),
+    radial-gradient(circle at 50% 66%, #49d7b8 0 6px, transparent 7px),
+    linear-gradient(90deg, #ff6f91 0 50%, #fff6e6 50% 100%);
+}
+
+.outfit-clown .torso::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -12px;
+  z-index: 4;
+  width: 86px;
+  height: 34px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 18% 50%, #ffd166 0 8px, transparent 9px),
+    radial-gradient(circle at 38% 50%, #fff6e6 0 8px, transparent 9px),
+    radial-gradient(circle at 58% 50%, #ffd166 0 8px, transparent 9px),
+    radial-gradient(circle at 78% 50%, #fff6e6 0 8px, transparent 9px),
+    transparent;
+  transform: translateX(-50%);
+}
+
+.outfit-clown .torso::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -34px;
+  width: 124px;
+  height: 70px;
+  border: 3px solid var(--ink);
+  border-radius: 0 0 34px 34px;
+  background:
+    radial-gradient(circle at 18% 28%, #fff6e6 0 5px, transparent 6px),
+    radial-gradient(circle at 42% 62%, #ffd166 0 5px, transparent 6px),
+    radial-gradient(circle at 70% 32%, #49d7b8 0 5px, transparent 6px),
+    repeating-linear-gradient(90deg, #e53242 0 14px, #56a3ff 14px 28px);
+  transform: translateX(-50%);
+}
+
+.outfit-clown .arm {
+  background: repeating-linear-gradient(0deg, #ffd166 0 14px, #fff6e6 14px 26px);
+}
+
+.outfit-clown[data-person="brunette"] .arm {
+  background: repeating-linear-gradient(0deg, #49d7b8 0 14px, #ff6f91 14px 26px);
+}
+
+.outfit-clown .leg {
+  background: linear-gradient(90deg, #56a3ff 0 50%, #e53242 50% 100%);
+}
+
+.outfit-clown[data-person="brunette"] .leg {
+  background: linear-gradient(90deg, #ffd166 0 50%, #49d7b8 50% 100%);
+}
+
+.outfit-clown .collar {
+  background: transparent;
+  border: 0;
 }
 
 .arm,
@@ -1285,27 +1287,9 @@ body {
   }
 }
 
-@keyframes pisaPush {
-  50% {
-    transform: perspective(420px) rotateX(56deg) rotateZ(-6deg) translateX(6px);
-  }
-}
-
 @keyframes pisaCaption {
   50% {
     transform: rotate(-8deg) translateY(-4px) scale(1.04);
-  }
-}
-
-@keyframes pushArmA {
-  50% {
-    transform: rotate(61deg) translateY(-3px);
-  }
-}
-
-@keyframes pushArmB {
-  50% {
-    transform: rotate(73deg) translateY(-3px);
   }
 }
 
