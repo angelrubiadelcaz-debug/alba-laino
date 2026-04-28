@@ -582,7 +582,7 @@ body {
 }
 
 .bathroom-scores,
-.pintxo-scores {
+.flag-scores {
   position: absolute;
   inset: clamp(12px, 2.4vw, 28px) clamp(10px, 2.2vw, 24px) auto clamp(10px, 2.2vw, 24px);
   z-index: 17;
@@ -593,7 +593,7 @@ body {
 }
 
 .bath-score,
-.pintxo-score {
+.flag-score {
   padding: 9px 10px;
   border: 1px solid rgba(255, 248, 232, 0.22);
   border-radius: 8px;
@@ -607,7 +607,7 @@ body {
 }
 
 .bath-score span,
-.pintxo-score span {
+.flag-score span {
   display: block;
   font-size: 1.24rem;
   line-height: 1;
@@ -617,7 +617,7 @@ body {
   display: grid;
 }
 
-.stage.pintxo-mode .pintxo-scores {
+.stage.flag-mode .flag-scores {
   display: grid;
 }
 
@@ -644,16 +644,16 @@ body {
 }
 
 .stage.bathroom-mode .games-menu,
-.stage.pintxo-mode .games-menu {
+.stage.flag-mode .games-menu {
   top: clamp(64px, 9vw, 84px);
   right: clamp(10px, 2.2vw, 24px);
 }
 
-.stage.pintxo-mode .caption {
+.stage.flag-mode .caption {
   display: none;
 }
 
-.stage.pintxo-mode .doll {
+.stage.flag-mode .doll {
   top: 47%;
 }
 
@@ -759,18 +759,6 @@ body {
   animation: strainShake 180ms ease-in-out 6;
 }
 
-.doll.snacking .smile {
-  top: 54px;
-  width: 32px;
-  height: 18px;
-  border-bottom-width: 5px;
-}
-
-.doll.snacking .eye {
-  animation: none;
-  transform: scaleY(0.38);
-}
-
 .poop {
   position: absolute;
   z-index: 17;
@@ -813,49 +801,58 @@ body {
   animation: poopCollect 280ms ease-out forwards;
 }
 
-.pintxo {
+.flag-target {
   position: absolute;
   z-index: 32;
-  pointer-events: auto;
-  width: 72px;
-  height: 44px;
-  border: 3px solid var(--ink);
-  border-radius: 999px 999px 16px 16px;
-  background:
-    radial-gradient(circle at 30% 38%, #49d7b8 0 7px, transparent 8px),
-    radial-gradient(circle at 58% 34%, #ff6f91 0 8px, transparent 9px),
-    linear-gradient(#fff6e6 0 44%, #d9a45f 44% 100%);
-  cursor: pointer;
-  transform: scale(0.22) rotate(-10deg);
-  animation: pintxoDrop 840ms ease-out forwards;
-}
-
-.pintxo::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: -22px;
-  width: 4px;
+  display: grid;
+  place-items: center;
+  width: 62px;
   height: 52px;
-  border-radius: 999px;
-  background: var(--ink);
-  transform: translateX(-50%) rotate(24deg);
+  color: var(--paper);
+  font-size: 1.6rem;
+  font-weight: 950;
+  pointer-events: none;
+  transform: scale(0.2) rotate(-8deg);
+  animation: flagAppear 360ms ease-out forwards, flagBob 1.1s ease-in-out 360ms infinite alternate;
 }
 
-.pintxo::after {
+.flag-target::before {
   content: "";
   position: absolute;
-  left: 43%;
-  top: -12px;
-  width: 16px;
-  aspect-ratio: 1;
-  border: 3px solid var(--ink);
-  border-radius: 50%;
-  background: #5f8f3a;
+  left: 9px;
+  top: -6px;
+  width: 6px;
+  height: 72px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: #fff8e8;
 }
 
-.pintxo.collected {
-  animation: pintxoCollect 260ms ease-out forwards;
+.flag-target::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 3px;
+  z-index: -1;
+  width: 44px;
+  height: 34px;
+  border: 3px solid var(--ink);
+  border-radius: 0 10px 10px 0;
+  background: var(--flag-color);
+  clip-path: polygon(0 0, 100% 0, 78% 50%, 100% 100%, 0 100%);
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.12);
+}
+
+.flag-target.blonde {
+  --flag-color: #ff6f91;
+}
+
+.flag-target.brunette {
+  --flag-color: #49d7b8;
+}
+
+.flag-target.captured {
+  animation: flagCapture 280ms ease-out forwards;
 }
 
 .head {
@@ -1818,23 +1815,25 @@ body {
   }
 }
 
-@keyframes pintxoDrop {
+@keyframes flagAppear {
   0% {
     opacity: 0;
-    transform: translateY(-80px) scale(0.24) rotate(-18deg);
-  }
-
-  24% {
-    opacity: 1;
+    transform: scale(0.2) rotate(-18deg);
   }
 
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1) rotate(-4deg);
+    transform: scale(1) rotate(-4deg);
   }
 }
 
-@keyframes pintxoCollect {
+@keyframes flagBob {
+  to {
+    transform: translateY(-8px) scale(1) rotate(4deg);
+  }
+}
+
+@keyframes flagCapture {
   to {
     opacity: 0;
     transform: translateY(-24px) scale(1.35) rotate(18deg);
@@ -1914,12 +1913,12 @@ body {
   .games-menu summary,
   .game-button,
   .bath-score,
-  .pintxo-score {
+  .flag-score {
     font-size: 0.66rem;
   }
 
   .bathroom-scores,
-  .pintxo-scores {
+  .flag-scores {
     inset: 10px 10px auto 10px;
     grid-template-columns: 104px 104px;
   }
@@ -1930,12 +1929,12 @@ body {
   }
 
   .stage.bathroom-mode .doll,
-  .stage.pintxo-mode .doll {
+  .stage.flag-mode .doll {
     top: 43%;
   }
 
   .stage.bathroom-mode .games-menu,
-  .stage.pintxo-mode .games-menu {
+  .stage.flag-mode .games-menu {
     top: 56px;
   }
 
@@ -2056,18 +2055,18 @@ body {
   }
 
   .bathroom-scores,
-  .pintxo-scores {
+  .flag-scores {
     grid-template-columns: 92px 92px;
   }
 
   .bath-score,
-  .pintxo-score {
+  .flag-score {
     padding: 7px 6px;
     font-size: 0.58rem;
   }
 
   .bath-score span,
-  .pintxo-score span {
+  .flag-score span {
     font-size: 1rem;
   }
 

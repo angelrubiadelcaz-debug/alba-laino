@@ -2,14 +2,14 @@ const scene = document.querySelector(".scene");
 const dolls = [...document.querySelectorAll(".doll")];
 const outfitButtons = [...document.querySelectorAll(".outfit-button")];
 const poopToggle = document.querySelector("#poopToggle");
-const pintxoToggle = document.querySelector("#pintxoToggle");
+const flagToggle = document.querySelector("#flagToggle");
 const poopCountNodes = {
   blonde: document.querySelector("#poopCountAlba"),
   brunette: document.querySelector("#poopCountLaino"),
 };
-const pintxoCountNodes = {
-  blonde: document.querySelector("#pintxoCountAlba"),
-  brunette: document.querySelector("#pintxoCountLaino"),
+const flagCountNodes = {
+  blonde: document.querySelector("#flagCountAlba"),
+  brunette: document.querySelector("#flagCountLaino"),
 };
 const canvas = document.querySelector("#confetti");
 const ctx = canvas.getContext("2d");
@@ -63,12 +63,12 @@ const poopCounts = {
   blonde: 0,
   brunette: 0,
 };
-const pintxoCounts = {
+const flagCounts = {
   blonde: 0,
   brunette: 0,
 };
 let poopTimer = 0;
-let pintxoTimer = 0;
+let flagTimer = 0;
 
 const state = new Map(
   dolls.map((doll) => [
@@ -153,30 +153,30 @@ function placeAnimation(person) {
 }
 
 function clearGameObjects() {
-  document.querySelectorAll(".poop, .pintxo").forEach((item) => item.remove());
-  dolls.forEach((doll) => doll.classList.remove("strained", "snacking"));
+  document.querySelectorAll(".poop, .flag-target").forEach((item) => item.remove());
+  dolls.forEach((doll) => doll.classList.remove("strained"));
 }
 
 function setGame(nextGame) {
   activeGame = activeGame === nextGame ? null : nextGame;
   const isBathroom = activeGame === "bathroom";
-  const isPintxos = activeGame === "pintxos";
+  const isFlags = activeGame === "flags";
 
   document.querySelector(".stage").classList.toggle("bathroom-mode", isBathroom);
-  document.querySelector(".stage").classList.toggle("pintxo-mode", isPintxos);
+  document.querySelector(".stage").classList.toggle("flag-mode", isFlags);
   poopToggle.classList.toggle("active", isBathroom);
-  pintxoToggle.classList.toggle("active", isPintxos);
+  flagToggle.classList.toggle("active", isFlags);
   poopToggle.setAttribute("aria-pressed", String(isBathroom));
-  pintxoToggle.setAttribute("aria-pressed", String(isPintxos));
+  flagToggle.setAttribute("aria-pressed", String(isFlags));
   poopToggle.textContent = isBathroom ? "Baño activo" : "Baño";
-  pintxoToggle.textContent = isPintxos ? "Pintxos activo" : "Pintxos";
+  flagToggle.textContent = isFlags ? "Banderas activo" : "Banderas";
 
   clearTimeout(poopTimer);
-  clearTimeout(pintxoTimer);
+  clearTimeout(flagTimer);
   clearGameObjects();
 
   if (isBathroom) schedulePoop();
-  if (isPintxos) schedulePintxo();
+  if (isFlags) scheduleFlag();
 }
 
 function schedulePoop() {
@@ -188,12 +188,12 @@ function schedulePoop() {
   }, delay);
 }
 
-function schedulePintxo() {
-  if (activeGame !== "pintxos") return;
-  const delay = 1500 + Math.random() * 1800;
-  pintxoTimer = setTimeout(() => {
-    dropPintxo();
-    schedulePintxo();
+function scheduleFlag() {
+  if (activeGame !== "flags") return;
+  const delay = 900 + Math.random() * 1300;
+  flagTimer = setTimeout(() => {
+    dropFlag();
+    scheduleFlag();
   }, delay);
 }
 
@@ -227,67 +227,38 @@ function dropPoop() {
   }, 5200);
 }
 
-function dropPintxo() {
-  const doll = dolls[Math.floor(Math.random() * dolls.length)];
-  const rect = doll.getBoundingClientRect();
-  const pintxo = document.createElement("button");
-  const person = doll.dataset.person;
-  const x = Math.max(56, Math.min(innerWidth - 56, rect.left + rect.width * (0.24 + Math.random() * 0.52)));
-  const y = Math.max(118, rect.top - 34 - Math.random() * 80);
-
-  pintxo.type = "button";
-  pintxo.className = "pintxo";
-  pintxo.setAttribute("aria-label", "Pintxo");
-  pintxo.style.left = `${x - 36}px`;
-  pintxo.style.top = `${y}px`;
-
-  doll.classList.add("snacking");
-  clearTimeout(doll._snackTimer);
-  doll._snackTimer = setTimeout(() => doll.classList.remove("snacking"), 900);
-
-  const collectPintxo = () => {
-    if (pintxo.classList.contains("collected")) return;
-    pintxo.classList.add("collected");
-    pintxoCounts[person] += 1;
-    pintxoCountNodes[person].textContent = pintxoCounts[person];
-    burst(x, y, person, 8);
-    setTimeout(() => pintxo.remove(), 260);
-  };
-
-  pintxo.addEventListener("pointerdown", (event) => {
-    event.stopPropagation();
-    collectPintxo();
-  });
-  pintxo.addEventListener("mousedown", (event) => {
-    event.stopPropagation();
-    collectPintxo();
-  });
-  pintxo.addEventListener("click", collectPintxo);
-  pintxo.collect = collectPintxo;
-  pintxo.onclick = collectPintxo;
-  pintxo.onmousedown = (event) => {
-    event.stopPropagation();
-    collectPintxo();
-  };
-
-  scene.appendChild(pintxo);
-  setTimeout(() => {
-    if (!pintxo.classList.contains("collected")) pintxo.remove();
-  }, 4200);
+function dropFlag() {
+  const person = Math.random() > 0.5 ? "blonde" : "brunette";
+  const flag = document.createElement("div");
+  flag.className = `flag-target ${person}`;
+  flag.dataset.person = person;
+  flag.textContent = person === "blonde" ? "A" : "L";
+  flag.style.left = `${48 + Math.random() * (innerWidth - 124)}px`;
+  flag.style.top = `${118 + Math.random() * Math.max(160, innerHeight * 0.48)}px`;
+  scene.appendChild(flag);
+  setTimeout(() => flag.remove(), 5200);
 }
 
-function collectNearbyPintxo(event) {
-  if (activeGame !== "pintxos") return;
-  const match = [...document.querySelectorAll(".pintxo")].find((pintxo) => {
-    const rect = pintxo.getBoundingClientRect();
-    return (
-      event.clientX >= rect.left - 18 &&
-      event.clientX <= rect.right + 18 &&
-      event.clientY >= rect.top - 18 &&
-      event.clientY <= rect.bottom + 18
-    );
+function captureFlags() {
+  if (activeGame !== "flags") return;
+  document.querySelectorAll(".flag-target").forEach((flag) => {
+    const flagRect = flag.getBoundingClientRect();
+    const flagPerson = flag.dataset.person;
+    const doll = dolls.find((item) => item.dataset.person === flagPerson);
+    const dollRect = doll.getBoundingClientRect();
+    const touches =
+      dollRect.left < flagRect.right &&
+      dollRect.right > flagRect.left &&
+      dollRect.top < flagRect.bottom &&
+      dollRect.bottom > flagRect.top;
+
+    if (!touches || flag.classList.contains("captured")) return;
+    flag.classList.add("captured");
+    flagCounts[flagPerson] += 1;
+    flagCountNodes[flagPerson].textContent = flagCounts[flagPerson];
+    burst(flagRect.left + flagRect.width / 2, flagRect.top + flagRect.height / 2, flagPerson, 12);
+    setTimeout(() => flag.remove(), 280);
   });
-  if (match?.collect) match.collect();
 }
 
 function setOutfit(person, outfit) {
@@ -401,6 +372,8 @@ function animate(time = 0) {
     updateDoll(doll);
   });
 
+  captureFlags();
+
   ctx.clearRect(0, 0, innerWidth, innerHeight);
   particles = particles.filter((p) => p.y < innerHeight + 30);
   particles.forEach((p) => {
@@ -445,15 +418,13 @@ outfitButtons.forEach((button) => {
   button.addEventListener("click", () => setOutfit(button.dataset.person, button.dataset.outfit));
 });
 
-[poopToggle, pintxoToggle].forEach((button) => {
+[poopToggle, flagToggle].forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
 });
 poopToggle.addEventListener("click", () => setGame("bathroom"));
-pintxoToggle.addEventListener("click", () => setGame("pintxos"));
+flagToggle.addEventListener("click", () => setGame("flags"));
 
 window.addEventListener("pointermove", moveDrag);
-window.addEventListener("pointerdown", collectNearbyPintxo);
-window.addEventListener("click", collectNearbyPintxo);
 window.addEventListener("pointerup", endDrag);
 window.addEventListener("pointercancel", endDrag);
 window.addEventListener("resize", resizeCanvas);
