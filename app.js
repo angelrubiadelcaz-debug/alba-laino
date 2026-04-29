@@ -1,14 +1,17 @@
 const scene = document.querySelector(".scene");
 const dolls = [...document.querySelectorAll(".doll")];
 const outfitButtons = [...document.querySelectorAll(".outfit-button")];
+const playerToggles = [...document.querySelectorAll(".player-toggle")];
 const mazeButtons = [...document.querySelectorAll(".maze-pad button")];
 const poopToggle = document.querySelector("#poopToggle");
 const flagToggle = document.querySelector("#flagToggle");
 const pictionaryToggle = document.querySelector("#pictionaryToggle");
+const tortillaToggle = document.querySelector("#tortillaToggle");
 const mazeBoard = document.querySelector("#mazeBoard");
 const mazeStatus = document.querySelector("#mazeStatus");
 const caption = document.querySelector(".caption");
 const pictionaryPanel = document.querySelector(".pictionary-panel");
+const tortillaPanel = document.querySelector(".tortilla-panel");
 const turnName = document.querySelector("#turnName");
 const turnPrompt = document.querySelector("#turnPrompt");
 const turnSubtitle = document.querySelector("#turnSubtitle");
@@ -16,20 +19,46 @@ const skipTurn = document.querySelector("#skipTurn");
 const timerButton = document.querySelector("#timerButton");
 const correctGuess = document.querySelector("#correctGuess");
 const nextTurn = document.querySelector("#nextTurn");
+const tortillaTurn = document.querySelector("#tortillaTurn");
+const tortillaClock = document.querySelector("#tortillaClock");
+const tortillaTarget = document.querySelector("#tortillaTarget");
+const tortillaStatus = document.querySelector("#tortillaStatus");
+const tortillaStart = document.querySelector("#tortillaStart");
+const tortillaReset = document.querySelector("#tortillaReset");
 const poopCountNodes = {
   blonde: document.querySelector("#poopCountAlba"),
   brunette: document.querySelector("#poopCountLaino"),
   niya: document.querySelector("#poopCountNiya"),
+  emma: document.querySelector("#poopCountEmma"),
+  mila: document.querySelector("#poopCountMila"),
 };
 const flagCountNodes = {
   blonde: document.querySelector("#flagCountAlba"),
   brunette: document.querySelector("#flagCountLaino"),
   niya: document.querySelector("#flagCountNiya"),
+  emma: document.querySelector("#flagCountEmma"),
+  mila: document.querySelector("#flagCountMila"),
 };
 const pictionaryScoreNodes = {
   blonde: document.querySelector("#scoreAlba"),
   brunette: document.querySelector("#scoreLaino"),
   niya: document.querySelector("#scoreNiya"),
+  emma: document.querySelector("#scoreEmma"),
+  mila: document.querySelector("#scoreMila"),
+};
+const tortillaScoreNodes = {
+  blonde: document.querySelector("#tortillaScoreAlba"),
+  brunette: document.querySelector("#tortillaScoreLaino"),
+  niya: document.querySelector("#tortillaScoreNiya"),
+  emma: document.querySelector("#tortillaScoreEmma"),
+  mila: document.querySelector("#tortillaScoreMila"),
+};
+const tortillaTryNodes = {
+  blonde: document.querySelector("#tortillaTryAlba"),
+  brunette: document.querySelector("#tortillaTryLaino"),
+  niya: document.querySelector("#tortillaTryNiya"),
+  emma: document.querySelector("#tortillaTryEmma"),
+  mila: document.querySelector("#tortillaTryMila"),
 };
 const canvas = document.querySelector("#confetti");
 const ctx = canvas.getContext("2d");
@@ -48,6 +77,16 @@ const lines = {
   niya: [
     "Precaria",
     "Haber, los dias de la semana",
+  ],
+  emma: [
+    "I love ladybugs",
+    "Mimimimimi",
+    "Che cute",
+  ],
+  mila: [
+    "Joj, kakav cirkus",
+    "Volleyball queen",
+    "Theatre kid",
   ],
 };
 
@@ -81,6 +120,16 @@ const references = {
     { title: "Аз съм филмова маниачка", icon: "camera-icon", note: "soy una friki de las pelis" },
     { title: "Film Class", icon: "camera-icon", note: "scene one, take one" },
   ],
+  emma: [
+    { title: "Brunei", icon: "brunei-icon", note: "pink traditional mode" },
+    { title: "Ladybugs", icon: "ladybug-icon", note: "I love ladybugs" },
+    { title: "Che cute", icon: "sun-icon", note: "soft chaos" },
+  ],
+  mila: [
+    { title: "Bosnia", icon: "bosnia-icon", note: "joj, kakav cirkus" },
+    { title: "Volleyball", icon: "volley-icon", note: "serve, set, drama" },
+    { title: "Theatre kid", icon: "frame-icon", note: "stage presence" },
+  ],
 };
 
 let activeDoll = null;
@@ -92,11 +141,15 @@ const poopCounts = {
   blonde: 0,
   brunette: 0,
   niya: 0,
+  emma: 0,
+  mila: 0,
 };
 const flagCounts = {
   blonde: 0,
   brunette: 0,
   niya: 0,
+  emma: 0,
+  mila: 0,
 };
 let poopTimer = 0;
 let audioContext = null;
@@ -106,11 +159,19 @@ let hintTimer = null;
 let currentTurnIndex = 0;
 let mimeTimer = null;
 let mimeTimeLeft = 60;
-const pictionaryPeople = [
+let tortillaTimer = null;
+let tortillaStartTime = 0;
+let tortillaElapsed = 0;
+let tortillaRunning = false;
+let tortillaTurnIndex = 0;
+const people = [
   { person: "blonde", name: "Alba" },
   { person: "brunette", name: "Laino" },
   { person: "niya", name: "Niya" },
+  { person: "emma", name: "Emma" },
+  { person: "mila", name: "Mila" },
 ];
+const activePeople = new Set(people.map((person) => person.person));
 const pictionaryPrompts = [
   { es: "haz mimica de montar una rueda de prensa incomoda", en: "act out an awkward press conference" },
   { es: "haz mimica de doblar una pelicula dramatica", en: "mime dubbing a dramatic movie scene" },
@@ -133,7 +194,17 @@ const pictionaryScores = {
   blonde: 0,
   brunette: 0,
   niya: 0,
+  emma: 0,
+  mila: 0,
 };
+const tortillaScores = {
+  blonde: 0,
+  brunette: 0,
+  niya: 0,
+  emma: 0,
+  mila: 0,
+};
+const tortillaAttempts = {};
 const mazeLevels = [
   [
     "#################",
@@ -222,6 +293,13 @@ const mazePlayers = {
   brunette: { col: 1, row: 7, done: false },
   niya: { col: 1, row: 5, done: false },
 };
+const mazeStartCells = [
+  { col: 1, row: 1 },
+  { col: 1, row: 9 },
+  { col: 1, row: 5 },
+  { col: 3, row: 3 },
+  { col: 3, row: 7 },
+];
 
 const state = new Map(
   dolls.map((doll) => [
@@ -244,6 +322,73 @@ function readCssNumber(el, prop) {
   return Number.parseFloat(getComputedStyle(el).getPropertyValue(prop)) || 0;
 }
 
+function getActivePeople() {
+  return people.filter((person) => activePeople.has(person.person));
+}
+
+function getActiveDolls() {
+  return dolls.filter((doll) => activePeople.has(doll.dataset.person));
+}
+
+function getPersonName(person) {
+  return people.find((item) => item.person === person)?.name || person;
+}
+
+function getDoll(person) {
+  return dolls.find((item) => item.dataset.person === person);
+}
+
+function refreshActivePlayers() {
+  const enabled = getActivePeople();
+  if (enabled.length === 0) {
+    activePeople.add("blonde");
+  }
+
+  dolls.forEach((doll) => {
+    const active = activePeople.has(doll.dataset.person);
+    doll.classList.toggle("inactive-player", !active);
+    doll.setAttribute("aria-hidden", String(!active));
+  });
+
+  playerToggles.forEach((button) => {
+    const active = activePeople.has(button.dataset.person);
+    button.classList.toggle("active", active);
+    button.textContent = active ? "ON" : "OFF";
+    button.setAttribute("aria-pressed", String(active));
+  });
+
+  outfitButtons.forEach((button) => {
+    button.disabled = !activePeople.has(button.dataset.person);
+  });
+
+  mazeButtons.forEach((button) => {
+    button.closest(".maze-pad").classList.toggle("inactive-score", !activePeople.has(button.dataset.person));
+  });
+
+  [poopCountNodes, flagCountNodes, pictionaryScoreNodes, tortillaScoreNodes].forEach((group) => {
+    Object.entries(group).forEach(([person, node]) => {
+      node?.parentElement?.classList.toggle("inactive-score", !activePeople.has(person));
+    });
+  });
+
+  Object.entries(tortillaTryNodes).forEach(([person, node]) => {
+    node?.parentElement?.classList.toggle("inactive-score", !activePeople.has(person));
+  });
+
+  if (activeGame === "flags") {
+    buildMaze();
+    requestAnimationFrame(placeMazePlayers);
+  }
+  if (activeGame === "pictionary") updatePictionaryTurn();
+  if (activeGame === "tortilla") {
+    Object.keys(tortillaAttempts).forEach((key) => {
+      if (!activePeople.has(key)) delete tortillaAttempts[key];
+    });
+    updateTortillaTurn();
+    requestAnimationFrame(placeTortillaPlayers);
+  }
+}
+
 function resizeCanvas() {
   const ratio = window.devicePixelRatio || 1;
   canvas.width = Math.floor(innerWidth * ratio);
@@ -261,7 +406,6 @@ function updateDoll(doll) {
 }
 
 function speak(doll) {
-  const bubble = doll.querySelector(".bubble");
   const options = lines[doll.dataset.person];
   sayText(doll, options[Math.floor(Math.random() * options.length)]);
 }
@@ -282,7 +426,11 @@ function burst(x, y, person, amount = 12) {
       ? ["Palencia", "Cristo", "FOMO", "Etruscos", "zzz", "♥"]
       : person === "brunette"
         ? ["Aupa", "Kaixo", "Donosti", "Arte", "Pintxo", "♥"]
-        : ["Niya", "Bulgaria", "Sofia", "Rila", "Banitsa", "♥"];
+        : person === "niya"
+          ? ["Niya", "Bulgaria", "Sofia", "Rila", "Banitsa", "♥"]
+          : person === "emma"
+            ? ["Emma", "Brunei", "Ladybugs", "Cute", "Pink", "♥"]
+            : ["Mila", "Bosnia", "Volley", "Theatre", "Cirkus", "♥"];
   for (let i = 0; i < amount; i += 1) {
     const spark = document.createElement("span");
     const angle = Math.random() * Math.PI * 2;
@@ -303,11 +451,21 @@ function playVictoryMusic(person) {
   audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
   audioContext.resume?.();
   const now = audioContext.currentTime;
-  const notes = person === "blonde"
-    ? [523.25, 659.25, 783.99, 1046.5, 880, 1046.5]
-    : person === "brunette"
-      ? [392, 493.88, 587.33, 783.99, 659.25, 783.99]
-      : [440, 554.37, 659.25, 830.61, 739.99, 987.77];
+  const melodies = {
+    blonde: [523.25, 659.25, 783.99, 1046.5, 880, 1046.5],
+    brunette: [392, 493.88, 587.33, 783.99, 659.25, 783.99],
+    niya: [440, 554.37, 659.25, 830.61, 739.99, 987.77],
+    emma: [493.88, 587.33, 739.99, 880, 987.77, 880],
+    mila: [349.23, 440, 523.25, 698.46, 659.25, 783.99],
+  };
+  const bassNotes = {
+    blonde: [130.81, 196],
+    brunette: [98, 146.83],
+    niya: [116.54, 174.61],
+    emma: [123.47, 185],
+    mila: [110, 164.81],
+  };
+  const notes = melodies[person] || melodies.blonde;
 
   notes.forEach((frequency, index) => {
     const osc = audioContext.createOscillator();
@@ -325,8 +483,8 @@ function playVictoryMusic(person) {
   const bass = audioContext.createOscillator();
   const bassGain = audioContext.createGain();
   bass.type = "sawtooth";
-  bass.frequency.setValueAtTime(person === "blonde" ? 130.81 : person === "brunette" ? 98 : 116.54, now);
-  bass.frequency.exponentialRampToValueAtTime(person === "blonde" ? 196 : person === "brunette" ? 146.83 : 174.61, now + 0.8);
+  bass.frequency.setValueAtTime(bassNotes[person]?.[0] || 130.81, now);
+  bass.frequency.exponentialRampToValueAtTime(bassNotes[person]?.[1] || 196, now + 0.8);
   bassGain.gain.setValueAtTime(0.055, now);
   bassGain.gain.exponentialRampToValueAtTime(0.001, now + 1.15);
   bass.connect(bassGain).connect(audioContext.destination);
@@ -335,16 +493,19 @@ function playVictoryMusic(person) {
 }
 
 function showVictoryJumpscare(person) {
-  const winner = dolls.find((item) => item.dataset.person === person);
+  const winner = getDoll(person);
   const overlay = document.createElement("div");
   const clone = winner.cloneNode(true);
-  const words = person === "blonde"
-    ? ["YUPI", "PALENCIA", "ETRUSCOS", "FOMO", "ALBA"]
-    : person === "brunette"
-      ? ["YUPI", "DONOSTI", "ARTE", "KAIXO", "LAINO"]
-      : ["YUPI", "NIYA", "BULGARIA", "SOFIA", "BANITSA"];
+  const wordMap = {
+    blonde: ["YUPI", "PALENCIA", "ETRUSCOS", "FOMO", "ALBA"],
+    brunette: ["YUPI", "DONOSTI", "ARTE", "KAIXO", "LAINO"],
+    niya: ["YUPI", "NIYA", "BULGARIA", "SOFIA", "BANITSA"],
+    emma: ["YUPI", "EMMA", "BRUNEI", "LADYBUGS", "CHE CUTE"],
+    mila: ["YUPI", "MILA", "BOSNIA", "VOLLEY", "THEATRE"],
+  };
+  const words = wordMap[person] || wordMap.blonde;
 
-  overlay.className = `victory-jumpscare ${person === "blonde" ? "alba" : person === "brunette" ? "laino" : "niya"}`;
+  overlay.className = `victory-jumpscare ${person}`;
   overlay.setAttribute("aria-hidden", "true");
   clone.classList.remove("dragging", "maze-step", "maze-winner", "maze-loser", "maze-caught");
   clone.classList.add("victory-doll");
@@ -376,7 +537,7 @@ function placeAnimation(person) {
   const isBlonde = person === "blonde";
   const options = references[person];
   const ref = options[Math.floor(Math.random() * options.length)];
-  card.className = `place-flyby ${isBlonde ? "palencia" : person === "brunette" ? "donosti" : "bulgaria"}`;
+  card.className = `place-flyby ${isBlonde ? "palencia" : person === "brunette" ? "donosti" : person}`;
   card.innerHTML = `
     <span class="place-title">${ref.title}</span>
     <span class="place-icon ${ref.icon}" aria-hidden="true"></span>
@@ -388,7 +549,7 @@ function placeAnimation(person) {
 
 function clearGameObjects() {
   document.querySelectorAll(".poop, .flag-target, .victory-jumpscare, .singing-mic").forEach((item) => item.remove());
-  dolls.forEach((doll) => doll.classList.remove("strained", "maze-step", "maze-winner", "maze-loser", "maze-caught", "pictionary-turn"));
+  dolls.forEach((doll) => doll.classList.remove("strained", "maze-step", "maze-winner", "maze-loser", "maze-caught", "pictionary-turn", "tortilla-turn"));
   mazeBoard.innerHTML = "";
   mazeBoard.setAttribute("aria-hidden", "true");
   mazeRoundLocked = false;
@@ -409,9 +570,10 @@ function findMazeCell(symbol) {
 
 function buildMaze() {
   const grid = getMazeGrid();
+  const active = getActivePeople();
   mazeBoard.innerHTML = "";
   mazeBoard.setAttribute("aria-hidden", "false");
-  mazeStatus.textContent = `Nivel ${currentMazeIndex + 1}`;
+  mazeStatus.textContent = `Nivel ${currentMazeIndex + 1} · ${active.length} jugador${active.length === 1 ? "" : "as"}`;
   mazeBoard.style.setProperty("--maze-cols", grid[0].length);
   mazeBoard.style.setProperty("--maze-rows", grid.length);
   grid.forEach((row, rowIndex) => {
@@ -420,9 +582,10 @@ function buildMaze() {
       tile.className = "maze-cell";
       if (cell === "#") tile.classList.add("wall");
       if (cell === "E") tile.classList.add("exit");
-      if (cell === "A") tile.classList.add("start", "alba");
-      if (cell === "L") tile.classList.add("start", "laino");
-      if (cell === "N") tile.classList.add("start", "niya");
+      active.forEach((player, index) => {
+        const start = mazeStartCells[index % mazeStartCells.length];
+        if (start.col === colIndex && start.row === rowIndex) tile.classList.add("start", player.person);
+      });
       tile.style.gridColumn = colIndex + 1;
       tile.style.gridRow = rowIndex + 1;
       mazeBoard.appendChild(tile);
@@ -433,29 +596,33 @@ function buildMaze() {
 function placeMazePlayers() {
   mazeRoundLocked = false;
   dolls.forEach((doll) => doll.classList.remove("maze-step", "maze-winner", "maze-loser", "maze-caught"));
-  mazePlayers.blonde = findMazeCell("A");
-  mazePlayers.brunette = findMazeCell("L");
-  mazePlayers.niya = findMazeCell("N");
-  updateMazeDoll("blonde");
-  updateMazeDoll("brunette");
-  updateMazeDoll("niya");
+  Object.keys(mazePlayers).forEach((person) => delete mazePlayers[person]);
+  getActivePeople().forEach((person, index) => {
+    const start = mazeStartCells[index % mazeStartCells.length];
+    mazePlayers[person.person] = { col: start.col, row: start.row, done: false };
+    updateMazeDoll(person.person);
+  });
 }
 
 function resetMazeAfterCatch() {
   mazeRoundLocked = true;
-  mazePlayers.blonde = findMazeCell("A");
-  mazePlayers.brunette = findMazeCell("L");
-  mazePlayers.niya = findMazeCell("N");
-  updateMazeDoll("blonde");
-  updateMazeDoll("brunette");
-  updateMazeDoll("niya");
-  dolls.forEach((doll) => {
+  getActivePeople().forEach((person, index) => {
+    const start = mazeStartCells[index % mazeStartCells.length];
+    mazePlayers[person.person] = { col: start.col, row: start.row, done: false };
+    updateMazeDoll(person.person);
+  });
+  getActiveDolls().forEach((doll) => {
     doll.classList.remove("maze-step");
     doll.classList.add("maze-caught");
   });
-  sayText(dolls.find((item) => item.dataset.person === "blonde"), "Odio la tecnologia", 3600);
-  sayText(dolls.find((item) => item.dataset.person === "brunette"), "Laguntza", 3600);
-  sayText(dolls.find((item) => item.dataset.person === "niya"), "Pomognete", 3600);
+  const catchLines = {
+    blonde: "Odio la tecnologia",
+    brunette: "Laguntza",
+    niya: "Pomognete",
+    emma: "Mimimimimi",
+    mila: "Joj, kakav cirkus",
+  };
+  getActiveDolls().forEach((doll) => sayText(doll, catchLines[doll.dataset.person] || "Me cago", 3600));
   setTimeout(() => {
     if (activeGame !== "flags") return;
     dolls.forEach((doll) => doll.classList.remove("maze-caught"));
@@ -464,8 +631,9 @@ function resetMazeAfterCatch() {
 }
 
 function updateMazeDoll(person, step = false, dc = 0) {
-  const doll = dolls.find((item) => item.dataset.person === person);
+  const doll = getDoll(person);
   const player = mazePlayers[person];
+  if (!doll || !player) return;
   const grid = getMazeGrid();
   const board = mazeBoard.getBoundingClientRect();
   const cellW = board.width / grid[0].length;
@@ -480,7 +648,8 @@ function updateMazeDoll(person, step = false, dc = 0) {
   item.vx = 0;
   item.vy = 0;
   item.vr = 0;
-  item.r = dc === 0 ? (person === "blonde" ? -4 : person === "brunette" ? 4 : 0) : dc * 7;
+  const idleRotation = { blonde: -4, brunette: 4, niya: 0, emma: -2, mila: 3 };
+  item.r = dc === 0 ? (idleRotation[person] || 0) : dc * 7;
   updateDoll(doll);
   if (!step) return;
   doll.classList.remove("maze-step");
@@ -493,7 +662,7 @@ function updateMazeDoll(person, step = false, dc = 0) {
 function moveMazePlayer(person, dc, dr) {
   if (activeGame !== "flags" || mazeRoundLocked) return;
   const player = mazePlayers[person];
-  if (player.done) return;
+  if (!player || player.done || !activePeople.has(person)) return;
   const nextCol = player.col + dc;
   const nextRow = player.row + dr;
   const cell = getMazeGrid()[nextRow]?.[nextCol];
@@ -516,8 +685,8 @@ function moveMazePlayer(person, dc, dr) {
     player.done = true;
     flagCounts[person] += 1;
     flagCountNodes[person].textContent = flagCounts[person];
-    const doll = dolls.find((item) => item.dataset.person === person);
-    const losers = dolls.filter((item) => item.dataset.person !== person);
+    const doll = getDoll(person);
+    const losers = getActiveDolls().filter((item) => item.dataset.person !== person);
     const rect = doll.getBoundingClientRect();
     doll.classList.add("maze-winner");
     losers.forEach((loser) => loser.classList.add("maze-loser"));
@@ -550,6 +719,14 @@ function handleMazeKey(event) {
     j: ["niya", -1, 0],
     k: ["niya", 0, 1],
     l: ["niya", 1, 0],
+    t: ["emma", 0, -1],
+    f: ["emma", -1, 0],
+    g: ["emma", 0, 1],
+    h: ["emma", 1, 0],
+    y: ["mila", 0, -1],
+    b: ["mila", -1, 0],
+    n: ["mila", 0, 1],
+    m: ["mila", 1, 0],
   };
   const move = moves[key];
   if (!move) return;
@@ -562,24 +739,31 @@ function setGame(nextGame) {
   const isBathroom = activeGame === "bathroom";
   const isFlags = activeGame === "flags";
   const isPictionary = activeGame === "pictionary";
+  const isTortilla = activeGame === "tortilla";
 
   document.querySelector(".stage").classList.toggle("bathroom-mode", isBathroom);
   document.querySelector(".stage").classList.toggle("flag-mode", isFlags);
   document.querySelector(".stage").classList.toggle("pictionary-mode", isPictionary);
+  document.querySelector(".stage").classList.toggle("tortilla-mode", isTortilla);
   poopToggle.classList.toggle("active", isBathroom);
   flagToggle.classList.toggle("active", isFlags);
   pictionaryToggle.classList.toggle("active", isPictionary);
+  tortillaToggle.classList.toggle("active", isTortilla);
   poopToggle.setAttribute("aria-pressed", String(isBathroom));
   flagToggle.setAttribute("aria-pressed", String(isFlags));
   pictionaryToggle.setAttribute("aria-pressed", String(isPictionary));
+  tortillaToggle.setAttribute("aria-pressed", String(isTortilla));
   pictionaryPanel.hidden = !isPictionary;
+  tortillaPanel.hidden = !isTortilla;
   poopToggle.textContent = isBathroom ? "Baño activo" : "Baño";
   flagToggle.textContent = isFlags ? "Laberinto activo" : "Laberinto";
   pictionaryToggle.textContent = isPictionary ? "Mimica activa" : "Mimica";
+  tortillaToggle.textContent = isTortilla ? "Tortilla activa" : "Tortilla";
 
   clearTimeout(poopTimer);
   clearInterval(mazeHoldTimer);
   clearMimeTimer();
+  clearTortillaTimer();
   clearGameObjects();
 
   if (isBathroom) schedulePoop();
@@ -591,17 +775,48 @@ function setGame(nextGame) {
     updatePictionaryTurn();
     requestAnimationFrame(placeCafePlayers);
   }
+  if (isTortilla) {
+    updateTortillaTurn();
+    requestAnimationFrame(placeTortillaPlayers);
+  }
+}
+
+function getLinePositions(active, mobile, baseY, spread) {
+  const count = active.length;
+  const gap = mobile ? Math.min(72, 260 / Math.max(1, count - 1)) : spread;
+  return active.reduce((positions, player, index) => {
+    const x = (index - (count - 1) / 2) * gap;
+    positions[player.person] = {
+      x,
+      y: baseY + (index % 2 ? -10 : 8),
+      r: (index - (count - 1) / 2) * 2.5,
+    };
+    return positions;
+  }, {});
 }
 
 function placeCafePlayers() {
   const mobile = innerWidth < 520;
-  const positions = {
-    blonde: { x: mobile ? -96 : -176, y: mobile ? 160 : 112, r: -4 },
-    brunette: { x: 0, y: mobile ? 142 : 96, r: 2 },
-    niya: { x: mobile ? 96 : 176, y: mobile ? 160 : 112, r: 4 },
-  };
+  const positions = getLinePositions(getActivePeople(), mobile, mobile ? 154 : 106, mobile ? 78 : 132);
 
-  dolls.forEach((doll) => {
+  getActiveDolls().forEach((doll) => {
+    const item = state.get(doll);
+    const pos = positions[doll.dataset.person];
+    item.x = pos.x;
+    item.y = pos.y;
+    item.r = pos.r;
+    item.vx = 0;
+    item.vy = 0;
+    item.vr = 0;
+    updateDoll(doll);
+  });
+}
+
+function placeTortillaPlayers() {
+  const mobile = innerWidth < 520;
+  const positions = getLinePositions(getActivePeople(), mobile, mobile ? 150 : 106, mobile ? 76 : 128);
+
+  getActiveDolls().forEach((doll) => {
     const item = state.get(doll);
     const pos = positions[doll.dataset.person];
     item.x = pos.x;
@@ -615,14 +830,15 @@ function placeCafePlayers() {
 }
 
 function updatePictionaryTurn() {
-  const player = pictionaryPeople[currentTurnIndex % pictionaryPeople.length];
+  const active = getActivePeople();
+  const player = active[currentTurnIndex % active.length];
   const prompt = pictionaryPrompts[currentTurnIndex % pictionaryPrompts.length];
   turnName.textContent = `Turno de ${player.name}`;
   turnPrompt.textContent = prompt.es;
   turnSubtitle.textContent = prompt.en;
-  turnSubtitle.hidden = player.person !== "niya";
+  turnSubtitle.hidden = !["niya", "emma", "mila"].includes(player.person);
   dolls.forEach((doll) => doll.classList.toggle("pictionary-turn", doll.dataset.person === player.person));
-  sayText(dolls.find((doll) => doll.dataset.person === player.person), "Me toca", 1400);
+  sayText(getDoll(player.person), "Me toca", 1400);
 }
 
 function nextPictionaryTurn() {
@@ -633,10 +849,11 @@ function nextPictionaryTurn() {
 
 function awardPictionaryPoint() {
   clearMimeTimer();
-  const player = pictionaryPeople[currentTurnIndex % pictionaryPeople.length];
+  const active = getActivePeople();
+  const player = active[currentTurnIndex % active.length];
   pictionaryScores[player.person] += 1;
   pictionaryScoreNodes[player.person].textContent = pictionaryScores[player.person];
-  const doll = dolls.find((item) => item.dataset.person === player.person);
+  const doll = getDoll(player.person);
   const rect = doll.getBoundingClientRect();
   sayText(doll, "Yupi", 1200);
   burst(rect.left + rect.width / 2, rect.top + rect.height / 2, player.person, 12);
@@ -666,14 +883,101 @@ function startMimeTimer() {
     updateTimerButton();
     if (mimeTimeLeft > 0) return;
 
-    const player = pictionaryPeople[currentTurnIndex % pictionaryPeople.length];
-    const doll = dolls.find((item) => item.dataset.person === player.person);
+    const active = getActivePeople();
+    const player = active[currentTurnIndex % active.length];
+    const doll = getDoll(player.person);
     pictionaryScores[player.person] -= 1;
     pictionaryScoreNodes[player.person].textContent = pictionaryScores[player.person];
     sayText(doll, "Me cago", 1200);
     nextPictionaryTurn();
   }, 1000);
   updateTimerButton();
+}
+
+function updateTortillaTurn() {
+  const active = getActivePeople();
+  const player = active[tortillaTurnIndex % active.length];
+  tortillaTurn.textContent = `Turno de ${player.name}`;
+  tortillaClock.textContent = tortillaElapsed.toFixed(2);
+  dolls.forEach((doll) => doll.classList.toggle("tortilla-turn", doll.dataset.person === player.person));
+}
+
+function clearTortillaTimer() {
+  clearInterval(tortillaTimer);
+  tortillaTimer = null;
+  tortillaRunning = false;
+  tortillaStart.classList.remove("running");
+}
+
+function startTortillaTurn() {
+  if (activeGame !== "tortilla" || tortillaRunning) return;
+  tortillaElapsed = 0;
+  tortillaClock.textContent = "0.00";
+  tortillaStatus.textContent = "¡A los 8.00!";
+  tortillaRunning = true;
+  tortillaStart.classList.add("running");
+  tortillaStartTime = performance.now();
+  tortillaTarget.classList.remove("flipped");
+  tortillaTimer = setInterval(() => {
+    tortillaElapsed = (performance.now() - tortillaStartTime) / 1000;
+    tortillaClock.textContent = tortillaElapsed.toFixed(2);
+  }, 24);
+}
+
+function stopTortillaTurn() {
+  if (activeGame !== "tortilla" || !tortillaRunning) return;
+  clearTortillaTimer();
+  tortillaElapsed = (performance.now() - tortillaStartTime) / 1000;
+  const active = getActivePeople();
+  const player = active[tortillaTurnIndex % active.length];
+  const diff = Math.abs(tortillaElapsed - 8);
+  tortillaAttempts[player.person] = diff;
+  tortillaTryNodes[player.person].textContent = `${diff.toFixed(2)}s`;
+  tortillaClock.textContent = tortillaElapsed.toFixed(2);
+  tortillaStatus.textContent = `${player.name}: ${diff.toFixed(2)}s de diferencia`;
+  tortillaTarget.classList.add("flipped");
+  sayText(getDoll(player.person), diff < 0.25 ? "Yupi" : "Me cago", 1100);
+
+  tortillaTurnIndex += 1;
+  if (Object.keys(tortillaAttempts).filter((person) => activePeople.has(person)).length >= active.length) {
+    finishTortillaRound();
+    return;
+  }
+  setTimeout(updateTortillaTurn, 650);
+}
+
+function finishTortillaRound() {
+  const [winnerPerson, bestDiff] = Object.entries(tortillaAttempts)
+    .filter(([person]) => activePeople.has(person))
+    .sort((a, b) => a[1] - b[1])[0];
+  const winner = people.find((item) => item.person === winnerPerson);
+  tortillaScores[winnerPerson] += 1;
+  tortillaScoreNodes[winnerPerson].textContent = tortillaScores[winnerPerson];
+  tortillaStatus.textContent = `Gana ${winner.name}: ${bestDiff.toFixed(2)}s de diferencia`;
+  sayText(getDoll(winnerPerson), "Yupi", 1300);
+  setTimeout(() => {
+    Object.keys(tortillaAttempts).forEach((key) => delete tortillaAttempts[key]);
+    Object.values(tortillaTryNodes).forEach((node) => { node.textContent = "-"; });
+    tortillaElapsed = 0;
+    tortillaClock.textContent = "0.00";
+    tortillaTurnIndex %= getActivePeople().length;
+    updateTortillaTurn();
+  }, 2600);
+}
+
+function resetTortillaGame() {
+  clearTortillaTimer();
+  tortillaTurnIndex = 0;
+  tortillaElapsed = 0;
+  Object.keys(tortillaAttempts).forEach((key) => delete tortillaAttempts[key]);
+  Object.keys(tortillaScores).forEach((person) => {
+    tortillaScores[person] = 0;
+    tortillaScoreNodes[person].textContent = "0";
+    tortillaTryNodes[person].textContent = "-";
+  });
+  tortillaClock.textContent = "0.00";
+  tortillaStatus.textContent = "Pulsa Start para calentar la sartén.";
+  updateTortillaTurn();
 }
 
 function showHintPopup() {
@@ -704,7 +1008,8 @@ function schedulePoop() {
 }
 
 function dropPoop() {
-  const doll = dolls[Math.floor(Math.random() * dolls.length)];
+  const activeDolls = getActiveDolls();
+  const doll = activeDolls[Math.floor(Math.random() * activeDolls.length)];
   const rect = doll.getBoundingClientRect();
   const poop = document.createElement("button");
   const person = doll.dataset.person;
@@ -735,7 +1040,7 @@ function dropPoop() {
 
 
 function setOutfit(person, outfit) {
-  const doll = dolls.find((item) => item.dataset.person === person);
+  const doll = getDoll(person);
   if (!doll) return;
 
   doll.classList.toggle("outfit-normal", outfit === "normal");
@@ -755,6 +1060,7 @@ function setOutfit(person, outfit) {
 }
 
 function beginDrag(event, doll) {
+  if (!activePeople.has(doll.dataset.person)) return;
   activeDoll = doll;
   pointer = {
     id: event.pointerId,
@@ -831,7 +1137,7 @@ function animate(time = 0) {
   lastTime = time;
 
   dolls.forEach((doll) => {
-    if (activeGame === "flags" || activeGame === "pictionary" || doll === activeDoll) return;
+    if (!activePeople.has(doll.dataset.person) || activeGame === "flags" || activeGame === "pictionary" || activeGame === "tortilla" || doll === activeDoll) return;
     const item = state.get(doll);
     item.vy += 0.28 * dt;
     item.x += item.vx * dt;
@@ -865,16 +1171,18 @@ function animate(time = 0) {
 
 dolls.forEach((doll) => {
   doll.addEventListener("pointerdown", (event) => {
-    if (activeGame === "flags" || activeGame === "pictionary") return;
+    if (!activePeople.has(doll.dataset.person) || activeGame === "flags" || activeGame === "pictionary" || activeGame === "tortilla") return;
     event.preventDefault();
     beginDrag(event, doll);
   });
 
   doll.addEventListener("click", (event) => {
+    if (!activePeople.has(doll.dataset.person)) return;
     burst(event.clientX, event.clientY, doll.dataset.person, 10);
   });
 
   doll.addEventListener("keydown", (event) => {
+    if (!activePeople.has(doll.dataset.person)) return;
     const item = state.get(doll);
     if (event.key === "ArrowLeft") item.vx -= 6;
     if (event.key === "ArrowRight") item.vx += 6;
@@ -888,6 +1196,20 @@ outfitButtons.forEach((button) => {
   button.setAttribute("aria-pressed", String(button.classList.contains("active")));
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
   button.addEventListener("click", () => setOutfit(button.dataset.person, button.dataset.outfit));
+});
+
+playerToggles.forEach((button) => {
+  button.addEventListener("pointerdown", (event) => event.stopPropagation());
+  button.addEventListener("click", () => {
+    const person = button.dataset.person;
+    if (activePeople.has(person) && activePeople.size === 1) {
+      sayText(getDoll(person), "Tiene que jugar alguien", 1200);
+      return;
+    }
+    if (activePeople.has(person)) activePeople.delete(person);
+    else activePeople.add(person);
+    refreshActivePlayers();
+  });
 });
 
 mazeButtons.forEach((button) => {
@@ -906,28 +1228,39 @@ mazeButtons.forEach((button) => {
   });
 });
 
-[poopToggle, flagToggle, pictionaryToggle].forEach((button) => {
+[poopToggle, flagToggle, pictionaryToggle, tortillaToggle].forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
 });
 poopToggle.addEventListener("click", () => setGame("bathroom"));
 flagToggle.addEventListener("click", () => setGame("flags"));
 pictionaryToggle.addEventListener("click", () => setGame("pictionary"));
+tortillaToggle.addEventListener("click", () => setGame("tortilla"));
 skipTurn.addEventListener("click", nextPictionaryTurn);
 timerButton.addEventListener("click", startMimeTimer);
 correctGuess.addEventListener("click", awardPictionaryPoint);
 nextTurn.addEventListener("click", nextPictionaryTurn);
+tortillaStart.addEventListener("click", startTortillaTurn);
+tortillaReset.addEventListener("click", resetTortillaGame);
+tortillaTarget.addEventListener("click", stopTortillaTurn);
 
 window.addEventListener("pointermove", moveDrag);
 window.addEventListener("pointerup", endDrag);
 window.addEventListener("pointercancel", endDrag);
 window.addEventListener("keydown", handleMazeKey);
+window.addEventListener("keydown", (event) => {
+  if (activeGame !== "tortilla" || event.code !== "Space") return;
+  event.preventDefault();
+  stopTortillaTurn();
+});
 window.addEventListener("resize", () => {
   resizeCanvas();
   if (activeGame === "flags") requestAnimationFrame(placeMazePlayers);
   if (activeGame === "pictionary") requestAnimationFrame(placeCafePlayers);
+  if (activeGame === "tortilla") requestAnimationFrame(placeTortillaPlayers);
 });
 
 resizeCanvas();
 dolls.forEach(updateDoll);
+refreshActivePlayers();
 startHintPopups();
 requestAnimationFrame(animate);

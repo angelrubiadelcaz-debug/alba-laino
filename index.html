@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Angel Moment</title>
-    <link rel="stylesheet" href="./styles.css?v=20260429-1340" />
+    <link rel="stylesheet" href="./styles.css?v=20260429-1515" />
   </head>
   <body>
     <main class="stage" aria-label="Escena interactiva con tres figuras">
@@ -54,7 +54,10 @@
         <details class="wardrobe">
           <summary>Ropa</summary>
           <div class="wardrobe-card">
-            <span>Alba</span>
+            <div class="wardrobe-title">
+              <span>Alba</span>
+              <button class="player-toggle active" data-person="blonde" type="button" aria-pressed="true">ON</button>
+            </div>
             <div class="wardrobe-buttons">
               <button class="outfit-button active" data-person="blonde" data-outfit="normal" type="button">Normal</button>
               <button class="outfit-button" data-person="blonde" data-outfit="traditional" type="button">Tradicional</button>
@@ -62,7 +65,10 @@
             </div>
           </div>
           <div class="wardrobe-card">
-            <span>Laino</span>
+            <div class="wardrobe-title">
+              <span>Laino</span>
+              <button class="player-toggle active" data-person="brunette" type="button" aria-pressed="true">ON</button>
+            </div>
             <div class="wardrobe-buttons">
               <button class="outfit-button active" data-person="brunette" data-outfit="normal" type="button">Normal</button>
               <button class="outfit-button" data-person="brunette" data-outfit="traditional" type="button">Tradicional</button>
@@ -70,11 +76,36 @@
             </div>
           </div>
           <div class="wardrobe-card">
-            <span>Niya</span>
+            <div class="wardrobe-title">
+              <span>Niya</span>
+              <button class="player-toggle active" data-person="niya" type="button" aria-pressed="true">ON</button>
+            </div>
             <div class="wardrobe-buttons">
               <button class="outfit-button active" data-person="niya" data-outfit="normal" type="button">Normal</button>
               <button class="outfit-button" data-person="niya" data-outfit="traditional" type="button">Tradicional</button>
               <button class="outfit-button" data-person="niya" data-outfit="clown" type="button">Payaso</button>
+            </div>
+          </div>
+          <div class="wardrobe-card">
+            <div class="wardrobe-title">
+              <span>Emma</span>
+              <button class="player-toggle active" data-person="emma" type="button" aria-pressed="true">ON</button>
+            </div>
+            <div class="wardrobe-buttons">
+              <button class="outfit-button active" data-person="emma" data-outfit="normal" type="button">Normal</button>
+              <button class="outfit-button" data-person="emma" data-outfit="traditional" type="button">Tradicional</button>
+              <button class="outfit-button" data-person="emma" data-outfit="clown" type="button">Payaso</button>
+            </div>
+          </div>
+          <div class="wardrobe-card">
+            <div class="wardrobe-title">
+              <span>Mila</span>
+              <button class="player-toggle active" data-person="mila" type="button" aria-pressed="true">ON</button>
+            </div>
+            <div class="wardrobe-buttons">
+              <button class="outfit-button active" data-person="mila" data-outfit="normal" type="button">Normal</button>
+              <button class="outfit-button" data-person="mila" data-outfit="traditional" type="button">Tradicional</button>
+              <button class="outfit-button" data-person="mila" data-outfit="clown" type="button">Payaso</button>
             </div>
           </div>
         </details>
@@ -143,23 +174,80 @@
           <div class="leg leg-right"></div>
         </article>
 
+        <article class="doll doll-emma outfit-normal" data-person="emma" tabindex="0" aria-label="Emma con traje rosa">
+          <div class="bubble">I love ladybugs</div>
+          <div class="earring earring-left"></div>
+          <div class="earring earring-right"></div>
+          <div class="head">
+            <div class="hair hair-emma"></div>
+            <div class="face">
+              <span class="eye eye-left"></span>
+              <span class="eye eye-right"></span>
+              <span class="smile"></span>
+            </div>
+          </div>
+          <div class="torso brunei-pink"></div>
+          <div class="arm arm-left brunei-arm"></div>
+          <div class="arm arm-right brunei-arm"></div>
+          <div class="leg leg-left patterned-leg"></div>
+          <div class="leg leg-right patterned-leg"></div>
+        </article>
+
+        <article class="doll doll-mila outfit-normal" data-person="mila" tabindex="0" aria-label="Mila con vestido largo">
+          <div class="bubble">Theatre kid</div>
+          <div class="earring earring-left"></div>
+          <div class="earring earring-right"></div>
+          <div class="head">
+            <div class="hair hair-mila"></div>
+            <div class="face">
+              <span class="eye eye-left"></span>
+              <span class="eye eye-right"></span>
+              <span class="smile"></span>
+            </div>
+          </div>
+          <div class="torso mila-dress"></div>
+          <div class="arm arm-left mila-arm"></div>
+          <div class="arm arm-right mila-arm"></div>
+          <div class="leg leg-left"></div>
+          <div class="leg leg-right"></div>
+        </article>
+
         <details class="games-menu">
           <summary>Juegos</summary>
           <button id="poopToggle" class="game-button" type="button" aria-pressed="false">Baño</button>
           <button id="flagToggle" class="game-button" type="button" aria-pressed="false">Laberinto</button>
           <button id="pictionaryToggle" class="game-button" type="button" aria-pressed="false">Mimica</button>
+          <button id="tortillaToggle" class="game-button" type="button" aria-pressed="false">Tortilla</button>
         </details>
+
+        <section class="game-help bathroom-help" aria-label="Normas del baño">
+          <details>
+            <summary>Normas / Rules</summary>
+            <p>ES: Pulsa las cacas antes de que desaparezcan. EN: Tap the poops before they vanish.</p>
+          </details>
+        </section>
+
+        <section class="game-help maze-help" aria-label="Normas del laberinto">
+          <details>
+            <summary>Normas / Rules</summary>
+            <p>ES: Sacad del laberinto a las jugadoras activas. Si se chocan, vuelven al inicio. EN: Get the active players out of the maze. If players collide, everyone resets.</p>
+          </details>
+        </section>
 
         <section class="bathroom-scores" aria-label="Marcador del baño">
           <div class="bath-score bath-score-alba"><span id="poopCountAlba">0</span> Cacas Alba</div>
           <div class="bath-score bath-score-laino"><span id="poopCountLaino">0</span> Cacas Laino</div>
           <div class="bath-score bath-score-niya"><span id="poopCountNiya">0</span> Cacas Niya</div>
+          <div class="bath-score bath-score-emma"><span id="poopCountEmma">0</span> Cacas Emma</div>
+          <div class="bath-score bath-score-mila"><span id="poopCountMila">0</span> Cacas Mila</div>
         </section>
 
         <section class="flag-scores" aria-label="Marcador del laberinto">
           <div class="flag-score flag-score-alba"><span id="flagCountAlba">0</span> Salidas Alba</div>
           <div class="flag-score flag-score-laino"><span id="flagCountLaino">0</span> Salidas Laino</div>
           <div class="flag-score flag-score-niya"><span id="flagCountNiya">0</span> Salidas Niya</div>
+          <div class="flag-score flag-score-emma"><span id="flagCountEmma">0</span> Salidas Emma</div>
+          <div class="flag-score flag-score-mila"><span id="flagCountMila">0</span> Salidas Mila</div>
         </section>
 
         <div id="mazeStatus" class="maze-status" aria-live="polite">Nivel 1</div>
@@ -183,12 +271,24 @@
             <button type="button" data-person="niya" data-dc="0" data-dr="1">K</button>
             <button type="button" data-person="niya" data-dc="1" data-dr="0">L</button>
           </div>
+          <div class="maze-pad maze-pad-emma" aria-label="Emma">
+            <button type="button" data-person="emma" data-dc="0" data-dr="-1">T</button>
+            <button type="button" data-person="emma" data-dc="-1" data-dr="0">F</button>
+            <button type="button" data-person="emma" data-dc="0" data-dr="1">G</button>
+            <button type="button" data-person="emma" data-dc="1" data-dr="0">H</button>
+          </div>
+          <div class="maze-pad maze-pad-mila" aria-label="Mila">
+            <button type="button" data-person="mila" data-dc="0" data-dr="-1">Y</button>
+            <button type="button" data-person="mila" data-dc="-1" data-dr="0">B</button>
+            <button type="button" data-person="mila" data-dc="0" data-dr="1">N</button>
+            <button type="button" data-person="mila" data-dc="1" data-dr="0">M</button>
+          </div>
         </section>
 
         <section class="pictionary-panel" aria-label="Juego de mimica en cafe" hidden>
           <details class="mime-rules">
-            <summary>Reglas</summary>
-            <p>Por turnos, una persona interpreta el reto sin hablar. Si aciertan, pulsa Acierto. Puedes activar 1 minuto de tiempo; si llega a 0, pierde 1 punto.</p>
+            <summary>Normas / Rules</summary>
+            <p>ES: Por turnos, una persona interpreta el reto sin hablar. Si aciertan, pulsa Acierto. Puedes activar 1 minuto; si llega a 0, pierde 1 punto. EN: Take turns acting without speaking. Press Correct on a guess. Start the 1-minute timer; if it reaches 0, that player loses 1 point.</p>
           </details>
           <div class="pictionary-header">
             <span id="turnName">Turno de Alba</span>
@@ -205,6 +305,34 @@
             <span>Alba <strong id="scoreAlba">0</strong></span>
             <span>Laino <strong id="scoreLaino">0</strong></span>
             <span>Niya <strong id="scoreNiya">0</strong></span>
+            <span>Emma <strong id="scoreEmma">0</strong></span>
+            <span>Mila <strong id="scoreMila">0</strong></span>
+          </div>
+        </section>
+
+        <section class="tortilla-panel" aria-label="Juego de tortilla" hidden>
+          <details class="tortilla-rules">
+            <summary>Normas / Rules</summary>
+            <p>ES: Pulsa Start, mira el contador y pulsa la tortilla o Espacio justo al llegar a 8.00 s. Cada una tiene un intento; gana 1 punto quien quede más cerca. EN: Press Start, watch the timer, then tap the tortilla or press Space as close to 8.00 s as possible. One try each; closest wins 1 point.</p>
+          </details>
+          <div class="tortilla-card">
+            <span id="tortillaTurn">Turno de Alba</span>
+            <strong id="tortillaClock">0.00</strong>
+            <button id="tortillaTarget" class="tortilla-target" type="button" aria-label="Dar la vuelta a la tortilla">
+              <span></span>
+            </button>
+            <p id="tortillaStatus">Pulsa Start para calentar la sartén.</p>
+          </div>
+          <div class="tortilla-actions">
+            <button id="tortillaStart" type="button">Start</button>
+            <button id="tortillaReset" type="button">Reset</button>
+          </div>
+          <div class="tortilla-scores">
+            <span>Alba <strong id="tortillaScoreAlba">0</strong><em id="tortillaTryAlba">-</em></span>
+            <span>Laino <strong id="tortillaScoreLaino">0</strong><em id="tortillaTryLaino">-</em></span>
+            <span>Niya <strong id="tortillaScoreNiya">0</strong><em id="tortillaTryNiya">-</em></span>
+            <span>Emma <strong id="tortillaScoreEmma">0</strong><em id="tortillaTryEmma">-</em></span>
+            <span>Mila <strong id="tortillaScoreMila">0</strong><em id="tortillaTryMila">-</em></span>
           </div>
         </section>
 
@@ -212,6 +340,6 @@
       </div>
     </main>
 
-    <script src="./app.js?v=20260429-1340"></script>
+    <script src="./app.js?v=20260429-1515"></script>
   </body>
 </html>
