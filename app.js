@@ -77,10 +77,7 @@ const references = {
   niya: [
     { title: "Spaventapasseri", icon: "mic-icon", note: "Italian drama mode" },
     { title: "Аз съм филмова маниачка", icon: "camera-icon", note: "soy una friki de las pelis" },
-    { title: "Филмова фрикиня", icon: "frame-icon", note: "movie nerd energy" },
-    { title: "Broadcast", icon: "mic-icon", note: "live from Bulgaria" },
     { title: "Film Class", icon: "camera-icon", note: "scene one, take one" },
-    { title: "International", icon: "sun-icon", note: "English mode" },
   ],
 };
 
