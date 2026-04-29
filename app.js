@@ -75,9 +75,9 @@ const references = {
     { title: "Parte Vieja", icon: "pintxo-icon", note: "pintxos everywhere" },
   ],
   niya: [
-    { title: "Microphone", icon: "mic-icon", note: "sing it, Niya" },
-    { title: "Audiovisual Communication", icon: "camera-icon", note: "international class" },
-    { title: "Media Studies", icon: "frame-icon", note: "in English, obviously" },
+    { title: "Spaventapasseri", icon: "mic-icon", note: "Italian drama mode" },
+    { title: "Аз съм филмова маниачка", icon: "camera-icon", note: "soy una friki de las pelis" },
+    { title: "Филмова фрикиня", icon: "frame-icon", note: "movie nerd energy" },
     { title: "Broadcast", icon: "mic-icon", note: "live from Bulgaria" },
     { title: "Film Class", icon: "camera-icon", note: "scene one, take one" },
     { title: "International", icon: "sun-icon", note: "English mode" },
