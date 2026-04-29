@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Angel Moment</title>
-    <link rel="stylesheet" href="./styles.css?v=20260429-1515" />
+    <link rel="stylesheet" href="./styles.css?v=20260429-1545" />
   </head>
   <body>
     <main class="stage" aria-label="Escena interactiva con tres figuras">
@@ -311,21 +311,27 @@
         </section>
 
         <section class="tortilla-panel" aria-label="Juego de tortilla" hidden>
-          <details class="tortilla-rules">
+          <details class="tortilla-rules" open>
             <summary>Normas / Rules</summary>
-            <p>ES: Pulsa Start, mira el contador y pulsa la tortilla o Espacio justo al llegar a 8.00 s. Cada una tiene un intento; gana 1 punto quien quede más cerca. EN: Press Start, watch the timer, then tap the tortilla or press Space as close to 8.00 s as possible. One try each; closest wins 1 point.</p>
+            <p>ES: Por turnos, pulsa Start y gira la tortilla justo en 8.00 s. La más cercana gana 1 punto. EN: Take turns, press Start and flip at 8.00 s. Closest wins 1 point.</p>
           </details>
+          <ol class="tortilla-steps" aria-label="Como jugar a tortilla">
+            <li>1. Mira de quien es el turno.</li>
+            <li>2. Pulsa Start.</li>
+            <li>3. Toca la tortilla cuando el reloj llegue a 8.00.</li>
+          </ol>
+          <div class="tortilla-actions">
+            <button id="tortillaStart" type="button">Start</button>
+            <button id="tortillaReset" type="button">Reset</button>
+          </div>
           <div class="tortilla-card">
             <span id="tortillaTurn">Turno de Alba</span>
+            <small>Objetivo: 8.00 segundos</small>
             <strong id="tortillaClock">0.00</strong>
             <button id="tortillaTarget" class="tortilla-target" type="button" aria-label="Dar la vuelta a la tortilla">
               <span></span>
             </button>
             <p id="tortillaStatus">Pulsa Start para calentar la sartén.</p>
-          </div>
-          <div class="tortilla-actions">
-            <button id="tortillaStart" type="button">Start</button>
-            <button id="tortillaReset" type="button">Reset</button>
           </div>
           <div class="tortilla-scores">
             <span>Alba <strong id="tortillaScoreAlba">0</strong><em id="tortillaTryAlba">-</em></span>
@@ -340,6 +346,6 @@
       </div>
     </main>
 
-    <script src="./app.js?v=20260429-1515"></script>
+    <script src="./app.js?v=20260429-1545"></script>
   </body>
 </html>

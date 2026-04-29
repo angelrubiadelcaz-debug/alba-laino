@@ -899,6 +899,7 @@ function updateTortillaTurn() {
   const player = active[tortillaTurnIndex % active.length];
   tortillaTurn.textContent = `Turno de ${player.name}`;
   tortillaClock.textContent = tortillaElapsed.toFixed(2);
+  tortillaStatus.textContent = `Le toca a ${player.name}. Pulsa Start y espera al 8.00.`;
   dolls.forEach((doll) => doll.classList.toggle("tortilla-turn", doll.dataset.person === player.person));
 }
 
@@ -913,7 +914,7 @@ function startTortillaTurn() {
   if (activeGame !== "tortilla" || tortillaRunning) return;
   tortillaElapsed = 0;
   tortillaClock.textContent = "0.00";
-  tortillaStatus.textContent = "¡A los 8.00!";
+  tortillaStatus.textContent = "Ahora: toca la tortilla o Espacio justo en 8.00.";
   tortillaRunning = true;
   tortillaStart.classList.add("running");
   tortillaStartTime = performance.now();
@@ -934,7 +935,7 @@ function stopTortillaTurn() {
   tortillaAttempts[player.person] = diff;
   tortillaTryNodes[player.person].textContent = `${diff.toFixed(2)}s`;
   tortillaClock.textContent = tortillaElapsed.toFixed(2);
-  tortillaStatus.textContent = `${player.name}: ${diff.toFixed(2)}s de diferencia`;
+  tortillaStatus.textContent = `${player.name}: ${diff.toFixed(2)}s de diferencia. Cuanto mas cerca de 0, mejor.`;
   tortillaTarget.classList.add("flipped");
   sayText(getDoll(player.person), diff < 0.25 ? "Yupi" : "Me cago", 1100);
 
