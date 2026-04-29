@@ -13,6 +13,7 @@ const caption = document.querySelector(".caption");
 const pictionaryPanel = document.querySelector(".pictionary-panel");
 const tortillaPanel = document.querySelector(".tortilla-panel");
 const tortillaRules = document.querySelector(".tortilla-rules");
+const tortillaArt = document.querySelector(".tortilla-stage-art");
 const turnName = document.querySelector("#turnName");
 const turnPrompt = document.querySelector("#turnPrompt");
 const turnSubtitle = document.querySelector("#turnSubtitle");
@@ -907,6 +908,7 @@ function updateTortillaTurn() {
   tortillaTurn.textContent = `Turno de ${player.name}`;
   tortillaClock.textContent = tortillaElapsed.toFixed(2);
   tortillaStatus.textContent = `Le toca a ${player.name}. Pulsa Start y espera al 8.00.`;
+  tortillaArt.classList.remove("cooking", "almost", "flipped", "perfect", "missed");
   dolls.forEach((doll) => doll.classList.toggle("tortilla-turn", doll.dataset.person === player.person));
 }
 
@@ -915,6 +917,7 @@ function clearTortillaTimer() {
   tortillaTimer = null;
   tortillaRunning = false;
   tortillaStart.classList.remove("running");
+  tortillaArt.classList.remove("cooking", "almost");
 }
 
 function startTortillaTurn() {
@@ -926,9 +929,12 @@ function startTortillaTurn() {
   tortillaStart.classList.add("running");
   tortillaStartTime = performance.now();
   tortillaTarget.classList.remove("flipped");
+  tortillaArt.classList.remove("flipped", "perfect", "missed");
+  tortillaArt.classList.add("cooking");
   tortillaTimer = setInterval(() => {
     tortillaElapsed = (performance.now() - tortillaStartTime) / 1000;
     tortillaClock.textContent = tortillaElapsed.toFixed(2);
+    tortillaArt.classList.toggle("almost", tortillaElapsed >= 6.75 && tortillaElapsed <= 8.35);
   }, 24);
 }
 
@@ -944,6 +950,9 @@ function stopTortillaTurn() {
   tortillaClock.textContent = tortillaElapsed.toFixed(2);
   tortillaStatus.textContent = `${player.name}: ${diff.toFixed(2)}s de diferencia. Cuanto mas cerca de 0, mejor.`;
   tortillaTarget.classList.add("flipped");
+  tortillaArt.classList.remove("cooking", "almost", "perfect", "missed");
+  tortillaArt.classList.add("flipped", diff < 0.25 ? "perfect" : "missed");
+  setTimeout(() => tortillaArt.classList.remove("flipped", "perfect", "missed"), 1200);
   sayText(getDoll(player.person), diff < 0.25 ? "Yupi" : "Me cago", 1100);
 
   tortillaTurnIndex += 1;
@@ -985,6 +994,7 @@ function resetTortillaGame() {
   });
   tortillaClock.textContent = "0.00";
   tortillaStatus.textContent = "Pulsa Start para calentar la sartén.";
+  tortillaArt.classList.remove("cooking", "almost", "flipped", "perfect", "missed");
   updateTortillaTurn();
 }
 

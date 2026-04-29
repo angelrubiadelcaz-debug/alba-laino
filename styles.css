@@ -1112,6 +1112,20 @@ body {
   pointer-events: none;
   opacity: 0.92;
   filter: drop-shadow(0 30px 44px rgba(0, 0, 0, 0.36));
+  transition: filter 180ms ease, opacity 180ms ease, transform 180ms ease;
+}
+
+.tortilla-stage-art.cooking {
+  filter: drop-shadow(0 34px 48px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 22px rgba(255, 209, 102, 0.22));
+}
+
+.tortilla-stage-art.almost {
+  opacity: 1;
+  filter: drop-shadow(0 34px 48px rgba(0, 0, 0, 0.42)) drop-shadow(0 0 34px rgba(229, 50, 66, 0.38));
+}
+
+.tortilla-stage-art.flipped {
+  transform: scale(1.06);
 }
 
 .frying-pan {
@@ -1127,7 +1141,18 @@ body {
     linear-gradient(145deg, #22201f, #0f1111);
   transform: rotate(-8deg);
   transform-origin: 68% 50%;
-  animation: panToss 2200ms ease-in-out infinite;
+}
+
+.tortilla-stage-art.cooking .frying-pan {
+  animation: panHeat 520ms ease-in-out infinite alternate;
+}
+
+.tortilla-stage-art.almost .frying-pan {
+  animation: panUrgent 170ms ease-in-out infinite alternate;
+}
+
+.tortilla-stage-art.flipped .frying-pan {
+  animation: panToss 760ms ease-out 1;
 }
 
 .frying-pan::before {
@@ -1184,7 +1209,29 @@ body {
     inset -18px -12px 0 rgba(141, 92, 37, 0.18),
     inset 12px 10px 0 rgba(255, 248, 232, 0.16);
   transform: translate(-50%, 0) rotateX(66deg) rotate(-8deg);
-  animation: tortillaFlip 2200ms cubic-bezier(0.3, 0.02, 0.28, 1) infinite;
+}
+
+.tortilla-stage-art.cooking .flying-tortilla {
+  animation: tortillaWarm 760ms ease-in-out infinite alternate;
+}
+
+.tortilla-stage-art.almost .flying-tortilla {
+  animation: tortillaReady 260ms ease-in-out infinite alternate;
+}
+
+.tortilla-stage-art.flipped .flying-tortilla {
+  animation: tortillaFlip 760ms cubic-bezier(0.3, 0.02, 0.28, 1) 1;
+}
+
+.tortilla-stage-art.perfect .flying-tortilla {
+  box-shadow:
+    0 0 28px rgba(255, 209, 102, 0.72),
+    inset -18px -12px 0 rgba(141, 92, 37, 0.18),
+    inset 12px 10px 0 rgba(255, 248, 232, 0.16);
+}
+
+.tortilla-stage-art.missed .flying-tortilla {
+  animation: tortillaMiss 520ms ease-in-out 1;
 }
 
 .flying-tortilla i {
@@ -1231,7 +1278,21 @@ body {
   border-radius: 50%;
   background: #ffd166;
   opacity: 0;
-  animation: potatoSpark 2200ms ease-out infinite;
+}
+
+.tortilla-stage-art.cooking .tortilla-spark,
+.tortilla-stage-art.almost .tortilla-spark,
+.tortilla-stage-art.flipped .tortilla-spark {
+  animation: potatoSpark 1100ms ease-out infinite;
+}
+
+.tortilla-stage-art.almost .tortilla-spark {
+  background: #e53242;
+  animation-duration: 420ms;
+}
+
+.tortilla-stage-art.perfect .tortilla-spark {
+  background: #49d7b8;
 }
 
 .spark-a {
@@ -4046,6 +4107,18 @@ body {
   }
 }
 
+@keyframes panHeat {
+  to {
+    transform: rotate(-10deg) translateY(-3px);
+  }
+}
+
+@keyframes panUrgent {
+  to {
+    transform: rotate(-13deg) translateY(-6px);
+  }
+}
+
 @keyframes panToss {
   0%,
   100% {
@@ -4062,6 +4135,18 @@ body {
 
   62% {
     transform: rotate(-4deg) translateY(3px);
+  }
+}
+
+@keyframes tortillaWarm {
+  to {
+    transform: translate(-50%, -8%) rotateX(72deg) rotate(4deg) scale(1.03);
+  }
+}
+
+@keyframes tortillaReady {
+  to {
+    transform: translate(-50%, -16%) rotateX(82deg) rotate(12deg) scale(1.08);
   }
 }
 
@@ -4082,6 +4167,20 @@ body {
 
   72% {
     transform: translate(-47%, -28%) rotateX(420deg) rotate(318deg) scale(1.04);
+  }
+}
+
+@keyframes tortillaMiss {
+  20% {
+    transform: translate(-50%, -20%) rotateX(100deg) rotate(-24deg) scale(1.06);
+  }
+
+  55% {
+    transform: translate(-50%, 4%) rotateX(50deg) rotate(18deg) scale(0.96);
+  }
+
+  80% {
+    transform: translate(-50%, -4%) rotateX(66deg) rotate(-8deg) scale(1);
   }
 }
 
