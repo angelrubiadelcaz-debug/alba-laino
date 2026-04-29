@@ -587,7 +587,7 @@ body {
   inset: clamp(12px, 2.4vw, 28px) clamp(10px, 2.2vw, 24px) auto clamp(10px, 2.2vw, 24px);
   z-index: 17;
   display: none;
-  grid-template-columns: 132px 132px;
+  grid-template-columns: repeat(3, 132px);
   justify-content: space-between;
   pointer-events: none;
 }
@@ -926,6 +926,10 @@ body {
   background: rgba(73, 215, 184, 0.38);
 }
 
+.maze-cell.start.niya {
+  background: rgba(255, 209, 102, 0.4);
+}
+
 .maze-controls {
   position: absolute;
   inset: auto clamp(12px, 2.8vw, 32px) clamp(14px, 3vw, 28px) clamp(12px, 2.8vw, 32px);
@@ -1012,13 +1016,19 @@ body {
 }
 
 .doll-left {
-  --x: -124px;
+  --x: -176px;
   --y: 34px;
   --r: -5deg;
 }
 
+.doll-center {
+  --x: 0px;
+  --y: 8px;
+  --r: 0deg;
+}
+
 .doll-right {
-  --x: 118px;
+  --x: 176px;
   --y: 16px;
   --r: 4deg;
 }
@@ -1225,6 +1235,41 @@ body {
     linear-gradient(#241716, #33211d);
 }
 
+.hair-long {
+  left: -4px;
+  right: -5px;
+  height: 134px;
+  border-radius: 48% 48% 40% 40%;
+  background:
+    radial-gradient(ellipse at 6% 70%, #241815 0 24px, transparent 25px),
+    radial-gradient(ellipse at 96% 70%, #211613 0 28px, transparent 29px),
+    linear-gradient(130deg, #3b241d 0 44%, #1f1513 44% 100%);
+}
+
+.hair-long::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 3px;
+  width: 70px;
+  height: 46px;
+  border-radius: 50%;
+  background: #2f1d18;
+  transform: rotate(-18deg);
+}
+
+.hair-long::after {
+  content: "";
+  position: absolute;
+  right: 2px;
+  top: 42px;
+  width: 31px;
+  height: 90px;
+  border-radius: 999px 999px 44px 44px;
+  background: #211613;
+  transform: rotate(-6deg);
+}
+
 .eye {
   position: absolute;
   top: 38px;
@@ -1318,6 +1363,43 @@ body {
   background:
     repeating-linear-gradient(0deg, #4c2c28 0 12px, #fff6e6 12px 17px),
     #4c2c28;
+}
+
+.red-sweater {
+  background:
+    radial-gradient(circle at 72% 38%, rgba(255, 248, 232, 0.13) 0 7px, transparent 8px),
+    linear-gradient(#9f2830, #7b1f27);
+}
+
+.red-arm {
+  background: linear-gradient(#9f2830, #7b1f27);
+}
+
+.necklace {
+  position: absolute;
+  left: 50%;
+  top: 104px;
+  z-index: 5;
+  width: 44px;
+  height: 42px;
+  border: 3px solid transparent;
+  border-bottom-color: #d9a45f;
+  border-radius: 0 0 50% 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.necklace::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -11px;
+  width: 14px;
+  aspect-ratio: 1;
+  border: 2px solid var(--ink);
+  border-radius: 50% 50% 45% 45%;
+  background: #ffd166;
+  transform: translateX(-50%) rotate(-12deg);
 }
 
 .outfit-traditional[data-person="blonde"] .torso {
@@ -1443,6 +1525,74 @@ body {
   background: #171819;
 }
 
+.outfit-traditional[data-person="niya"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  z-index: 5;
+  width: 86px;
+  height: 22px;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 18% 50%, #e53242 0 6px, transparent 7px),
+    radial-gradient(circle at 38% 50%, #fff6e6 0 5px, transparent 6px),
+    radial-gradient(circle at 58% 50%, #49d7b8 0 6px, transparent 7px),
+    radial-gradient(circle at 78% 50%, #e53242 0 5px, transparent 6px),
+    #ffd166;
+  transform: translateX(-50%) rotate(-3deg);
+}
+
+.outfit-traditional[data-person="niya"] .torso {
+  background:
+    linear-gradient(90deg, #fff6e6 0 18%, #191716 18% 82%, #fff6e6 82% 100%),
+    linear-gradient(#191716, #191716);
+}
+
+.outfit-traditional[data-person="niya"] .torso::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  width: 36px;
+  height: 74px;
+  border: 3px solid var(--ink);
+  border-radius: 4px 4px 18px 18px;
+  background:
+    radial-gradient(circle at 50% 18%, #e53242 0 4px, transparent 5px),
+    radial-gradient(circle at 34% 42%, #49d7b8 0 4px, transparent 5px),
+    radial-gradient(circle at 66% 42%, #ffd166 0 4px, transparent 5px),
+    linear-gradient(#8f1f2d 0 58%, #cf3341 58% 100%);
+  transform: translateX(-50%);
+}
+
+.outfit-traditional[data-person="niya"] .torso::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -38px;
+  width: 128px;
+  height: 78px;
+  border: 3px solid var(--ink);
+  border-radius: 0 0 36px 36px;
+  background:
+    linear-gradient(0deg, #49d7b8 0 10%, transparent 10% 100%),
+    repeating-linear-gradient(90deg, #8f1f2d 0 16px, #cf3341 16px 28px),
+    #8f1f2d;
+  transform: translateX(-50%);
+}
+
+.outfit-traditional[data-person="niya"] .arm {
+  background:
+    radial-gradient(circle at 50% 20%, #fff8e8 0 40%, transparent 41%),
+    linear-gradient(#fff6e6 0 74%, #191716 74% 100%);
+}
+
+.outfit-traditional[data-person="niya"] .leg {
+  background: #171819;
+}
+
 .outfit-traditional .stripe-arm {
   background: #fff6e6;
 }
@@ -1474,6 +1624,14 @@ body {
     radial-gradient(circle at 50% 42%, #e53242 0 6px, transparent 7px),
     radial-gradient(circle at 50% 66%, #49d7b8 0 6px, transparent 7px),
     linear-gradient(90deg, #ff6f91 0 50%, #fff6e6 50% 100%);
+}
+
+.outfit-clown[data-person="niya"] .torso {
+  background:
+    radial-gradient(circle at 50% 18%, #49d7b8 0 6px, transparent 7px),
+    radial-gradient(circle at 50% 42%, #ffd166 0 6px, transparent 7px),
+    radial-gradient(circle at 50% 66%, #ff6f91 0 6px, transparent 7px),
+    linear-gradient(90deg, #191716 0 50%, #fff6e6 50% 100%);
 }
 
 .outfit-clown .torso::before {
@@ -1520,12 +1678,20 @@ body {
   background: repeating-linear-gradient(0deg, #49d7b8 0 14px, #ff6f91 14px 26px);
 }
 
+.outfit-clown[data-person="niya"] .arm {
+  background: repeating-linear-gradient(0deg, #191716 0 14px, #ffd166 14px 26px);
+}
+
 .outfit-clown .leg {
   background: linear-gradient(90deg, #56a3ff 0 50%, #e53242 50% 100%);
 }
 
 .outfit-clown[data-person="brunette"] .leg {
   background: linear-gradient(90deg, #ffd166 0 50%, #49d7b8 50% 100%);
+}
+
+.outfit-clown[data-person="niya"] .leg {
+  background: linear-gradient(90deg, #e53242 0 50%, #49d7b8 50% 100%);
 }
 
 .outfit-clown .collar {
@@ -1650,6 +1816,11 @@ body {
 
 .place-flyby.donosti {
   animation-name: placeFlybyReverse;
+}
+
+.place-flyby.bulgaria {
+  background: rgba(255, 248, 232, 0.88);
+  mix-blend-mode: normal;
 }
 
 .place-title {
@@ -1962,6 +2133,10 @@ body {
   bottom: 4%;
   font-size: clamp(1.5rem, 4vw, 3.8rem);
   transform: translateX(-50%);
+}
+
+.bulgaria .sun-icon::after {
+  content: "Zdravei";
 }
 
 .doll.dance .head {
@@ -2372,7 +2547,7 @@ body {
   .bathroom-scores,
   .flag-scores {
     inset: 10px 10px auto 10px;
-    grid-template-columns: 104px 104px;
+    grid-template-columns: repeat(3, 104px);
   }
 
   .games-menu summary,
@@ -2405,13 +2580,14 @@ body {
   }
 
   .maze-controls {
+    inset-inline: 6px;
     bottom: max(10px, env(safe-area-inset-bottom));
   }
 
   .maze-pad {
-    grid-template-columns: repeat(3, 36px);
-    grid-template-rows: repeat(3, 36px);
-    gap: 4px;
+    grid-template-columns: repeat(3, 32px);
+    grid-template-rows: repeat(3, 32px);
+    gap: 3px;
   }
 
   .maze-pad button {
@@ -2448,12 +2624,17 @@ body {
   }
 
   .doll-left {
-    --x: -76px;
+    --x: -106px;
     --y: 72px;
   }
 
+  .doll-center {
+    --x: 0px;
+    --y: 54px;
+  }
+
   .doll-right {
-    --x: 76px;
+    --x: 106px;
     --y: 52px;
   }
 
@@ -2498,17 +2679,22 @@ body {
   }
 
   .doll {
-    --scale: 0.76;
+    --scale: 0.68;
     top: 57%;
   }
 
   .doll-left {
-    --x: -58px;
+    --x: -82px;
     --y: 74px;
   }
 
+  .doll-center {
+    --x: 0px;
+    --y: 56px;
+  }
+
   .doll-right {
-    --x: 60px;
+    --x: 82px;
     --y: 52px;
   }
 
@@ -2541,7 +2727,7 @@ body {
 
   .bathroom-scores,
   .flag-scores {
-    grid-template-columns: 92px 92px;
+    grid-template-columns: repeat(3, 92px);
   }
 
   .stage.flag-mode .doll {
@@ -2560,8 +2746,9 @@ body {
   }
 
   .maze-pad {
-    grid-template-columns: repeat(3, 32px);
-    grid-template-rows: repeat(3, 32px);
+    grid-template-columns: repeat(3, 28px);
+    grid-template-rows: repeat(3, 28px);
+    gap: 3px;
   }
 
   .bath-score,

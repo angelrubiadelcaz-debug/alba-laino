@@ -9,10 +9,12 @@ const mazeStatus = document.querySelector("#mazeStatus");
 const poopCountNodes = {
   blonde: document.querySelector("#poopCountAlba"),
   brunette: document.querySelector("#poopCountLaino"),
+  niya: document.querySelector("#poopCountNiya"),
 };
 const flagCountNodes = {
   blonde: document.querySelector("#flagCountAlba"),
   brunette: document.querySelector("#flagCountLaino"),
+  niya: document.querySelector("#flagCountNiya"),
 };
 const canvas = document.querySelector("#confetti");
 const ctx = canvas.getContext("2d");
@@ -27,6 +29,11 @@ const lines = {
     "Ja ja, Angel calvo. Aupa!",
     "Soy una friki del arte",
     "Ja ja, Angel calvo. Kaixo!",
+  ],
+  niya: [
+    "Az sam Niya",
+    "Bulgaria mood",
+    "Angel, molya te",
   ],
 };
 
@@ -55,6 +62,14 @@ const references = {
     { title: "Kursaal", icon: "frame-icon", note: "cubos y arte" },
     { title: "Parte Vieja", icon: "pintxo-icon", note: "pintxos everywhere" },
   ],
+  niya: [
+    { title: "Bulgaria", icon: "sun-icon", note: "Niya energy" },
+    { title: "Sofia", icon: "frame-icon", note: "capital mode" },
+    { title: "Rila", icon: "cathedral-icon", note: "monasterio y montañas" },
+    { title: "Rosa", icon: "phone-icon", note: "valle de las rosas" },
+    { title: "Banitsa", icon: "pintxo-icon", note: "snack serio" },
+    { title: "Kukeri", icon: "vase-icon", note: "tradicion bulgara" },
+  ],
 };
 
 let activeDoll = null;
@@ -65,10 +80,12 @@ let activeGame = null;
 const poopCounts = {
   blonde: 0,
   brunette: 0,
+  niya: 0,
 };
 const flagCounts = {
   blonde: 0,
   brunette: 0,
+  niya: 0,
 };
 let poopTimer = 0;
 let audioContext = null;
@@ -79,7 +96,7 @@ const mazeLevels = [
     "#.###.###.###.#.#",
     "#...#...#.#...#.#",
     "###.#.#.#.#.#.###",
-    "#...#.#...#.#...#",
+    "#N..#.#...#.#...#",
     "#.###.#####.###.#",
     "#...#...#...#...#",
     "#.#.###.###.###.#",
@@ -92,7 +109,7 @@ const mazeLevels = [
     "#.###.#####.###.#",
     "#...#.....#.....#",
     "###.#.###.#####.#",
-    "#...#...#.......#",
+    "#N..#...#.......#",
     "#.#####.###.###.#",
     "#.....#.....#...#",
     "#.###.#####.###.#",
@@ -105,12 +122,51 @@ const mazeLevels = [
     "#.###.#.#####.#.#",
     "#...#.#.....#...#",
     "###.#.#####.###.#",
-    "#...#.....#.....#",
+    "#N..#.....#.....#",
     "#.#######.#####.#",
     "#.#.....#.......#",
     "#.#.###.#######.#",
     "#L....#........E#",
     "#################",
+  ],
+  [
+    "###################",
+    "#A......#........E#",
+    "#.####..#.######..#",
+    "#....#..#......#..#",
+    "####.#.######..##.#",
+    "#N...#......#.....#",
+    "#.#########.#.###.#",
+    "#.....#.....#...#.#",
+    "#.###.#.#######.#.#",
+    "#L..#...........#E#",
+    "###################",
+  ],
+  [
+    "###################",
+    "#A..#............E#",
+    "#.#.#.###########.#",
+    "#.#.#.....#.......#",
+    "#.#.#####.#.#####.#",
+    "#N#.....#.#.....#.#",
+    "#.#####.#.#####.#.#",
+    "#.....#.#.....#.#.#",
+    "#####.#.#####.#.#.#",
+    "#L....#.......#..E#",
+    "###################",
+  ],
+  [
+    "###################",
+    "#A......#.....#..E#",
+    "###.###.#.###.#.#.#",
+    "#...#...#.#...#.#.#",
+    "#.###.###.#.###.#.#",
+    "#N....#...#.....#.#",
+    "#.###.#.#######.#.#",
+    "#.#...#.....#...#.#",
+    "#.#.#######.#.###.#",
+    "#L#.............#E#",
+    "###################",
   ],
 ];
 let currentMazeIndex = 0;
@@ -119,6 +175,7 @@ let mazeHoldTimer = 0;
 const mazePlayers = {
   blonde: { col: 1, row: 1, done: false },
   brunette: { col: 1, row: 7, done: false },
+  niya: { col: 1, row: 5, done: false },
 };
 
 const state = new Map(
@@ -178,7 +235,9 @@ function burst(x, y, person, amount = 12) {
   const words =
     person === "blonde"
       ? ["Palencia", "Cristo", "FOMO", "Etruscos", "zzz", "♥"]
-      : ["Aupa", "Kaixo", "Donosti", "Arte", "Pintxo", "♥"];
+      : person === "brunette"
+        ? ["Aupa", "Kaixo", "Donosti", "Arte", "Pintxo", "♥"]
+        : ["Niya", "Bulgaria", "Sofia", "Rila", "Banitsa", "♥"];
   for (let i = 0; i < amount; i += 1) {
     const spark = document.createElement("span");
     const angle = Math.random() * Math.PI * 2;
@@ -199,7 +258,11 @@ function playVictoryMusic(person) {
   audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
   audioContext.resume?.();
   const now = audioContext.currentTime;
-  const notes = person === "blonde" ? [523.25, 659.25, 783.99, 1046.5, 880, 1046.5] : [392, 493.88, 587.33, 783.99, 659.25, 783.99];
+  const notes = person === "blonde"
+    ? [523.25, 659.25, 783.99, 1046.5, 880, 1046.5]
+    : person === "brunette"
+      ? [392, 493.88, 587.33, 783.99, 659.25, 783.99]
+      : [440, 554.37, 659.25, 830.61, 739.99, 987.77];
 
   notes.forEach((frequency, index) => {
     const osc = audioContext.createOscillator();
@@ -217,8 +280,8 @@ function playVictoryMusic(person) {
   const bass = audioContext.createOscillator();
   const bassGain = audioContext.createGain();
   bass.type = "sawtooth";
-  bass.frequency.setValueAtTime(person === "blonde" ? 130.81 : 98, now);
-  bass.frequency.exponentialRampToValueAtTime(person === "blonde" ? 196 : 146.83, now + 0.8);
+  bass.frequency.setValueAtTime(person === "blonde" ? 130.81 : person === "brunette" ? 98 : 116.54, now);
+  bass.frequency.exponentialRampToValueAtTime(person === "blonde" ? 196 : person === "brunette" ? 146.83 : 174.61, now + 0.8);
   bassGain.gain.setValueAtTime(0.055, now);
   bassGain.gain.exponentialRampToValueAtTime(0.001, now + 1.15);
   bass.connect(bassGain).connect(audioContext.destination);
@@ -232,9 +295,11 @@ function showVictoryJumpscare(person) {
   const clone = winner.cloneNode(true);
   const words = person === "blonde"
     ? ["YUPI", "PALENCIA", "ETRUSCOS", "FOMO", "ALBA"]
-    : ["YUPI", "DONOSTI", "ARTE", "KAIXO", "LAINO"];
+    : person === "brunette"
+      ? ["YUPI", "DONOSTI", "ARTE", "KAIXO", "LAINO"]
+      : ["YUPI", "NIYA", "BULGARIA", "SOFIA", "BANITSA"];
 
-  overlay.className = `victory-jumpscare ${person === "blonde" ? "alba" : "laino"}`;
+  overlay.className = `victory-jumpscare ${person === "blonde" ? "alba" : person === "brunette" ? "laino" : "niya"}`;
   overlay.setAttribute("aria-hidden", "true");
   clone.classList.remove("dragging", "maze-step", "maze-winner", "maze-loser", "maze-caught");
   clone.classList.add("victory-doll");
@@ -266,7 +331,7 @@ function placeAnimation(person) {
   const isBlonde = person === "blonde";
   const options = references[person];
   const ref = options[Math.floor(Math.random() * options.length)];
-  card.className = `place-flyby ${isBlonde ? "palencia" : "donosti"}`;
+  card.className = `place-flyby ${isBlonde ? "palencia" : person === "brunette" ? "donosti" : "bulgaria"}`;
   card.innerHTML = `
     <span class="place-title">${ref.title}</span>
     <span class="place-icon ${ref.icon}" aria-hidden="true"></span>
@@ -312,6 +377,7 @@ function buildMaze() {
       if (cell === "E") tile.classList.add("exit");
       if (cell === "A") tile.classList.add("start", "alba");
       if (cell === "L") tile.classList.add("start", "laino");
+      if (cell === "N") tile.classList.add("start", "niya");
       tile.style.gridColumn = colIndex + 1;
       tile.style.gridRow = rowIndex + 1;
       mazeBoard.appendChild(tile);
@@ -324,22 +390,27 @@ function placeMazePlayers() {
   dolls.forEach((doll) => doll.classList.remove("maze-step", "maze-winner", "maze-loser", "maze-caught"));
   mazePlayers.blonde = findMazeCell("A");
   mazePlayers.brunette = findMazeCell("L");
+  mazePlayers.niya = findMazeCell("N");
   updateMazeDoll("blonde");
   updateMazeDoll("brunette");
+  updateMazeDoll("niya");
 }
 
 function resetMazeAfterCatch() {
   mazeRoundLocked = true;
   mazePlayers.blonde = findMazeCell("A");
   mazePlayers.brunette = findMazeCell("L");
+  mazePlayers.niya = findMazeCell("N");
   updateMazeDoll("blonde");
   updateMazeDoll("brunette");
+  updateMazeDoll("niya");
   dolls.forEach((doll) => {
     doll.classList.remove("maze-step");
     doll.classList.add("maze-caught");
   });
   sayText(dolls.find((item) => item.dataset.person === "blonde"), "Odio la tecnologia", 3600);
   sayText(dolls.find((item) => item.dataset.person === "brunette"), "Laguntza", 3600);
+  sayText(dolls.find((item) => item.dataset.person === "niya"), "Pomognete", 3600);
   setTimeout(() => {
     if (activeGame !== "flags") return;
     dolls.forEach((doll) => doll.classList.remove("maze-caught"));
@@ -364,7 +435,7 @@ function updateMazeDoll(person, step = false, dc = 0) {
   item.vx = 0;
   item.vy = 0;
   item.vr = 0;
-  item.r = dc === 0 ? (person === "blonde" ? -4 : 4) : dc * 7;
+  item.r = dc === 0 ? (person === "blonde" ? -4 : person === "brunette" ? 4 : 0) : dc * 7;
   updateDoll(doll);
   if (!step) return;
   doll.classList.remove("maze-step");
@@ -387,9 +458,10 @@ function moveMazePlayer(person, dc, dr) {
   player.row = nextRow;
   updateMazeDoll(person, true, dc);
 
-  const otherPerson = person === "blonde" ? "brunette" : "blonde";
-  const otherPlayer = mazePlayers[otherPerson];
-  if (!otherPlayer.done && player.col === otherPlayer.col && player.row === otherPlayer.row) {
+  const caught = Object.entries(mazePlayers).some(([otherPerson, otherPlayer]) => (
+    otherPerson !== person && !otherPlayer.done && player.col === otherPlayer.col && player.row === otherPlayer.row
+  ));
+  if (caught) {
     resetMazeAfterCatch();
     return;
   }
@@ -400,13 +472,12 @@ function moveMazePlayer(person, dc, dr) {
     flagCounts[person] += 1;
     flagCountNodes[person].textContent = flagCounts[person];
     const doll = dolls.find((item) => item.dataset.person === person);
-    const loserPerson = person === "blonde" ? "brunette" : "blonde";
-    const loser = dolls.find((item) => item.dataset.person === loserPerson);
+    const losers = dolls.filter((item) => item.dataset.person !== person);
     const rect = doll.getBoundingClientRect();
     doll.classList.add("maze-winner");
-    loser.classList.add("maze-loser");
+    losers.forEach((loser) => loser.classList.add("maze-loser"));
     sayText(doll, "Yupi", 1300);
-    sayText(loser, "Me cago", 1300);
+    losers.forEach((loser) => sayText(loser, "Me cago", 1300));
     burst(rect.left + rect.width / 2, rect.top + rect.height / 2, person, 18);
     showVictoryJumpscare(person);
     setTimeout(() => {
@@ -430,6 +501,10 @@ function handleMazeKey(event) {
     arrowleft: ["brunette", -1, 0],
     arrowdown: ["brunette", 0, 1],
     arrowright: ["brunette", 1, 0],
+    i: ["niya", 0, -1],
+    j: ["niya", -1, 0],
+    k: ["niya", 0, 1],
+    l: ["niya", 1, 0],
   };
   const move = moves[key];
   if (!move) return;
