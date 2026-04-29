@@ -974,6 +974,10 @@ body {
   display: grid;
 }
 
+.stage.tortilla-mode .tortilla-stage-art {
+  display: block;
+}
+
 .stage.bathroom-mode .cafe-bg,
 .stage.bathroom-mode .moon,
 .stage.bathroom-mode .pisa-gag,
@@ -1095,6 +1099,156 @@ body {
 
 .stage.tortilla-mode .doll.tortilla-turn {
   filter: drop-shadow(0 0 28px rgba(255, 209, 102, 0.58)) saturate(1.16);
+}
+
+.tortilla-stage-art {
+  position: absolute;
+  right: clamp(22px, 8vw, 140px);
+  top: clamp(112px, 18vh, 190px);
+  z-index: 4;
+  display: none;
+  width: clamp(210px, 30vw, 430px);
+  height: clamp(180px, 26vw, 340px);
+  pointer-events: none;
+  opacity: 0.92;
+  filter: drop-shadow(0 30px 44px rgba(0, 0, 0, 0.36));
+}
+
+.frying-pan {
+  position: absolute;
+  left: 8%;
+  right: 12%;
+  bottom: 12%;
+  height: 42%;
+  border: clamp(5px, 0.75vw, 9px) solid var(--ink);
+  border-radius: 50% 50% 36% 36%;
+  background:
+    radial-gradient(ellipse at 42% 26%, rgba(255, 248, 232, 0.14) 0 18%, transparent 19%),
+    linear-gradient(145deg, #22201f, #0f1111);
+  transform: rotate(-8deg);
+  transform-origin: 68% 50%;
+  animation: panToss 2200ms ease-in-out infinite;
+}
+
+.frying-pan::before {
+  content: "";
+  position: absolute;
+  right: -34%;
+  top: 42%;
+  width: 44%;
+  height: 18%;
+  border: clamp(5px, 0.75vw, 9px) solid var(--ink);
+  border-left: 0;
+  border-radius: 0 999px 999px 0;
+  background:
+    linear-gradient(90deg, #4c2f20, #8d5c25);
+}
+
+.frying-pan::after {
+  content: "";
+  position: absolute;
+  left: 11%;
+  right: 11%;
+  bottom: 15%;
+  height: 36%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 248, 232, 0.18), transparent 70%);
+}
+
+.pan-shine {
+  position: absolute;
+  left: 18%;
+  top: 20%;
+  width: 34%;
+  height: 12%;
+  border-radius: 999px;
+  background: rgba(255, 248, 232, 0.18);
+  transform: rotate(-8deg);
+}
+
+.flying-tortilla {
+  position: absolute;
+  left: 50%;
+  top: -68%;
+  z-index: 2;
+  width: clamp(108px, 16vw, 224px);
+  aspect-ratio: 1.34;
+  border: clamp(4px, 0.65vw, 7px) solid var(--ink);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 28% 34%, rgba(255, 248, 232, 0.58) 0 7%, transparent 8%),
+    radial-gradient(circle at 66% 28%, rgba(141, 92, 37, 0.34) 0 9%, transparent 10%),
+    radial-gradient(circle at 48% 66%, rgba(255, 248, 232, 0.34) 0 8%, transparent 9%),
+    linear-gradient(135deg, #f3c36b, #d79a39 60%, #b86e25);
+  box-shadow:
+    inset -18px -12px 0 rgba(141, 92, 37, 0.18),
+    inset 12px 10px 0 rgba(255, 248, 232, 0.16);
+  transform: translate(-50%, 0) rotateX(66deg) rotate(-8deg);
+  animation: tortillaFlip 2200ms cubic-bezier(0.3, 0.02, 0.28, 1) infinite;
+}
+
+.flying-tortilla i {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 248, 232, 0.42);
+}
+
+.flying-tortilla i:nth-child(1) {
+  left: 18%;
+  top: 38%;
+  width: 10%;
+  aspect-ratio: 1;
+}
+
+.flying-tortilla i:nth-child(2) {
+  left: 46%;
+  top: 22%;
+  width: 8%;
+  aspect-ratio: 1;
+  background: rgba(141, 92, 37, 0.28);
+}
+
+.flying-tortilla i:nth-child(3) {
+  right: 20%;
+  top: 52%;
+  width: 12%;
+  aspect-ratio: 1;
+}
+
+.flying-tortilla i:nth-child(4) {
+  left: 40%;
+  bottom: 18%;
+  width: 7%;
+  aspect-ratio: 1;
+  background: rgba(141, 92, 37, 0.24);
+}
+
+.tortilla-spark {
+  position: absolute;
+  width: clamp(8px, 1.2vw, 14px);
+  aspect-ratio: 1;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: #ffd166;
+  opacity: 0;
+  animation: potatoSpark 2200ms ease-out infinite;
+}
+
+.spark-a {
+  left: 24%;
+  top: 22%;
+}
+
+.spark-b {
+  left: 64%;
+  top: 14%;
+  animation-delay: 160ms;
+}
+
+.spark-c {
+  left: 80%;
+  top: 42%;
+  animation-delay: 320ms;
 }
 
 .stage.flag-mode .doll.maze-step .head {
@@ -3892,6 +4046,64 @@ body {
   }
 }
 
+@keyframes panToss {
+  0%,
+  100% {
+    transform: rotate(-8deg) translateY(0);
+  }
+
+  34% {
+    transform: rotate(-18deg) translateY(12px);
+  }
+
+  48% {
+    transform: rotate(9deg) translateY(-10px);
+  }
+
+  62% {
+    transform: rotate(-4deg) translateY(3px);
+  }
+}
+
+@keyframes tortillaFlip {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) rotateX(66deg) rotate(-8deg) scale(1);
+  }
+
+  28% {
+    transform: translate(-54%, -34%) rotateX(118deg) rotate(48deg) scale(1.05);
+  }
+
+  50% {
+    transform: translate(-50%, -78%) rotateX(260deg) rotate(180deg) scale(1.12);
+  }
+
+  72% {
+    transform: translate(-47%, -28%) rotateX(420deg) rotate(318deg) scale(1.04);
+  }
+}
+
+@keyframes potatoSpark {
+  0%,
+  36%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4);
+  }
+
+  48% {
+    opacity: 1;
+    transform: translate(8px, -22px) scale(1);
+  }
+
+  72% {
+    opacity: 0;
+    transform: translate(22px, -46px) scale(0.72);
+  }
+}
+
 @media (max-width: 720px) {
   html,
   body {
@@ -4023,6 +4235,14 @@ body {
     max-height: 48svh;
     gap: 5px;
     padding: 6px;
+  }
+
+  .tortilla-stage-art {
+    right: -18px;
+    top: 37%;
+    width: 190px;
+    height: 160px;
+    opacity: 0.72;
   }
 
   .tortilla-rules p,
@@ -4399,6 +4619,14 @@ body {
     width: calc(100vw - 112px);
     min-width: 170px;
     max-height: 48svh;
+  }
+
+  .tortilla-stage-art {
+    right: -34px;
+    top: 39%;
+    width: 160px;
+    height: 132px;
+    opacity: 0.62;
   }
 
   .maze-board {
