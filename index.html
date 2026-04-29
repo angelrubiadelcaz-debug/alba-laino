@@ -34,6 +34,23 @@
           <div class="cafe-door"></div>
         </div>
 
+        <div class="volta-interior" aria-hidden="true">
+          <div class="volta-arch arch-left"></div>
+          <div class="volta-arch arch-center"></div>
+          <div class="volta-door"></div>
+          <div class="volta-piano"></div>
+          <div class="volta-shelf shelf-main"></div>
+          <div class="volta-shelf shelf-side"></div>
+          <div class="volta-art"></div>
+          <div class="cafe-table table-front"></div>
+          <div class="cafe-table table-mid"></div>
+          <div class="cafe-chair chair-one"></div>
+          <div class="cafe-chair chair-two"></div>
+          <div class="cafe-chair chair-three"></div>
+          <div class="cafe-lamp lamp-one"></div>
+          <div class="cafe-lamp lamp-two"></div>
+        </div>
+
         <details class="wardrobe">
           <summary>Ropa</summary>
           <div class="wardrobe-card">
@@ -110,6 +127,9 @@
           <div class="head">
             <div class="hair hair-long"></div>
             <div class="face">
+              <span class="big-glasses left-lens"></span>
+              <span class="big-glasses right-lens"></span>
+              <span class="big-bridge"></span>
               <span class="eye eye-left"></span>
               <span class="eye eye-right"></span>
               <span class="smile"></span>
@@ -127,6 +147,7 @@
           <summary>Juegos</summary>
           <button id="poopToggle" class="game-button" type="button" aria-pressed="false">Baño</button>
           <button id="flagToggle" class="game-button" type="button" aria-pressed="false">Laberinto</button>
+          <button id="pictionaryToggle" class="game-button" type="button" aria-pressed="false">Mímica</button>
         </details>
 
         <section class="bathroom-scores" aria-label="Marcador del baño">
@@ -164,7 +185,24 @@
           </div>
         </section>
 
-        <div class="caption" aria-hidden="true">mueve las figuras y toca sus caras</div>
+        <section class="pictionary-panel" aria-label="Juego de mimica en cafe">
+          <div class="pictionary-header">
+            <span id="turnName">Turno de Alba</span>
+            <strong id="turnPrompt">haz mimica de pedir un cafe</strong>
+          </div>
+          <div class="pictionary-actions">
+            <button id="skipTurn" type="button">Pasar</button>
+            <button id="correctGuess" type="button">Acierto</button>
+            <button id="nextTurn" type="button">Siguiente</button>
+          </div>
+          <div class="pictionary-scores">
+            <span>Alba <strong id="scoreAlba">0</strong></span>
+            <span>Laino <strong id="scoreLaino">0</strong></span>
+            <span>Niya <strong id="scoreNiya">0</strong></span>
+          </div>
+        </section>
+
+        <div class="caption" aria-live="polite">mueve las figuras y toca sus caras</div>
       </div>
     </main>
 

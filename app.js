@@ -4,8 +4,15 @@ const outfitButtons = [...document.querySelectorAll(".outfit-button")];
 const mazeButtons = [...document.querySelectorAll(".maze-pad button")];
 const poopToggle = document.querySelector("#poopToggle");
 const flagToggle = document.querySelector("#flagToggle");
+const pictionaryToggle = document.querySelector("#pictionaryToggle");
 const mazeBoard = document.querySelector("#mazeBoard");
 const mazeStatus = document.querySelector("#mazeStatus");
+const caption = document.querySelector(".caption");
+const turnName = document.querySelector("#turnName");
+const turnPrompt = document.querySelector("#turnPrompt");
+const skipTurn = document.querySelector("#skipTurn");
+const correctGuess = document.querySelector("#correctGuess");
+const nextTurn = document.querySelector("#nextTurn");
 const poopCountNodes = {
   blonde: document.querySelector("#poopCountAlba"),
   brunette: document.querySelector("#poopCountLaino"),
@@ -15,6 +22,11 @@ const flagCountNodes = {
   blonde: document.querySelector("#flagCountAlba"),
   brunette: document.querySelector("#flagCountLaino"),
   niya: document.querySelector("#flagCountNiya"),
+};
+const pictionaryScoreNodes = {
+  blonde: document.querySelector("#scoreAlba"),
+  brunette: document.querySelector("#scoreLaino"),
+  niya: document.querySelector("#scoreNiya"),
 };
 const canvas = document.querySelector("#confetti");
 const ctx = canvas.getContext("2d");
@@ -31,9 +43,8 @@ const lines = {
     "Ja ja, Angel calvo. Kaixo!",
   ],
   niya: [
-    "Az sam Niya",
-    "Bulgaria mood",
-    "Angel, molya te",
+    "Precaria",
+    "Haber, los dias de la semana",
   ],
 };
 
@@ -63,12 +74,12 @@ const references = {
     { title: "Parte Vieja", icon: "pintxo-icon", note: "pintxos everywhere" },
   ],
   niya: [
-    { title: "Bulgaria", icon: "sun-icon", note: "Niya energy" },
-    { title: "Sofia", icon: "frame-icon", note: "capital mode" },
-    { title: "Rila", icon: "cathedral-icon", note: "monasterio y montañas" },
-    { title: "Rosa", icon: "phone-icon", note: "valle de las rosas" },
-    { title: "Banitsa", icon: "pintxo-icon", note: "snack serio" },
-    { title: "Kukeri", icon: "vase-icon", note: "tradicion bulgara" },
+    { title: "Microphone", icon: "mic-icon", note: "sing it, Niya" },
+    { title: "Audiovisual Communication", icon: "camera-icon", note: "international class" },
+    { title: "Media Studies", icon: "frame-icon", note: "in English, obviously" },
+    { title: "Broadcast", icon: "mic-icon", note: "live from Bulgaria" },
+    { title: "Film Class", icon: "camera-icon", note: "scene one, take one" },
+    { title: "International", icon: "sun-icon", note: "English mode" },
   ],
 };
 
@@ -89,6 +100,30 @@ const flagCounts = {
 };
 let poopTimer = 0;
 let audioContext = null;
+let hintCount = 0;
+let hintInterval = null;
+let hintTimer = null;
+let currentTurnIndex = 0;
+const pictionaryPeople = [
+  { person: "blonde", name: "Alba" },
+  { person: "brunette", name: "Laino" },
+  { person: "niya", name: "Niya" },
+];
+const pictionaryPrompts = [
+  "haz mimica de tocar el piano",
+  "haz mimica de pedir un cafe",
+  "haz mimica de leer dramaticamente",
+  "haz mimica de cantar con micro",
+  "haz mimica de vender un libro",
+  "haz mimica de sentarte en una silla azul",
+  "haz mimica de estar en una clase internacional",
+  "haz mimica de grabar una escena",
+];
+const pictionaryScores = {
+  blonde: 0,
+  brunette: 0,
+  niya: 0,
+};
 const mazeLevels = [
   [
     "#################",
@@ -342,8 +377,8 @@ function placeAnimation(person) {
 }
 
 function clearGameObjects() {
-  document.querySelectorAll(".poop, .flag-target, .victory-jumpscare").forEach((item) => item.remove());
-  dolls.forEach((doll) => doll.classList.remove("strained", "maze-step", "maze-winner", "maze-loser", "maze-caught"));
+  document.querySelectorAll(".poop, .flag-target, .victory-jumpscare, .singing-mic").forEach((item) => item.remove());
+  dolls.forEach((doll) => doll.classList.remove("strained", "maze-step", "maze-winner", "maze-loser", "maze-caught", "pictionary-turn"));
   mazeBoard.innerHTML = "";
   mazeBoard.setAttribute("aria-hidden", "true");
   mazeRoundLocked = false;
@@ -516,15 +551,20 @@ function setGame(nextGame) {
   activeGame = activeGame === nextGame ? null : nextGame;
   const isBathroom = activeGame === "bathroom";
   const isFlags = activeGame === "flags";
+  const isPictionary = activeGame === "pictionary";
 
   document.querySelector(".stage").classList.toggle("bathroom-mode", isBathroom);
   document.querySelector(".stage").classList.toggle("flag-mode", isFlags);
+  document.querySelector(".stage").classList.toggle("pictionary-mode", isPictionary);
   poopToggle.classList.toggle("active", isBathroom);
   flagToggle.classList.toggle("active", isFlags);
+  pictionaryToggle.classList.toggle("active", isPictionary);
   poopToggle.setAttribute("aria-pressed", String(isBathroom));
   flagToggle.setAttribute("aria-pressed", String(isFlags));
+  pictionaryToggle.setAttribute("aria-pressed", String(isPictionary));
   poopToggle.textContent = isBathroom ? "Baño activo" : "Baño";
   flagToggle.textContent = isFlags ? "Laberinto activo" : "Laberinto";
+  pictionaryToggle.textContent = isPictionary ? "Mímica activa" : "Mímica";
 
   clearTimeout(poopTimer);
   clearInterval(mazeHoldTimer);
@@ -535,6 +575,74 @@ function setGame(nextGame) {
     buildMaze();
     requestAnimationFrame(placeMazePlayers);
   }
+  if (isPictionary) {
+    updatePictionaryTurn();
+    requestAnimationFrame(placeCafePlayers);
+  }
+}
+
+function placeCafePlayers() {
+  const mobile = innerWidth < 520;
+  const positions = {
+    blonde: { x: mobile ? -96 : -176, y: mobile ? 160 : 112, r: -4 },
+    brunette: { x: 0, y: mobile ? 142 : 96, r: 2 },
+    niya: { x: mobile ? 96 : 176, y: mobile ? 160 : 112, r: 4 },
+  };
+
+  dolls.forEach((doll) => {
+    const item = state.get(doll);
+    const pos = positions[doll.dataset.person];
+    item.x = pos.x;
+    item.y = pos.y;
+    item.r = pos.r;
+    item.vx = 0;
+    item.vy = 0;
+    item.vr = 0;
+    updateDoll(doll);
+  });
+}
+
+function updatePictionaryTurn() {
+  const player = pictionaryPeople[currentTurnIndex % pictionaryPeople.length];
+  const prompt = pictionaryPrompts[currentTurnIndex % pictionaryPrompts.length];
+  turnName.textContent = `Turno de ${player.name}`;
+  turnPrompt.textContent = prompt;
+  dolls.forEach((doll) => doll.classList.toggle("pictionary-turn", doll.dataset.person === player.person));
+  sayText(dolls.find((doll) => doll.dataset.person === player.person), "Me toca", 1400);
+}
+
+function nextPictionaryTurn() {
+  currentTurnIndex += 1;
+  updatePictionaryTurn();
+}
+
+function awardPictionaryPoint() {
+  const player = pictionaryPeople[currentTurnIndex % pictionaryPeople.length];
+  pictionaryScores[player.person] += 1;
+  pictionaryScoreNodes[player.person].textContent = pictionaryScores[player.person];
+  const doll = dolls.find((item) => item.dataset.person === player.person);
+  const rect = doll.getBoundingClientRect();
+  sayText(doll, "Yupi", 1200);
+  burst(rect.left + rect.width / 2, rect.top + rect.height / 2, player.person, 12);
+  nextPictionaryTurn();
+}
+
+function showHintPopup() {
+  if (hintCount >= 5) {
+    clearInterval(hintInterval);
+    return;
+  }
+
+  hintCount += 1;
+  caption.classList.add("visible");
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => caption.classList.remove("visible"), 5200);
+
+  if (hintCount >= 5) clearInterval(hintInterval);
+}
+
+function startHintPopups() {
+  hintInterval = setInterval(showHintPopup, 60000);
 }
 
 function schedulePoop() {
@@ -674,7 +782,7 @@ function animate(time = 0) {
   lastTime = time;
 
   dolls.forEach((doll) => {
-    if (activeGame === "flags" || doll === activeDoll) return;
+    if (activeGame === "flags" || activeGame === "pictionary" || doll === activeDoll) return;
     const item = state.get(doll);
     item.vy += 0.28 * dt;
     item.x += item.vx * dt;
@@ -708,7 +816,7 @@ function animate(time = 0) {
 
 dolls.forEach((doll) => {
   doll.addEventListener("pointerdown", (event) => {
-    if (activeGame === "flags") return;
+    if (activeGame === "flags" || activeGame === "pictionary") return;
     event.preventDefault();
     beginDrag(event, doll);
   });
@@ -749,11 +857,15 @@ mazeButtons.forEach((button) => {
   });
 });
 
-[poopToggle, flagToggle].forEach((button) => {
+[poopToggle, flagToggle, pictionaryToggle].forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
 });
 poopToggle.addEventListener("click", () => setGame("bathroom"));
 flagToggle.addEventListener("click", () => setGame("flags"));
+pictionaryToggle.addEventListener("click", () => setGame("pictionary"));
+skipTurn.addEventListener("click", nextPictionaryTurn);
+correctGuess.addEventListener("click", awardPictionaryPoint);
+nextTurn.addEventListener("click", nextPictionaryTurn);
 
 window.addEventListener("pointermove", moveDrag);
 window.addEventListener("pointerup", endDrag);
@@ -762,8 +874,10 @@ window.addEventListener("keydown", handleMazeKey);
 window.addEventListener("resize", () => {
   resizeCanvas();
   if (activeGame === "flags") requestAnimationFrame(placeMazePlayers);
+  if (activeGame === "pictionary") requestAnimationFrame(placeCafePlayers);
 });
 
 resizeCanvas();
 dolls.forEach(updateDoll);
+startHintPopups();
 requestAnimationFrame(animate);
