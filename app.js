@@ -11,7 +11,9 @@ const caption = document.querySelector(".caption");
 const pictionaryPanel = document.querySelector(".pictionary-panel");
 const turnName = document.querySelector("#turnName");
 const turnPrompt = document.querySelector("#turnPrompt");
+const turnSubtitle = document.querySelector("#turnSubtitle");
 const skipTurn = document.querySelector("#skipTurn");
+const timerButton = document.querySelector("#timerButton");
 const correctGuess = document.querySelector("#correctGuess");
 const nextTurn = document.querySelector("#nextTurn");
 const poopCountNodes = {
@@ -102,20 +104,30 @@ let hintCount = 0;
 let hintInterval = null;
 let hintTimer = null;
 let currentTurnIndex = 0;
+let mimeTimer = null;
+let mimeTimeLeft = 60;
 const pictionaryPeople = [
   { person: "blonde", name: "Alba" },
   { person: "brunette", name: "Laino" },
   { person: "niya", name: "Niya" },
 ];
 const pictionaryPrompts = [
-  "haz mimica de tocar el piano",
-  "haz mimica de pedir un cafe",
-  "haz mimica de leer dramaticamente",
-  "haz mimica de cantar con micro",
-  "haz mimica de vender un libro",
-  "haz mimica de sentarte en una silla azul",
-  "haz mimica de estar en una clase internacional",
-  "haz mimica de grabar una escena",
+  { es: "haz mimica de montar una rueda de prensa incomoda", en: "act out an awkward press conference" },
+  { es: "haz mimica de doblar una pelicula dramatica", en: "mime dubbing a dramatic movie scene" },
+  { es: "haz mimica de dirigir una escena sin presupuesto", en: "act out directing a no-budget film scene" },
+  { es: "haz mimica de entrevistar a alguien que no contesta", en: "mime interviewing someone who refuses to answer" },
+  { es: "haz mimica de vender un libro rarísimo", en: "act out selling a very weird book" },
+  { es: "haz mimica de encontrar un spoiler en clase", en: "mime discovering a spoiler in class" },
+  { es: "haz mimica de pedir un cafe mientras llegas tarde", en: "act out ordering coffee while running late" },
+  { es: "haz mimica de tocar el piano como si fuera una tragedia", en: "mime playing piano like a tragedy" },
+  { es: "haz mimica de grabar un documental sobre una silla azul", en: "act out filming a documentary about a blue chair" },
+  { es: "haz mimica de presentar las noticias sin teleprompter", en: "mime presenting the news without a teleprompter" },
+  { es: "haz mimica de hacer casting para una pelicula búlgara", en: "act out casting for a Bulgarian movie" },
+  { es: "haz mimica de explicar los dias de la semana", en: "mime explaining the days of the week" },
+  { es: "haz mimica de un espantapajaros italiano", en: "act out an Italian scarecrow" },
+  { es: "haz mimica de perder el micro en directo", en: "mime losing the microphone live on air" },
+  { es: "haz mimica de criticar una peli muy seria", en: "act out reviewing a very serious film" },
+  { es: "haz mimica de hacer una escena en camara lenta", en: "mime a slow-motion movie scene" },
 ];
 const pictionaryScores = {
   blonde: 0,
@@ -567,6 +579,7 @@ function setGame(nextGame) {
 
   clearTimeout(poopTimer);
   clearInterval(mazeHoldTimer);
+  clearMimeTimer();
   clearGameObjects();
 
   if (isBathroom) schedulePoop();
@@ -605,17 +618,21 @@ function updatePictionaryTurn() {
   const player = pictionaryPeople[currentTurnIndex % pictionaryPeople.length];
   const prompt = pictionaryPrompts[currentTurnIndex % pictionaryPrompts.length];
   turnName.textContent = `Turno de ${player.name}`;
-  turnPrompt.textContent = prompt;
+  turnPrompt.textContent = prompt.es;
+  turnSubtitle.textContent = prompt.en;
+  turnSubtitle.hidden = player.person !== "niya";
   dolls.forEach((doll) => doll.classList.toggle("pictionary-turn", doll.dataset.person === player.person));
   sayText(dolls.find((doll) => doll.dataset.person === player.person), "Me toca", 1400);
 }
 
 function nextPictionaryTurn() {
+  clearMimeTimer();
   currentTurnIndex += 1;
   updatePictionaryTurn();
 }
 
 function awardPictionaryPoint() {
+  clearMimeTimer();
   const player = pictionaryPeople[currentTurnIndex % pictionaryPeople.length];
   pictionaryScores[player.person] += 1;
   pictionaryScoreNodes[player.person].textContent = pictionaryScores[player.person];
@@ -624,6 +641,39 @@ function awardPictionaryPoint() {
   sayText(doll, "Yupi", 1200);
   burst(rect.left + rect.width / 2, rect.top + rect.height / 2, player.person, 12);
   nextPictionaryTurn();
+}
+
+function updateTimerButton() {
+  const minutes = Math.floor(mimeTimeLeft / 60);
+  const seconds = String(mimeTimeLeft % 60).padStart(2, "0");
+  timerButton.textContent = `${minutes}:${seconds}`;
+  timerButton.classList.toggle("running", Boolean(mimeTimer));
+}
+
+function clearMimeTimer() {
+  clearInterval(mimeTimer);
+  mimeTimer = null;
+  mimeTimeLeft = 60;
+  updateTimerButton();
+}
+
+function startMimeTimer() {
+  if (activeGame !== "pictionary" || mimeTimer) return;
+  mimeTimeLeft = 60;
+  updateTimerButton();
+  mimeTimer = setInterval(() => {
+    mimeTimeLeft -= 1;
+    updateTimerButton();
+    if (mimeTimeLeft > 0) return;
+
+    const player = pictionaryPeople[currentTurnIndex % pictionaryPeople.length];
+    const doll = dolls.find((item) => item.dataset.person === player.person);
+    pictionaryScores[player.person] -= 1;
+    pictionaryScoreNodes[player.person].textContent = pictionaryScores[player.person];
+    sayText(doll, "Me cago", 1200);
+    nextPictionaryTurn();
+  }, 1000);
+  updateTimerButton();
 }
 
 function showHintPopup() {
@@ -863,6 +913,7 @@ poopToggle.addEventListener("click", () => setGame("bathroom"));
 flagToggle.addEventListener("click", () => setGame("flags"));
 pictionaryToggle.addEventListener("click", () => setGame("pictionary"));
 skipTurn.addEventListener("click", nextPictionaryTurn);
+timerButton.addEventListener("click", startMimeTimer);
 correctGuess.addEventListener("click", awardPictionaryPoint);
 nextTurn.addEventListener("click", nextPictionaryTurn);
 
