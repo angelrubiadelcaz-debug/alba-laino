@@ -12,6 +12,7 @@ const mazeStatus = document.querySelector("#mazeStatus");
 const caption = document.querySelector(".caption");
 const pictionaryPanel = document.querySelector(".pictionary-panel");
 const tortillaPanel = document.querySelector(".tortilla-panel");
+const tortillaRules = document.querySelector(".tortilla-rules");
 const turnName = document.querySelector("#turnName");
 const turnPrompt = document.querySelector("#turnPrompt");
 const turnSubtitle = document.querySelector("#turnSubtitle");
@@ -164,6 +165,7 @@ let tortillaStartTime = 0;
 let tortillaElapsed = 0;
 let tortillaRunning = false;
 let tortillaTurnIndex = 0;
+let tortillaRulesTimer = null;
 const people = [
   { person: "blonde", name: "Alba" },
   { person: "brunette", name: "Laino" },
@@ -764,6 +766,7 @@ function setGame(nextGame) {
   clearInterval(mazeHoldTimer);
   clearMimeTimer();
   clearTortillaTimer();
+  clearTimeout(tortillaRulesTimer);
   clearGameObjects();
 
   if (isBathroom) schedulePoop();
@@ -776,6 +779,10 @@ function setGame(nextGame) {
     requestAnimationFrame(placeCafePlayers);
   }
   if (isTortilla) {
+    tortillaRules.open = true;
+    tortillaRulesTimer = setTimeout(() => {
+      if (activeGame === "tortilla") tortillaRules.open = false;
+    }, 15000);
     updateTortillaTurn();
     requestAnimationFrame(placeTortillaPlayers);
   }
