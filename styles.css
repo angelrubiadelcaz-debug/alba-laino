@@ -1297,6 +1297,10 @@ body {
   transform: rotate(-0.8deg);
 }
 
+.pictionary-panel[hidden] {
+  display: none;
+}
+
 .pictionary-header {
   display: grid;
   gap: 5px;

@@ -8,6 +8,7 @@ const pictionaryToggle = document.querySelector("#pictionaryToggle");
 const mazeBoard = document.querySelector("#mazeBoard");
 const mazeStatus = document.querySelector("#mazeStatus");
 const caption = document.querySelector(".caption");
+const pictionaryPanel = document.querySelector(".pictionary-panel");
 const turnName = document.querySelector("#turnName");
 const turnPrompt = document.querySelector("#turnPrompt");
 const skipTurn = document.querySelector("#skipTurn");
@@ -562,9 +563,10 @@ function setGame(nextGame) {
   poopToggle.setAttribute("aria-pressed", String(isBathroom));
   flagToggle.setAttribute("aria-pressed", String(isFlags));
   pictionaryToggle.setAttribute("aria-pressed", String(isPictionary));
+  pictionaryPanel.hidden = !isPictionary;
   poopToggle.textContent = isBathroom ? "Baño activo" : "Baño";
   flagToggle.textContent = isFlags ? "Laberinto activo" : "Laberinto";
-  pictionaryToggle.textContent = isPictionary ? "Mímica activa" : "Mímica";
+  pictionaryToggle.textContent = isPictionary ? "Mimica activa" : "Mimica";
 
   clearTimeout(poopTimer);
   clearInterval(mazeHoldTimer);
