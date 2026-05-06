@@ -17,7 +17,6 @@ const tortillaArt = document.querySelector(".tortilla-stage-art");
 const admin = document.querySelector(".angel-admin");
 const adminBubble = document.querySelector(".admin-bubble");
 const adminRules = document.querySelector("#adminRules");
-const adminVerdict = document.querySelector("#adminVerdict");
 const adminChaos = document.querySelector("#adminChaos");
 const adminShine = document.querySelector("#adminShine");
 const turnName = document.querySelector("#turnName");
@@ -223,14 +222,6 @@ const adminRulesText = {
   pictionary: "Mimica: una actúa sin hablar, las demás adivinan. El temporizador castiga.",
   tortilla: "Tortilla: Start, contar hasta 8.00 y girar. La más cercana gana. Ciencia española.",
 };
-const adminVerdicts = [
-  "Veredicto: aceptable, pero con miedo.",
-  "El comité calvo lo aprueba.",
-  "Esto huele a sabotaje emocional.",
-  "Se concede un punto imaginario por drama.",
-  "Como administrador, declaro esto histórico.",
-  "La técnica es dudosa, la actitud excelente.",
-];
 const mazeLevels = [
   [
     "#################",
@@ -457,10 +448,6 @@ function adminExplainGame(game = activeGame) {
   adminSay(adminRulesText[game || "free"], 5200);
 }
 
-function adminVerdictLine() {
-  adminSay(adminVerdicts[Math.floor(Math.random() * adminVerdicts.length)], 3800);
-}
-
 function adminShineBurst() {
   admin.classList.remove("shining");
   void admin.offsetWidth;
@@ -471,10 +458,21 @@ function adminShineBurst() {
 }
 
 function adminChaosMode() {
+  const stage = document.querySelector(".stage");
+  const isActive = stage.classList.contains("admin-party");
   clearTimeout(adminChaosTimer);
-  document.querySelector(".stage").classList.add("admin-chaos");
+  if (isActive) {
+    stage.classList.remove("admin-party");
+    admin.classList.remove("commanding");
+    adminChaos.classList.remove("active");
+    adminSay("Fiesta cancelada por orden del Pelón.", 2600);
+    return;
+  }
+
+  stage.classList.add("admin-party");
   admin.classList.add("commanding");
-  adminSay("Modo caos: diez segundos de autoridad absurda.", 3600);
+  adminChaos.classList.add("active");
+  adminSay("Fiesta activada. Pulsa Fiesta otra vez para pararla.", 3600);
   getActiveDolls().forEach((doll, index) => {
     setTimeout(() => {
       const outfits = ["normal", "traditional", "clown", "carnival"];
@@ -483,9 +481,10 @@ function adminChaosMode() {
     }, index * 180);
   });
   adminChaosTimer = setTimeout(() => {
-    document.querySelector(".stage").classList.remove("admin-chaos");
+    stage.classList.remove("admin-party");
     admin.classList.remove("commanding");
-    adminSay("Caos archivado. Siguiente desastre.", 2600);
+    adminChaos.classList.remove("active");
+    adminSay("Fiesta archivada. Vuelve la autoridad.", 2600);
   }, 10000);
 }
 
@@ -754,7 +753,7 @@ function moveMazePlayer(person, dc, dr) {
     player.done = true;
     flagCounts[person] += 1;
     flagCountNodes[person].textContent = flagCounts[person];
-    adminSay(`${getPersonName(person)} sale del laberinto. Veredicto: fuga legal.`, 3600);
+    adminSay(`${getPersonName(person)} sale del laberinto. Fuga legal.`, 3600);
     const doll = getDoll(person);
     const losers = getActiveDolls().filter((item) => item.dataset.person !== person);
     const rect = doll.getBoundingClientRect();
@@ -837,8 +836,9 @@ function setGame(nextGame) {
   clearTimeout(tortillaRulesTimer);
   clearGameObjects();
   clearTimeout(adminChaosTimer);
-  document.querySelector(".stage").classList.remove("admin-chaos");
+  document.querySelector(".stage").classList.remove("admin-party");
   admin.classList.remove("commanding");
+  adminChaos.classList.remove("active");
 
   if (isBathroom) {
     schedulePoop();
@@ -1332,7 +1332,6 @@ mazeButtons.forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
 });
 adminRules.addEventListener("pointerdown", (event) => event.stopPropagation());
-adminVerdict.addEventListener("pointerdown", (event) => event.stopPropagation());
 adminChaos.addEventListener("pointerdown", (event) => event.stopPropagation());
 adminShine.addEventListener("pointerdown", (event) => event.stopPropagation());
 poopToggle.addEventListener("click", () => setGame("bathroom"));
@@ -1340,7 +1339,6 @@ flagToggle.addEventListener("click", () => setGame("flags"));
 pictionaryToggle.addEventListener("click", () => setGame("pictionary"));
 tortillaToggle.addEventListener("click", () => setGame("tortilla"));
 adminRules.addEventListener("click", () => adminExplainGame());
-adminVerdict.addEventListener("click", adminVerdictLine);
 adminChaos.addEventListener("click", adminChaosMode);
 adminShine.addEventListener("click", adminShineBurst);
 skipTurn.addEventListener("click", nextPictionaryTurn);
