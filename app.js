@@ -1370,6 +1370,6 @@ window.addEventListener("resize", () => {
 resizeCanvas();
 dolls.forEach(updateDoll);
 refreshActivePlayers();
-adminSay("Ángel Admin preparado. Nadie toca producción sin supervisión.", 3600);
+adminSay("Ángel Pelón preparado. Nadie toca producción sin supervisión.", 3600);
 startHintPopups();
 requestAnimationFrame(animate);
