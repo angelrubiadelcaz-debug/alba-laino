@@ -222,6 +222,13 @@ const adminRulesText = {
   pictionary: "Mimica: una actúa sin hablar, las demás adivinan. El temporizador castiga.",
   tortilla: "Tortilla: Start, contar hasta 8.00 y girar. La más cercana gana. Ciencia española.",
 };
+const carnivalLines = {
+  blonde: "Voy de caca palentina. Arte contemporáneo.",
+  brunette: "Voy de sirena de Donosti con criterio artístico.",
+  niya: "Voy de estrella dramática de cine.",
+  emma: "Voy de mariquita peligrosa. I love ladybugs.",
+  mila: "Voy de diva teatral de voleibol.",
+};
 const mazeLevels = [
   [
     "#################",
@@ -1157,6 +1164,10 @@ function setOutfit(person, outfit) {
 
   const center = doll.getBoundingClientRect();
   burst(center.left + center.width / 2, center.top + center.height / 2, person, 10);
+  if (outfit === "carnival") {
+    sayText(doll, carnivalLines[person], 2600);
+    adminSay(`${getPersonName(person)} activa Carnaval: ${carnivalLines[person]}`, 3600);
+  }
 }
 
 function beginDrag(event, doll) {
