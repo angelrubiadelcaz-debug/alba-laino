@@ -710,7 +710,7 @@ body {
   left: clamp(10px, 2.2vw, 24px);
   top: clamp(12px, 2.4vw, 28px);
   z-index: 18;
-  width: min(88vw, 330px);
+  width: min(92vw, 430px);
   border-radius: 8px;
   color: var(--paper);
 }
@@ -745,6 +745,8 @@ body {
 
 .wardrobe-card {
   display: grid;
+  grid-template-columns: 102px minmax(0, 1fr);
+  align-items: center;
   gap: 8px;
   padding: 10px;
   border: 1px solid rgba(255, 248, 232, 0.2);
@@ -773,11 +775,14 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  min-width: 0;
 }
 
 .wardrobe-title span {
   font-size: 0.78rem;
   text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .player-toggle {
@@ -799,14 +804,37 @@ body {
 }
 
 .wardrobe-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 2px 7px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 214, 102, 0.7) rgba(255, 248, 232, 0.12);
+  -webkit-overflow-scrolling: touch;
+}
+
+.wardrobe-buttons::-webkit-scrollbar {
+  height: 6px;
+}
+
+.wardrobe-buttons::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 248, 232, 0.12);
+}
+
+.wardrobe-buttons::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 214, 102, 0.72);
 }
 
 .outfit-button {
-  min-width: 0;
+  flex: 0 0 auto;
+  min-width: 86px;
   min-height: 36px;
+  padding: 0 10px;
   border: 0;
   border-radius: 6px;
   background: rgba(255, 248, 232, 0.12);
@@ -814,7 +842,17 @@ body {
   font: inherit;
   font-size: 0.68rem;
   font-weight: 900;
+  white-space: nowrap;
+  scroll-snap-align: start;
   cursor: pointer;
+}
+
+.outfit-button[data-outfit="traditional"] {
+  min-width: 108px;
+}
+
+.outfit-button[data-outfit="carnival"] {
+  min-width: 96px;
 }
 
 .outfit-button.active {
@@ -4926,14 +4964,21 @@ body {
   .wardrobe {
     left: 10px;
     top: 10px;
-    width: min(74vw, 292px);
+    width: min(86vw, 390px);
   }
 
   .wardrobe-card {
-    grid-template-columns: 64px 1fr;
+    grid-template-columns: 84px minmax(0, 1fr);
     align-items: center;
     gap: 8px;
     padding: 7px;
+  }
+
+  .wardrobe-title {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: start;
+    gap: 5px;
   }
 
   .wardrobe-title span {
@@ -4941,14 +4986,24 @@ body {
   }
 
   .player-toggle {
-    min-width: 42px;
+    min-width: 58px;
     min-height: 26px;
     font-size: 0.62rem;
   }
 
   .outfit-button {
+    min-width: 82px;
     min-height: 32px;
+    padding: 0 9px;
     font-size: 0.7rem;
+  }
+
+  .outfit-button[data-outfit="traditional"] {
+    min-width: 104px;
+  }
+
+  .outfit-button[data-outfit="carnival"] {
+    min-width: 94px;
   }
 
   .moon {
