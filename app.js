@@ -134,8 +134,7 @@ const references = {
   ],
   mila: [
     { title: "Bosnia", icon: "bosnia-icon", note: "joj, kakav cirkus" },
-    { title: "Volleyball", icon: "volley-icon", note: "serve, set, drama" },
-    { title: "Theatre kid", icon: "frame-icon", note: "stage presence" },
+    { title: "Theatre diva", icon: "frame-icon", note: "stage presence total" },
   ],
 };
 
@@ -225,9 +224,9 @@ const adminRulesText = {
 const carnivalLines = {
   blonde: "Voy de caca palentina. Arte contemporáneo.",
   brunette: "Voy de sirena de Donosti con criterio artístico.",
-  niya: "Voy de estrella dramática de cine.",
-  emma: "Voy de mariquita peligrosa. I love ladybugs.",
-  mila: "Voy de diva teatral de voleibol.",
+  niya: "I am a dramatic movie star.",
+  emma: "I am a dangerous ladybug. I love ladybugs.",
+  mila: "I am a theatre diva.",
 };
 const mazeLevels = [
   [
@@ -505,7 +504,7 @@ function burst(x, y, person, amount = 12) {
           ? ["Niya", "Bulgaria", "Sofia", "Rila", "Banitsa", "♥"]
           : person === "emma"
             ? ["Emma", "Brunei", "Ladybugs", "Cute", "Pink", "♥"]
-            : ["Mila", "Bosnia", "Volley", "Theatre", "Cirkus", "♥"];
+            : ["Mila", "Bosnia", "Diva", "Theatre", "Cirkus", "♥"];
   for (let i = 0; i < amount; i += 1) {
     const spark = document.createElement("span");
     const angle = Math.random() * Math.PI * 2;
