@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Angel Moment</title>
-    <link rel="stylesheet" href="./styles.css?v=20260429-1640" />
+    <link rel="stylesheet" href="./styles.css?v=20260506-angel-admin" />
   </head>
   <body>
     <main class="stage" aria-label="Escena interactiva con tres figuras">
@@ -50,6 +50,35 @@
           <div class="cafe-lamp lamp-one"></div>
           <div class="cafe-lamp lamp-two"></div>
         </div>
+
+        <aside class="angel-admin" aria-label="Angel Admin">
+          <div class="admin-bubble" aria-live="polite">Ángel Admin vigila la partida.</div>
+          <div class="admin-figure" aria-hidden="true">
+            <div class="admin-head">
+              <span class="admin-shine"></span>
+              <span class="admin-glasses admin-left-lens"></span>
+              <span class="admin-glasses admin-right-lens"></span>
+              <span class="admin-bridge"></span>
+              <span class="admin-eye admin-eye-left"></span>
+              <span class="admin-eye admin-eye-right"></span>
+              <span class="admin-moustache"></span>
+              <span class="admin-smile"></span>
+            </div>
+            <div class="admin-body">
+              <span class="admin-collar"></span>
+            </div>
+            <div class="admin-arm admin-arm-left"></div>
+            <div class="admin-arm admin-arm-right"></div>
+          </div>
+        </aside>
+
+        <details class="admin-panel">
+          <summary>Ángel Admin</summary>
+          <button id="adminRules" class="admin-button" type="button">Reglas</button>
+          <button id="adminVerdict" class="admin-button" type="button">Veredicto</button>
+          <button id="adminChaos" class="admin-button" type="button">Caos</button>
+          <button id="adminShine" class="admin-button" type="button">Brillo</button>
+        </details>
 
         <details class="wardrobe">
           <summary>Ropa</summary>
@@ -361,6 +390,6 @@
       </div>
     </main>
 
-    <script src="./app.js?v=20260429-1640"></script>
+    <script src="./app.js?v=20260506-angel-admin"></script>
   </body>
 </html>

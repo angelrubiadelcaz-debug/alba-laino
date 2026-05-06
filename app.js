@@ -14,6 +14,12 @@ const pictionaryPanel = document.querySelector(".pictionary-panel");
 const tortillaPanel = document.querySelector(".tortilla-panel");
 const tortillaRules = document.querySelector(".tortilla-rules");
 const tortillaArt = document.querySelector(".tortilla-stage-art");
+const admin = document.querySelector(".angel-admin");
+const adminBubble = document.querySelector(".admin-bubble");
+const adminRules = document.querySelector("#adminRules");
+const adminVerdict = document.querySelector("#adminVerdict");
+const adminChaos = document.querySelector("#adminChaos");
+const adminShine = document.querySelector("#adminShine");
 const turnName = document.querySelector("#turnName");
 const turnPrompt = document.querySelector("#turnPrompt");
 const turnSubtitle = document.querySelector("#turnSubtitle");
@@ -167,6 +173,8 @@ let tortillaElapsed = 0;
 let tortillaRunning = false;
 let tortillaTurnIndex = 0;
 let tortillaRulesTimer = null;
+let adminTimer = null;
+let adminChaosTimer = null;
 const people = [
   { person: "blonde", name: "Alba" },
   { person: "brunette", name: "Laino" },
@@ -208,6 +216,21 @@ const tortillaScores = {
   mila: 0,
 };
 const tortillaAttempts = {};
+const adminRulesText = {
+  free: "Modo libre: tocad caras, moved muñecos y no rompáis mi sistema.",
+  bathroom: "Baño: si cae una caca, se pulsa rápido. Caca no pulsada, caca perdida.",
+  flags: "Laberinto: cada una sale por la salida. Si se chocan, vuelta al inicio. Justicia geométrica.",
+  pictionary: "Mimica: una actúa sin hablar, las demás adivinan. El temporizador castiga.",
+  tortilla: "Tortilla: Start, contar hasta 8.00 y girar. La más cercana gana. Ciencia española.",
+};
+const adminVerdicts = [
+  "Veredicto: aceptable, pero con miedo.",
+  "El comité calvo lo aprueba.",
+  "Esto huele a sabotaje emocional.",
+  "Se concede un punto imaginario por drama.",
+  "Como administrador, declaro esto histórico.",
+  "La técnica es dudosa, la actitud excelente.",
+];
 const mazeLevels = [
   [
     "#################",
@@ -421,6 +444,49 @@ function sayText(doll, text, duration = 900) {
   clearTimeout(doll._talkTimer);
   doll._popTimer = setTimeout(() => doll.classList.remove("popped"), 520);
   doll._talkTimer = setTimeout(() => doll.classList.remove("talking"), duration);
+}
+
+function adminSay(text, duration = 3600) {
+  adminBubble.textContent = text;
+  admin.classList.add("talking");
+  clearTimeout(adminTimer);
+  adminTimer = setTimeout(() => admin.classList.remove("talking"), duration);
+}
+
+function adminExplainGame(game = activeGame) {
+  adminSay(adminRulesText[game || "free"], 5200);
+}
+
+function adminVerdictLine() {
+  adminSay(adminVerdicts[Math.floor(Math.random() * adminVerdicts.length)], 3800);
+}
+
+function adminShineBurst() {
+  admin.classList.remove("shining");
+  void admin.offsetWidth;
+  admin.classList.add("shining");
+  const rect = admin.getBoundingClientRect();
+  burst(rect.left + rect.width * 0.46, rect.top + rect.height * 0.28, "brunette", 14);
+  adminSay("Brillo administrativo activado.", 2800);
+}
+
+function adminChaosMode() {
+  clearTimeout(adminChaosTimer);
+  document.querySelector(".stage").classList.add("admin-chaos");
+  admin.classList.add("commanding");
+  adminSay("Modo caos: diez segundos de autoridad absurda.", 3600);
+  getActiveDolls().forEach((doll, index) => {
+    setTimeout(() => {
+      const outfits = ["normal", "traditional", "clown"];
+      setOutfit(doll.dataset.person, outfits[Math.floor(Math.random() * outfits.length)]);
+      sayText(doll, lines[doll.dataset.person][Math.floor(Math.random() * lines[doll.dataset.person].length)], 1200);
+    }, index * 180);
+  });
+  adminChaosTimer = setTimeout(() => {
+    document.querySelector(".stage").classList.remove("admin-chaos");
+    admin.classList.remove("commanding");
+    adminSay("Caos archivado. Siguiente desastre.", 2600);
+  }, 10000);
 }
 
 function burst(x, y, person, amount = 12) {
@@ -688,6 +754,7 @@ function moveMazePlayer(person, dc, dr) {
     player.done = true;
     flagCounts[person] += 1;
     flagCountNodes[person].textContent = flagCounts[person];
+    adminSay(`${getPersonName(person)} sale del laberinto. Veredicto: fuga legal.`, 3600);
     const doll = getDoll(person);
     const losers = getActiveDolls().filter((item) => item.dataset.person !== person);
     const rect = doll.getBoundingClientRect();
@@ -769,15 +836,23 @@ function setGame(nextGame) {
   clearTortillaTimer();
   clearTimeout(tortillaRulesTimer);
   clearGameObjects();
+  clearTimeout(adminChaosTimer);
+  document.querySelector(".stage").classList.remove("admin-chaos");
+  admin.classList.remove("commanding");
 
-  if (isBathroom) schedulePoop();
+  if (isBathroom) {
+    schedulePoop();
+    adminExplainGame("bathroom");
+  }
   if (isFlags) {
     buildMaze();
     requestAnimationFrame(placeMazePlayers);
+    adminExplainGame("flags");
   }
   if (isPictionary) {
     updatePictionaryTurn();
     requestAnimationFrame(placeCafePlayers);
+    adminExplainGame("pictionary");
   }
   if (isTortilla) {
     tortillaRules.open = true;
@@ -786,7 +861,9 @@ function setGame(nextGame) {
     }, 15000);
     updateTortillaTurn();
     requestAnimationFrame(placeTortillaPlayers);
+    adminExplainGame("tortilla");
   }
+  if (!activeGame) adminExplainGame("free");
 }
 
 function getLinePositions(active, mobile, baseY, spread) {
@@ -864,6 +941,7 @@ function awardPictionaryPoint() {
   const doll = getDoll(player.person);
   const rect = doll.getBoundingClientRect();
   sayText(doll, "Yupi", 1200);
+  adminSay(`Punto para ${player.name}. Interpretación aceptada por la administración.`, 3400);
   burst(rect.left + rect.width / 2, rect.top + rect.height / 2, player.person, 12);
   nextPictionaryTurn();
 }
@@ -894,9 +972,10 @@ function startMimeTimer() {
     const active = getActivePeople();
     const player = active[currentTurnIndex % active.length];
     const doll = getDoll(player.person);
-    pictionaryScores[player.person] -= 1;
-    pictionaryScoreNodes[player.person].textContent = pictionaryScores[player.person];
-    sayText(doll, "Me cago", 1200);
+  pictionaryScores[player.person] -= 1;
+  pictionaryScoreNodes[player.person].textContent = pictionaryScores[player.person];
+  adminSay(`${player.name} pierde un punto. El reloj no perdona.`, 3200);
+  sayText(doll, "Me cago", 1200);
     nextPictionaryTurn();
   }, 1000);
   updateTimerButton();
@@ -971,6 +1050,7 @@ function finishTortillaRound() {
   tortillaScores[winnerPerson] += 1;
   tortillaScoreNodes[winnerPerson].textContent = tortillaScores[winnerPerson];
   tortillaStatus.textContent = `Gana ${winner.name}: ${bestDiff.toFixed(2)}s de diferencia`;
+  adminSay(`${winner.name} gana la tortilla. La calva arbitral lo confirma.`, 3800);
   sayText(getDoll(winnerPerson), "Yupi", 1300);
   setTimeout(() => {
     Object.keys(tortillaAttempts).forEach((key) => delete tortillaAttempts[key]);
@@ -1047,6 +1127,7 @@ function dropPoop() {
     poop.classList.add("collected");
     poopCounts[person] += 1;
     poopCountNodes[person].textContent = poopCounts[person];
+    if (poopCounts[person] % 3 === 0) adminSay(`${getPersonName(person)} lleva ${poopCounts[person]} cacas. Dato administrativo.`, 3000);
     setTimeout(() => poop.remove(), 280);
   });
 
@@ -1249,10 +1330,18 @@ mazeButtons.forEach((button) => {
 [poopToggle, flagToggle, pictionaryToggle, tortillaToggle].forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
 });
+adminRules.addEventListener("pointerdown", (event) => event.stopPropagation());
+adminVerdict.addEventListener("pointerdown", (event) => event.stopPropagation());
+adminChaos.addEventListener("pointerdown", (event) => event.stopPropagation());
+adminShine.addEventListener("pointerdown", (event) => event.stopPropagation());
 poopToggle.addEventListener("click", () => setGame("bathroom"));
 flagToggle.addEventListener("click", () => setGame("flags"));
 pictionaryToggle.addEventListener("click", () => setGame("pictionary"));
 tortillaToggle.addEventListener("click", () => setGame("tortilla"));
+adminRules.addEventListener("click", () => adminExplainGame());
+adminVerdict.addEventListener("click", adminVerdictLine);
+adminChaos.addEventListener("click", adminChaosMode);
+adminShine.addEventListener("click", adminShineBurst);
 skipTurn.addEventListener("click", nextPictionaryTurn);
 timerButton.addEventListener("click", startMimeTimer);
 correctGuess.addEventListener("click", awardPictionaryPoint);
@@ -1280,5 +1369,6 @@ window.addEventListener("resize", () => {
 resizeCanvas();
 dolls.forEach(updateDoll);
 refreshActivePlayers();
+adminSay("Ángel Admin preparado. Nadie toca producción sin supervisión.", 3600);
 startHintPopups();
 requestAnimationFrame(animate);

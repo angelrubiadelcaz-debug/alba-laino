@@ -881,6 +881,303 @@ body {
   background: #8d5c25;
 }
 
+.angel-admin {
+  position: absolute;
+  right: clamp(18px, 4vw, 64px);
+  top: clamp(238px, 28vh, 330px);
+  z-index: 16;
+  width: clamp(92px, 10vw, 138px);
+  height: clamp(168px, 19vw, 254px);
+  pointer-events: none;
+  filter: drop-shadow(0 22px 28px rgba(0, 0, 0, 0.34));
+  transform: rotate(2deg);
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.admin-bubble {
+  position: absolute;
+  right: 76%;
+  top: -46px;
+  width: min(230px, 46vw);
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: clamp(0.72rem, 1.3vw, 0.92rem);
+  font-weight: 950;
+  line-height: 1.12;
+  opacity: 0;
+  transform: translateY(10px) rotate(-3deg) scale(0.94);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.admin-bubble::after {
+  content: "";
+  position: absolute;
+  right: -12px;
+  bottom: 18px;
+  width: 18px;
+  height: 18px;
+  border-right: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  background: var(--paper);
+  transform: rotate(-45deg);
+}
+
+.angel-admin.talking .admin-bubble {
+  opacity: 1;
+  transform: translateY(0) rotate(-3deg) scale(1);
+}
+
+.admin-figure {
+  position: absolute;
+  inset: 0;
+}
+
+.admin-head {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  z-index: 3;
+  width: 88px;
+  height: 96px;
+  border: 3px solid var(--ink);
+  border-radius: 48% 48% 46% 46%;
+  background:
+    radial-gradient(circle at 32% 20%, rgba(255, 248, 232, 0.7) 0 7px, transparent 8px),
+    #f4b892;
+  transform: translateX(-50%);
+}
+
+.admin-head::before,
+.admin-head::after {
+  content: "";
+  position: absolute;
+  top: 25px;
+  width: 12px;
+  height: 24px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: #f4b892;
+}
+
+.admin-head::before {
+  left: -10px;
+}
+
+.admin-head::after {
+  right: -10px;
+}
+
+.admin-shine {
+  position: absolute;
+  left: 21px;
+  top: 9px;
+  width: 32px;
+  height: 15px;
+  border-radius: 50%;
+  background: rgba(255, 248, 232, 0.55);
+  transform: rotate(-16deg);
+}
+
+.admin-glasses {
+  position: absolute;
+  top: 34px;
+  z-index: 5;
+  width: 32px;
+  height: 28px;
+  border: 3px solid #1b2430;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-left-lens {
+  left: 9px;
+}
+
+.admin-right-lens {
+  right: 9px;
+}
+
+.admin-bridge {
+  position: absolute;
+  left: 39px;
+  top: 46px;
+  z-index: 6;
+  width: 12px;
+  height: 3px;
+  background: #1b2430;
+}
+
+.admin-eye {
+  position: absolute;
+  top: 45px;
+  z-index: 4;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.admin-eye-left {
+  left: 23px;
+}
+
+.admin-eye-right {
+  right: 23px;
+}
+
+.admin-moustache {
+  position: absolute;
+  left: 50%;
+  top: 65px;
+  z-index: 5;
+  width: 42px;
+  height: 13px;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 28% 50%, #4a3027 0 14px, transparent 15px),
+    radial-gradient(ellipse at 72% 50%, #4a3027 0 14px, transparent 15px);
+  transform: translateX(-50%);
+}
+
+.admin-smile {
+  position: absolute;
+  left: 50%;
+  top: 74px;
+  width: 25px;
+  height: 13px;
+  border-bottom: 4px solid var(--ink);
+  border-radius: 0 0 20px 20px;
+  transform: translateX(-50%);
+}
+
+.admin-body {
+  position: absolute;
+  left: 50%;
+  top: 96px;
+  width: 98px;
+  height: 112px;
+  border: 3px solid var(--ink);
+  border-radius: 26px 26px 14px 14px;
+  background:
+    linear-gradient(90deg, transparent 0 47%, rgba(255, 248, 232, 0.55) 47% 53%, transparent 53%),
+    linear-gradient(#20506a, #17384f);
+  transform: translateX(-50%);
+}
+
+.admin-collar {
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  width: 48px;
+  height: 30px;
+  border: 3px solid var(--ink);
+  border-top: 0;
+  border-radius: 0 0 24px 24px;
+  background: #fff6e6;
+  transform: translateX(-50%);
+}
+
+.admin-arm {
+  position: absolute;
+  top: 114px;
+  z-index: -1;
+  width: 24px;
+  height: 86px;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background: #f4b892;
+  transform-origin: 50% 0;
+}
+
+.admin-arm-left {
+  left: 9px;
+  transform: rotate(24deg);
+}
+
+.admin-arm-right {
+  right: 9px;
+  transform: rotate(-24deg);
+}
+
+.angel-admin.talking .admin-arm-right,
+.angel-admin.commanding .admin-arm-right {
+  animation: adminPoint 420ms ease-in-out infinite alternate;
+}
+
+.angel-admin.shining .admin-head {
+  animation: adminShineHead 900ms ease-out;
+}
+
+.angel-admin.shining .admin-shine {
+  animation: adminShineFlash 900ms ease-out;
+}
+
+.admin-panel {
+  position: absolute;
+  right: clamp(10px, 2.2vw, 24px);
+  top: clamp(198px, 20vw, 236px);
+  z-index: 18;
+  width: 132px;
+  color: var(--paper);
+}
+
+.admin-panel summary,
+.admin-button {
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid rgba(255, 248, 232, 0.22);
+  background: rgba(17, 15, 14, 0.78);
+  color: var(--paper);
+  font-size: 0.68rem;
+  font-weight: 950;
+  text-align: center;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+}
+
+.admin-panel summary {
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.admin-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-panel[open] summary {
+  border-radius: 8px 8px 0 0;
+  background: #ffd166;
+  color: var(--ink);
+}
+
+.admin-button {
+  display: block;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.admin-button:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+.admin-button:nth-child(4) {
+  background: #7b1f27;
+}
+
+.stage.admin-chaos .scene {
+  animation: adminSceneChaos 420ms ease-in-out infinite alternate;
+}
+
+.stage.admin-chaos .doll:not(.inactive-player) {
+  filter: drop-shadow(0 0 24px rgba(255, 209, 102, 0.42)) saturate(1.35);
+}
+
 .bathroom-scores,
 .flag-scores {
   position: absolute;
@@ -4107,6 +4404,38 @@ body {
   }
 }
 
+@keyframes adminPoint {
+  to {
+    transform: rotate(-58deg) translateY(-5px);
+  }
+}
+
+@keyframes adminShineHead {
+  35% {
+    filter: drop-shadow(0 0 28px rgba(255, 209, 102, 0.92));
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
+@keyframes adminShineFlash {
+  45% {
+    opacity: 1;
+    transform: rotate(-16deg) scale(1.8);
+  }
+
+  100% {
+    opacity: 0.58;
+    transform: rotate(-16deg) scale(1);
+  }
+}
+
+@keyframes adminSceneChaos {
+  to {
+    filter: hue-rotate(16deg) saturate(1.12);
+    transform: translateY(-2px);
+  }
+}
+
 @keyframes panHeat {
   to {
     transform: rotate(-10deg) translateY(-3px);
@@ -4277,6 +4606,35 @@ body {
     top: 10px;
     right: 10px;
     width: 104px;
+  }
+
+  .admin-panel {
+    top: 50px;
+    right: 10px;
+    width: 104px;
+  }
+
+  .admin-panel summary,
+  .admin-button {
+    min-height: 32px;
+    font-size: 0.6rem;
+  }
+
+  .angel-admin {
+    right: 0;
+    top: 188px;
+    width: 92px;
+    height: 168px;
+    transform: rotate(2deg) scale(0.62);
+    transform-origin: 100% 100%;
+  }
+
+  .admin-bubble {
+    right: 78%;
+    top: -38px;
+    width: min(196px, 58vw);
+    padding: 8px 9px;
+    font-size: 0.66rem;
   }
 
   .games-menu summary,
@@ -4540,7 +4898,9 @@ body {
   }
 
   .stage.bathroom-mode .games-menu,
-  .stage.flag-mode .games-menu {
+  .stage.flag-mode .games-menu,
+  .stage.bathroom-mode .admin-panel,
+  .stage.flag-mode .admin-panel {
     top: 56px;
   }
 
@@ -4688,6 +5048,22 @@ body {
 
   .games-menu {
     width: 92px;
+  }
+
+  .admin-panel {
+    width: 92px;
+    top: 48px;
+  }
+
+  .angel-admin {
+    right: -8px;
+    top: 178px;
+    transform: rotate(2deg) scale(0.56);
+  }
+
+  .admin-bubble {
+    width: min(172px, 62vw);
+    font-size: 0.62rem;
   }
 
   .bathroom-scores,
