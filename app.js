@@ -477,7 +477,7 @@ function adminChaosMode() {
   adminSay("Modo caos: diez segundos de autoridad absurda.", 3600);
   getActiveDolls().forEach((doll, index) => {
     setTimeout(() => {
-      const outfits = ["normal", "traditional", "clown"];
+      const outfits = ["normal", "traditional", "clown", "carnival"];
       setOutfit(doll.dataset.person, outfits[Math.floor(Math.random() * outfits.length)]);
       sayText(doll, lines[doll.dataset.person][Math.floor(Math.random() * lines[doll.dataset.person].length)], 1200);
     }, index * 180);
@@ -1145,6 +1145,7 @@ function setOutfit(person, outfit) {
   doll.classList.toggle("outfit-normal", outfit === "normal");
   doll.classList.toggle("outfit-traditional", outfit === "traditional");
   doll.classList.toggle("outfit-clown", outfit === "clown");
+  doll.classList.toggle("outfit-carnival", outfit === "carnival");
 
   outfitButtons
     .filter((button) => button.dataset.person === person)
