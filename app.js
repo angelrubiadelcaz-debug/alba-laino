@@ -7,6 +7,7 @@ const poopToggle = document.querySelector("#poopToggle");
 const flagToggle = document.querySelector("#flagToggle");
 const pictionaryToggle = document.querySelector("#pictionaryToggle");
 const tortillaToggle = document.querySelector("#tortillaToggle");
+const impostorToggle = document.querySelector("#impostorToggle");
 const mazeBoard = document.querySelector("#mazeBoard");
 const mazeStatus = document.querySelector("#mazeStatus");
 const caption = document.querySelector(".caption");
@@ -14,6 +15,15 @@ const pictionaryPanel = document.querySelector(".pictionary-panel");
 const tortillaPanel = document.querySelector(".tortilla-panel");
 const tortillaRules = document.querySelector(".tortilla-rules");
 const tortillaArt = document.querySelector(".tortilla-stage-art");
+const impostorPanel = document.querySelector(".impostor-panel");
+const impostorRules = document.querySelector(".impostor-rules");
+const impostorTurn = document.querySelector("#impostorTurn");
+const impostorSecret = document.querySelector("#impostorSecret");
+const impostorSubtitle = document.querySelector("#impostorSubtitle");
+const impostorNew = document.querySelector("#impostorNew");
+const impostorReveal = document.querySelector("#impostorReveal");
+const impostorNext = document.querySelector("#impostorNext");
+const impostorVote = document.querySelector("#impostorVote");
 const admin = document.querySelector(".angel-admin");
 const adminBubble = document.querySelector(".admin-bubble");
 const adminRules = document.querySelector("#adminRules");
@@ -66,6 +76,13 @@ const tortillaTryNodes = {
   niya: document.querySelector("#tortillaTryNiya"),
   emma: document.querySelector("#tortillaTryEmma"),
   mila: document.querySelector("#tortillaTryMila"),
+};
+const impostorScoreNodes = {
+  blonde: document.querySelector("#impostorScoreAlba"),
+  brunette: document.querySelector("#impostorScoreLaino"),
+  niya: document.querySelector("#impostorScoreNiya"),
+  emma: document.querySelector("#impostorScoreEmma"),
+  mila: document.querySelector("#impostorScoreMila"),
 };
 const canvas = document.querySelector("#confetti");
 const ctx = canvas.getContext("2d");
@@ -171,6 +188,10 @@ let tortillaElapsed = 0;
 let tortillaRunning = false;
 let tortillaTurnIndex = 0;
 let tortillaRulesTimer = null;
+let impostorRulesTimer = null;
+let impostorRound = null;
+let impostorRoleIndex = 0;
+let impostorRevealed = false;
 let adminTimer = null;
 let adminChaosTimer = null;
 const people = [
@@ -213,6 +234,13 @@ const tortillaScores = {
   emma: 0,
   mila: 0,
 };
+const impostorScores = {
+  blonde: 0,
+  brunette: 0,
+  niya: 0,
+  emma: 0,
+  mila: 0,
+};
 const tortillaAttempts = {};
 const adminRulesText = {
   free: "Modo libre: tocad caras, moved muñecos y no rompáis mi sistema.",
@@ -220,7 +248,22 @@ const adminRulesText = {
   flags: "Laberinto: cada una sale por la salida. Si se chocan, vuelta al inicio. Justicia geométrica.",
   pictionary: "Mimica: una actúa sin hablar, las demás adivinan. El temporizador castiga.",
   tortilla: "Tortilla: Start, contar hasta 8.00 y girar. La más cercana gana. Ciencia española.",
+  impostor: "Impostor: pasad el movil, memorizad la carta secreta y votad a quien huela a teatro barato.",
 };
+const impostorDeck = [
+  { word: "tortilla quemada", hint: "comida espanola en peligro", en: "burnt Spanish omelette" },
+  { word: "piano de VoltaPagina", hint: "algo musical del cafe", en: "VoltaPagina piano" },
+  { word: "Torre de Pisa", hint: "turismo con equilibrio dudoso", en: "Leaning Tower of Pisa" },
+  { word: "Cristo del Otero", hint: "Palencia mirando desde arriba", en: "Cristo del Otero" },
+  { word: "La Concha", hint: "Donosti en modo postal", en: "La Concha bay" },
+  { word: "ladybug", hint: "algo pequeno y cute", en: "ladybug" },
+  { word: "spaventapasseri", hint: "Italia, campo y drama", en: "scarecrow" },
+  { word: "casting sin presupuesto", hint: "cine precario internacional", en: "no-budget casting" },
+  { word: "caca palentina", hint: "arte marron de Alba", en: "Palencia poop art" },
+  { word: "diva teatral", hint: "escenario, drama y mirada intensa", en: "theatre diva" },
+  { word: "mariquita peligrosa", hint: "Emma pero con amenaza suave", en: "dangerous ladybug" },
+  { word: "pintxo sospechoso", hint: "Donosti y misterio comestible", en: "suspicious pintxo" },
+];
 const carnivalLines = {
   blonde: "Voy de caca palentina. Arte contemporáneo.",
   brunette: "Voy de sirena de Donosti con criterio artístico.",
@@ -388,7 +431,7 @@ function refreshActivePlayers() {
     button.closest(".maze-pad").classList.toggle("inactive-score", !activePeople.has(button.dataset.person));
   });
 
-  [poopCountNodes, flagCountNodes, pictionaryScoreNodes, tortillaScoreNodes].forEach((group) => {
+  [poopCountNodes, flagCountNodes, pictionaryScoreNodes, tortillaScoreNodes, impostorScoreNodes].forEach((group) => {
     Object.entries(group).forEach(([person, node]) => {
       node?.parentElement?.classList.toggle("inactive-score", !activePeople.has(person));
     });
@@ -410,6 +453,7 @@ function refreshActivePlayers() {
     updateTortillaTurn();
     requestAnimationFrame(placeTortillaPlayers);
   }
+  if (activeGame === "impostor") startImpostorRound();
 }
 
 function resizeCanvas() {
@@ -815,31 +859,38 @@ function setGame(nextGame) {
   const isFlags = activeGame === "flags";
   const isPictionary = activeGame === "pictionary";
   const isTortilla = activeGame === "tortilla";
+  const isImpostor = activeGame === "impostor";
 
   document.querySelector(".stage").classList.toggle("bathroom-mode", isBathroom);
   document.querySelector(".stage").classList.toggle("flag-mode", isFlags);
   document.querySelector(".stage").classList.toggle("pictionary-mode", isPictionary);
   document.querySelector(".stage").classList.toggle("tortilla-mode", isTortilla);
+  document.querySelector(".stage").classList.toggle("impostor-mode", isImpostor);
   poopToggle.classList.toggle("active", isBathroom);
   flagToggle.classList.toggle("active", isFlags);
   pictionaryToggle.classList.toggle("active", isPictionary);
   tortillaToggle.classList.toggle("active", isTortilla);
+  impostorToggle.classList.toggle("active", isImpostor);
   poopToggle.setAttribute("aria-pressed", String(isBathroom));
   flagToggle.setAttribute("aria-pressed", String(isFlags));
   pictionaryToggle.setAttribute("aria-pressed", String(isPictionary));
   tortillaToggle.setAttribute("aria-pressed", String(isTortilla));
+  impostorToggle.setAttribute("aria-pressed", String(isImpostor));
   pictionaryPanel.hidden = !isPictionary;
   tortillaPanel.hidden = !isTortilla;
+  impostorPanel.hidden = !isImpostor;
   poopToggle.textContent = isBathroom ? "Baño activo" : "Baño";
   flagToggle.textContent = isFlags ? "Laberinto activo" : "Laberinto";
   pictionaryToggle.textContent = isPictionary ? "Mimica activa" : "Mimica";
   tortillaToggle.textContent = isTortilla ? "Tortilla activa" : "Tortilla";
+  impostorToggle.textContent = isImpostor ? "Impostor activo" : "Impostor";
 
   clearTimeout(poopTimer);
   clearInterval(mazeHoldTimer);
   clearMimeTimer();
   clearTortillaTimer();
   clearTimeout(tortillaRulesTimer);
+  clearTimeout(impostorRulesTimer);
   clearGameObjects();
   clearTimeout(adminChaosTimer);
   document.querySelector(".stage").classList.remove("admin-party");
@@ -868,6 +919,15 @@ function setGame(nextGame) {
     updateTortillaTurn();
     requestAnimationFrame(placeTortillaPlayers);
     adminExplainGame("tortilla");
+  }
+  if (isImpostor) {
+    impostorRules.open = true;
+    impostorRulesTimer = setTimeout(() => {
+      if (activeGame === "impostor") impostorRules.open = false;
+    }, 15000);
+    startImpostorRound();
+    requestAnimationFrame(placeCafePlayers);
+    adminExplainGame("impostor");
   }
   if (!activeGame) adminExplainGame("free");
 }
@@ -985,6 +1045,110 @@ function startMimeTimer() {
     nextPictionaryTurn();
   }, 1000);
   updateTimerButton();
+}
+
+function startImpostorRound() {
+  const active = getActivePeople();
+  const topic = impostorDeck[Math.floor(Math.random() * impostorDeck.length)];
+  const impostor = active[Math.floor(Math.random() * active.length)]?.person || active[0].person;
+  impostorRound = { active, topic, impostor, voting: false };
+  impostorRoleIndex = 0;
+  impostorRevealed = false;
+  impostorVote.innerHTML = "";
+  updateImpostorCard();
+  dolls.forEach((doll) => doll.classList.remove("pictionary-turn"));
+  const first = active[0];
+  getDoll(first.person)?.classList.add("pictionary-turn");
+  adminSay("Ronda nueva. Pasad el movil como si contuviera secretos de Estado.", 3600);
+}
+
+function updateImpostorCard() {
+  if (!impostorRound) return;
+  const player = impostorRound.active[impostorRoleIndex % impostorRound.active.length];
+  impostorTurn.textContent = impostorRound.voting ? "Hora de votar" : `Turno secreto de ${player.name}`;
+  impostorSecret.textContent = impostorRevealed ? getImpostorRoleText(player) : "Carta oculta";
+  impostorSubtitle.textContent = impostorRound.voting
+    ? "Debatid, acusad con drama y elegid sospechosa."
+    : impostorRevealed
+      ? "Memoriza y pulsa Ocultar / Siguiente."
+      : "Pasa el movil y pulsa Ver solo si eres tú.";
+  impostorReveal.disabled = impostorRound.voting || impostorRevealed;
+  impostorNext.disabled = impostorRound.voting;
+  dolls.forEach((doll) => {
+    doll.classList.toggle("pictionary-turn", !impostorRound.voting && doll.dataset.person === player.person);
+  });
+}
+
+function getImpostorRoleText(player) {
+  const isImpostor = player.person === impostorRound.impostor;
+  const needsEnglish = ["niya", "emma", "mila"].includes(player.person);
+  if (isImpostor) return needsEnglish ? `IMPOSTOR. Clue: ${impostorRound.topic.hint}` : `IMPOSTORA. Pista: ${impostorRound.topic.hint}`;
+  return needsEnglish ? `WORD: ${impostorRound.topic.en}` : `PALABRA: ${impostorRound.topic.word}`;
+}
+
+function revealImpostorRole() {
+  if (activeGame !== "impostor" || !impostorRound || impostorRound.voting) return;
+  impostorRevealed = true;
+  updateImpostorCard();
+}
+
+function nextImpostorRole() {
+  if (activeGame !== "impostor" || !impostorRound || impostorRound.voting) return;
+  if (impostorRevealed) {
+    impostorRevealed = false;
+    impostorSecret.textContent = "Carta oculta";
+  }
+  impostorRoleIndex += 1;
+  if (impostorRoleIndex >= impostorRound.active.length) {
+    beginImpostorVote();
+    return;
+  }
+  updateImpostorCard();
+}
+
+function beginImpostorVote() {
+  impostorRound.voting = true;
+  impostorRevealed = false;
+  impostorVote.innerHTML = "";
+  impostorRound.active.forEach((player) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = `Votar ${player.name}`;
+    button.addEventListener("click", () => finishImpostorVote(player.person));
+    impostorVote.appendChild(button);
+  });
+  updateImpostorCard();
+}
+
+function finishImpostorVote(votedPerson) {
+  if (!impostorRound?.voting) return;
+  const impostor = impostorRound.impostor;
+  const caught = votedPerson === impostor;
+  const impostorName = getPersonName(impostor);
+  const votedName = getPersonName(votedPerson);
+  impostorVote.innerHTML = "";
+  if (caught) {
+    impostorRound.active.forEach((player) => {
+      if (player.person === impostor) return;
+      impostorScores[player.person] += 1;
+      impostorScoreNodes[player.person].textContent = impostorScores[player.person];
+    });
+    impostorSecret.textContent = `Pillada: era ${impostorName}.`;
+    impostorSubtitle.textContent = `La palabra era "${impostorRound.topic.word}". Punto para las inocentes.`;
+    sayText(getDoll(impostor), "Me cago", 1500);
+    adminSay(`Han cazado a ${impostorName}. Democracia con gritos, pero funciona.`, 3600);
+  } else {
+    impostorScores[impostor] += 2;
+    impostorScoreNodes[impostor].textContent = impostorScores[impostor];
+    impostorSecret.textContent = `Fallasteis: votasteis a ${votedName}.`;
+    impostorSubtitle.textContent = `${impostorName} era la impostora y se lleva 2 puntos.`;
+    sayText(getDoll(impostor), "Yupi", 1500);
+    adminSay(`${impostorName} se ha colado con una cara impecable. Dos puntos.`, 3600);
+  }
+  impostorReveal.disabled = true;
+  impostorNext.disabled = true;
+  dolls.forEach((doll) => doll.classList.toggle("pictionary-turn", doll.dataset.person === impostor));
+  setTimeout(() => burst(innerWidth / 2, innerHeight / 2, impostor, 18), 180);
 }
 
 function updateTortillaTurn() {
@@ -1247,7 +1411,7 @@ function animate(time = 0) {
   lastTime = time;
 
   dolls.forEach((doll) => {
-    if (!activePeople.has(doll.dataset.person) || activeGame === "flags" || activeGame === "pictionary" || activeGame === "tortilla" || doll === activeDoll) return;
+    if (!activePeople.has(doll.dataset.person) || activeGame === "flags" || activeGame === "pictionary" || activeGame === "tortilla" || activeGame === "impostor" || doll === activeDoll) return;
     const item = state.get(doll);
     item.vy += 0.28 * dt;
     item.x += item.vx * dt;
@@ -1281,7 +1445,7 @@ function animate(time = 0) {
 
 dolls.forEach((doll) => {
   doll.addEventListener("pointerdown", (event) => {
-    if (!activePeople.has(doll.dataset.person) || activeGame === "flags" || activeGame === "pictionary" || activeGame === "tortilla") return;
+    if (!activePeople.has(doll.dataset.person) || activeGame === "flags" || activeGame === "pictionary" || activeGame === "tortilla" || activeGame === "impostor") return;
     event.preventDefault();
     beginDrag(event, doll);
   });
@@ -1338,7 +1502,7 @@ mazeButtons.forEach((button) => {
   });
 });
 
-[poopToggle, flagToggle, pictionaryToggle, tortillaToggle].forEach((button) => {
+[poopToggle, flagToggle, pictionaryToggle, tortillaToggle, impostorToggle].forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
 });
 adminRules.addEventListener("pointerdown", (event) => event.stopPropagation());
@@ -1348,6 +1512,7 @@ poopToggle.addEventListener("click", () => setGame("bathroom"));
 flagToggle.addEventListener("click", () => setGame("flags"));
 pictionaryToggle.addEventListener("click", () => setGame("pictionary"));
 tortillaToggle.addEventListener("click", () => setGame("tortilla"));
+impostorToggle.addEventListener("click", () => setGame("impostor"));
 adminRules.addEventListener("click", () => adminExplainGame());
 adminChaos.addEventListener("click", adminChaosMode);
 adminShine.addEventListener("click", adminShineBurst);
@@ -1358,6 +1523,9 @@ nextTurn.addEventListener("click", nextPictionaryTurn);
 tortillaStart.addEventListener("click", startTortillaTurn);
 tortillaReset.addEventListener("click", resetTortillaGame);
 tortillaTarget.addEventListener("click", stopTortillaTurn);
+impostorNew.addEventListener("click", startImpostorRound);
+impostorReveal.addEventListener("click", revealImpostorRole);
+impostorNext.addEventListener("click", nextImpostorRole);
 
 window.addEventListener("pointermove", moveDrag);
 window.addEventListener("pointerup", endDrag);
@@ -1373,6 +1541,7 @@ window.addEventListener("resize", () => {
   if (activeGame === "flags") requestAnimationFrame(placeMazePlayers);
   if (activeGame === "pictionary") requestAnimationFrame(placeCafePlayers);
   if (activeGame === "tortilla") requestAnimationFrame(placeTortillaPlayers);
+  if (activeGame === "impostor") requestAnimationFrame(placeCafePlayers);
 });
 
 resizeCanvas();

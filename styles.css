@@ -1441,6 +1441,14 @@ body {
   display: grid;
 }
 
+.stage.impostor-mode .volta-interior {
+  display: block;
+}
+
+.stage.impostor-mode .impostor-panel {
+  display: grid;
+}
+
 .stage.bathroom-mode .bathroom-help,
 .stage.flag-mode .maze-help {
   display: block;
@@ -1484,6 +1492,16 @@ body {
   display: none;
 }
 
+.stage.impostor-mode .cafe-bg,
+.stage.impostor-mode .moon,
+.stage.impostor-mode .pisa-gag,
+.stage.impostor-mode .string,
+.stage.impostor-mode .caption,
+.stage.impostor-mode .place-flyby,
+.stage.impostor-mode .wardrobe {
+  display: none;
+}
+
 .stage.tortilla-mode .cafe-bg,
 .stage.tortilla-mode .moon,
 .stage.tortilla-mode .pisa-gag,
@@ -1516,6 +1534,13 @@ body {
   background: #d7c1a2;
 }
 
+.stage.impostor-mode {
+  background:
+    radial-gradient(circle at 16% 16%, rgba(255, 209, 102, 0.16), transparent 18rem),
+    radial-gradient(circle at 80% 12%, rgba(229, 50, 66, 0.16), transparent 18rem),
+    #d7c1a2;
+}
+
 .stage.tortilla-mode {
   background:
     radial-gradient(circle at 20% 18%, rgba(255, 209, 102, 0.16), transparent 17rem),
@@ -1529,7 +1554,8 @@ body {
 .stage.bathroom-mode .games-menu,
 .stage.flag-mode .games-menu,
 .stage.pictionary-mode .games-menu,
-.stage.tortilla-mode .games-menu {
+.stage.tortilla-mode .games-menu,
+.stage.impostor-mode .games-menu {
   top: clamp(64px, 9vw, 84px);
   right: clamp(10px, 2.2vw, 24px);
 }
@@ -1556,11 +1582,22 @@ body {
   filter: drop-shadow(0 18px 22px rgba(25, 23, 22, 0.34)) saturate(1.04);
 }
 
-.stage.pictionary-mode .doll.pictionary-turn {
+.stage.impostor-mode .doll {
+  z-index: 14;
+  top: 50%;
+  --scale: 0.58;
+  cursor: default;
+  pointer-events: none;
+  filter: drop-shadow(0 18px 22px rgba(25, 23, 22, 0.34)) saturate(1.04);
+}
+
+.stage.pictionary-mode .doll.pictionary-turn,
+.stage.impostor-mode .doll.pictionary-turn {
   filter: drop-shadow(0 0 28px rgba(255, 209, 102, 0.58)) saturate(1.16);
 }
 
-.stage.pictionary-mode .doll.pictionary-turn .head {
+.stage.pictionary-mode .doll.pictionary-turn .head,
+.stage.impostor-mode .doll.pictionary-turn .head {
   animation: winnerBounce 620ms ease-out 2;
 }
 
@@ -2428,6 +2465,156 @@ body {
   color: rgba(255, 248, 232, 0.8);
   font-size: 0.62rem;
   font-style: normal;
+}
+
+.impostor-panel {
+  position: absolute;
+  left: clamp(10px, 2.2vw, 24px);
+  top: clamp(64px, 9vw, 88px);
+  z-index: 18;
+  display: none;
+  width: min(70vw, 430px);
+  max-height: calc(100dvh - 118px);
+  overflow: auto;
+  gap: 8px;
+  padding: 10px;
+  border: 3px solid rgba(25, 23, 22, 0.78);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 248, 232, 0.9), rgba(255, 248, 232, 0.68)),
+    #fff8e8;
+  color: var(--ink);
+  box-shadow: 0 30px 70px rgba(25, 23, 22, 0.34);
+  transform: rotate(0.7deg);
+}
+
+.impostor-panel[hidden] {
+  display: none;
+}
+
+.impostor-rules,
+.impostor-card {
+  border: 2px solid rgba(25, 23, 22, 0.16);
+  border-radius: 7px;
+  background: rgba(255, 248, 232, 0.64);
+}
+
+.impostor-rules summary {
+  padding: 7px 9px;
+  font-size: 0.74rem;
+  font-weight: 950;
+  cursor: pointer;
+  list-style: none;
+}
+
+.impostor-rules summary::-webkit-details-marker {
+  display: none;
+}
+
+.impostor-rules p {
+  margin: 0;
+  padding: 0 9px 8px;
+  font-size: 0.68rem;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.impostor-card {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  min-height: 138px;
+  padding: 12px;
+  text-align: center;
+}
+
+.impostor-card span {
+  font-size: 0.82rem;
+  font-weight: 950;
+}
+
+.impostor-card strong {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 64px;
+  padding: 10px;
+  border: 3px solid rgba(25, 23, 22, 0.78);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255, 209, 102, 0.36), transparent 5rem),
+    #191716;
+  color: var(--sun);
+  font-size: clamp(1.05rem, 3vw, 1.45rem);
+  line-height: 1.05;
+}
+
+.impostor-card em {
+  color: #0f4a5b;
+  font-size: 0.74rem;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.impostor-actions,
+.impostor-vote,
+.impostor-scores {
+  display: grid;
+  gap: 8px;
+}
+
+.impostor-actions {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.impostor-vote {
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+}
+
+.impostor-scores {
+  grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+}
+
+.impostor-actions button,
+.impostor-vote button,
+.impostor-scores span {
+  min-height: 36px;
+  border: 2px solid rgba(25, 23, 22, 0.72);
+  border-radius: 7px;
+  background: #0f4a5b;
+  color: var(--paper);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 950;
+  text-align: center;
+}
+
+.impostor-actions button,
+.impostor-vote button {
+  cursor: pointer;
+}
+
+.impostor-actions button:nth-child(2) {
+  background: #8d1f2f;
+}
+
+.impostor-actions button:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.impostor-scores span {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  align-items: center;
+  padding: 0 8px;
+  background: rgba(25, 23, 22, 0.78);
+}
+
+.impostor-scores strong {
+  color: var(--sun);
+  font-size: 1.02rem;
 }
 
 .maze-pad button:nth-child(1) {
@@ -5092,6 +5279,11 @@ body {
     --scale: 0.36;
   }
 
+  .stage.impostor-mode .doll {
+    top: 50%;
+    --scale: 0.36;
+  }
+
   .stage.tortilla-mode .doll {
     top: 70%;
     --scale: 0.34;
@@ -5107,6 +5299,16 @@ body {
     top: 58px;
     width: calc(100vw - 128px);
     min-width: 184px;
+    gap: 6px;
+    padding: 7px;
+  }
+
+  .impostor-panel {
+    left: 8px;
+    top: 58px;
+    width: calc(100vw - 128px);
+    min-width: 184px;
+    max-height: 52svh;
     gap: 6px;
     padding: 7px;
   }
@@ -5175,6 +5377,35 @@ body {
     min-height: 32px;
     padding: 0 5px;
     font-size: 0.62rem;
+  }
+
+  .impostor-actions,
+  .impostor-vote,
+  .impostor-scores {
+    gap: 5px;
+  }
+
+  .impostor-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .impostor-actions button,
+  .impostor-vote button,
+  .impostor-scores span {
+    min-height: 32px;
+    padding: 0 5px;
+    font-size: 0.62rem;
+  }
+
+  .impostor-card {
+    min-height: 112px;
+    gap: 5px;
+    padding: 8px;
+  }
+
+  .impostor-card strong {
+    min-height: 52px;
+    font-size: 1rem;
   }
 
   .volta-interior::after {
@@ -5534,6 +5765,10 @@ body {
     --scale: 0.32;
   }
 
+  .stage.impostor-mode .doll {
+    --scale: 0.32;
+  }
+
   .stage.tortilla-mode .doll {
     top: 72%;
     --scale: 0.3;
@@ -5542,6 +5777,13 @@ body {
   .pictionary-panel {
     width: calc(100vw - 112px);
     min-width: 170px;
+    padding: 6px;
+  }
+
+  .impostor-panel {
+    width: calc(100vw - 112px);
+    min-width: 170px;
+    max-height: 52svh;
     padding: 6px;
   }
 

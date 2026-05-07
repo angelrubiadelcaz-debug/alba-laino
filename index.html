@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Angel Moment</title>
-    <link rel="stylesheet" href="./styles.css?v=20260506-carnival-en" />
+    <link rel="stylesheet" href="./styles.css?v=20260507-impostor" />
   </head>
   <body>
     <main class="stage" aria-label="Escena interactiva con tres figuras">
@@ -271,6 +271,7 @@
           <button id="flagToggle" class="game-button" type="button" aria-pressed="false">Laberinto</button>
           <button id="pictionaryToggle" class="game-button" type="button" aria-pressed="false">Mimica</button>
           <button id="tortillaToggle" class="game-button" type="button" aria-pressed="false">Tortilla</button>
+          <button id="impostorToggle" class="game-button" type="button" aria-pressed="false">Impostor</button>
         </details>
 
         <section class="game-help bathroom-help" aria-label="Normas del baño">
@@ -395,6 +396,31 @@
           </div>
         </section>
 
+        <section class="impostor-panel" aria-label="Juego del impostor" hidden>
+          <details class="impostor-rules" open>
+            <summary>Normas / Rules</summary>
+            <p>ES: Pasad el movil una a una. Cada persona pulsa Ver, memoriza su carta y pulsa Ocultar. Todas ven la misma palabra menos la impostora, que recibe una pista vaga. Luego debatid y votad. EN: Pass the phone around. Tap Reveal, memorize the card, then Hide. Everyone sees the same word except the impostor, who gets a vague clue. Discuss and vote.</p>
+          </details>
+          <div class="impostor-card">
+            <span id="impostorTurn">Turno de Alba</span>
+            <strong id="impostorSecret">Carta oculta</strong>
+            <em id="impostorSubtitle">No mires si no eres tú.</em>
+          </div>
+          <div class="impostor-actions">
+            <button id="impostorNew" type="button">Nueva ronda</button>
+            <button id="impostorReveal" type="button">Ver</button>
+            <button id="impostorNext" type="button">Ocultar / Siguiente</button>
+          </div>
+          <div id="impostorVote" class="impostor-vote" aria-label="Votacion del impostor"></div>
+          <div class="impostor-scores">
+            <span>Alba <strong id="impostorScoreAlba">0</strong></span>
+            <span>Laino <strong id="impostorScoreLaino">0</strong></span>
+            <span>Niya <strong id="impostorScoreNiya">0</strong></span>
+            <span>Emma <strong id="impostorScoreEmma">0</strong></span>
+            <span>Mila <strong id="impostorScoreMila">0</strong></span>
+          </div>
+        </section>
+
         <div class="tortilla-stage-art" aria-hidden="true">
           <div class="frying-pan">
             <span class="pan-shine"></span>
@@ -414,6 +440,6 @@
       </div>
     </main>
 
-    <script src="./app.js?v=20260506-carnival-en"></script>
+    <script src="./app.js?v=20260507-impostor"></script>
   </body>
 </html>
