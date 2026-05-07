@@ -565,7 +565,7 @@ function adminChaosMode() {
   adminSay("Fiesta activada. Pulsa Fiesta otra vez para pararla.", 3600);
   getActiveDolls().forEach((doll, index) => {
     setTimeout(() => {
-      const outfits = ["normal", "traditional", "clown", "carnival", "mexican"];
+      const outfits = ["normal", "traditional", "clown", "carnival"];
       setOutfit(doll.dataset.person, outfits[Math.floor(Math.random() * outfits.length)]);
       sayText(doll, lines[doll.dataset.person][Math.floor(Math.random() * lines[doll.dataset.person].length)], 1200);
     }, index * 180);
@@ -683,34 +683,20 @@ function playCucarachaMusic() {
   });
 }
 
-function startMexicanDance(person) {
-  const doll = getDoll(person);
-  if (!doll) return;
-  doll.classList.remove("mexican-dance");
-  void doll.offsetWidth;
-  doll.classList.add("mexican-dance");
-  clearTimeout(doll._mexicanDanceTimer);
-  doll._mexicanDanceTimer = setTimeout(() => doll.classList.remove("mexican-dance"), 3600);
-  playCucarachaMusic();
-  sayText(doll, "La Cucaracha", 1400);
-  adminSay(`${getPersonName(person)} activa baile mexicano. Sin letra, con dignidad y zapateo.`, 3200);
-}
-
-function dressAllMexican() {
+function playCucarachaDance() {
   const activeDolls = getActiveDolls();
   activeDolls.forEach((doll, index) => {
     setTimeout(() => {
-      setOutfit(doll.dataset.person, "mexican", { skipDance: true });
-      doll.classList.remove("mexican-dance");
+      doll.classList.remove("cucaracha-dance");
       void doll.offsetWidth;
-      doll.classList.add("mexican-dance");
-      clearTimeout(doll._mexicanDanceTimer);
-      doll._mexicanDanceTimer = setTimeout(() => doll.classList.remove("mexican-dance"), 3800);
+      doll.classList.add("cucaracha-dance");
+      clearTimeout(doll._cucarachaDanceTimer);
+      doll._cucarachaDanceTimer = setTimeout(() => doll.classList.remove("cucaracha-dance"), 3800);
       sayText(doll, "La Cucaracha", 1200);
     }, index * 110);
   });
   playCucarachaMusic();
-  adminSay("Modo mexicano grupal: sombreros fuera y baile de La Cucaracha.", 3600);
+  adminSay("La Cucaracha activada: baile grupal, sin cambiarles la ropa.", 3600);
 }
 
 function showVictoryJumpscare(person) {
@@ -1436,7 +1422,7 @@ function dropPoop() {
 }
 
 
-function setOutfit(person, outfit, options = {}) {
+function setOutfit(person, outfit) {
   const doll = getDoll(person);
   if (!doll) return;
 
@@ -1444,7 +1430,6 @@ function setOutfit(person, outfit, options = {}) {
   doll.classList.toggle("outfit-traditional", outfit === "traditional");
   doll.classList.toggle("outfit-clown", outfit === "clown");
   doll.classList.toggle("outfit-carnival", outfit === "carnival");
-  doll.classList.toggle("outfit-mexican", outfit === "mexican");
 
   outfitButtons
     .filter((button) => button.dataset.person === person)
@@ -1460,7 +1445,6 @@ function setOutfit(person, outfit, options = {}) {
     sayText(doll, carnivalLines[person], 2600);
     adminSay(`${getPersonName(person)} activa Carnaval: ${carnivalLines[person]}`, 3600);
   }
-  if (outfit === "mexican" && !options.skipDance) startMexicanDance(person);
 }
 
 function beginDrag(event, doll) {
@@ -1603,7 +1587,7 @@ outfitButtons.forEach((button) => {
 });
 
 mexicanAll.addEventListener("pointerdown", (event) => event.stopPropagation());
-mexicanAll.addEventListener("click", dressAllMexican);
+mexicanAll.addEventListener("click", playCucarachaDance);
 
 playerToggles.forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
