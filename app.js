@@ -248,7 +248,7 @@ const adminRulesText = {
   flags: "Laberinto: cada una sale por la salida. Si se chocan, vuelta al inicio. Justicia geométrica.",
   pictionary: "Mimica: una actúa sin hablar, las demás adivinan. El temporizador castiga.",
   tortilla: "Tortilla: Start, contar hasta 8.00 y girar. La más cercana gana. Ciencia española.",
-  impostor: "Impostor: pasad el movil, memorizad la carta secreta y votad a quien huela a teatro barato.",
+  impostor: "Impostor: pass the phone, memorize your secret card, discuss, then vote for the suspicious one.",
 };
 const impostorWordFiles = [
   "food",
@@ -1090,7 +1090,7 @@ async function loadImpostorDeck() {
     const loadedDeck = groups.flat().filter((item) => item.word && item.hint);
     if (loadedDeck.length > impostorDeck.length) impostorDeck = loadedDeck;
   } catch {
-    adminSay("Uso el mazo ingles de reserva porque el navegador no ha cargado los JSON.", 3600);
+    adminSay("Using the backup English deck because the browser did not load the JSON files.", 3600);
   }
 }
 
@@ -1106,19 +1106,19 @@ function startImpostorRound() {
   dolls.forEach((doll) => doll.classList.remove("pictionary-turn"));
   const first = active[0];
   getDoll(first.person)?.classList.add("pictionary-turn");
-  adminSay("Ronda nueva. Pasad el movil como si contuviera secretos de Estado.", 3600);
+  adminSay("New round. Pass the phone like it contains classified evidence.", 3600);
 }
 
 function updateImpostorCard() {
   if (!impostorRound) return;
   const player = impostorRound.active[impostorRoleIndex % impostorRound.active.length];
-  impostorTurn.textContent = impostorRound.voting ? "Hora de votar" : `Turno secreto de ${player.name}`;
-  impostorSecret.textContent = impostorRevealed ? getImpostorRoleText(player) : "Carta oculta";
+  impostorTurn.textContent = impostorRound.voting ? "Time to vote" : `${player.name}'s secret turn`;
+  impostorSecret.textContent = impostorRevealed ? getImpostorRoleText(player) : "Hidden card";
   impostorSubtitle.textContent = impostorRound.voting
-    ? "Debatid, acusad con drama y elegid sospechosa."
+    ? "Discuss, accuse dramatically, and choose a suspect."
     : impostorRevealed
-      ? "Memoriza y pulsa Ocultar / Siguiente."
-      : "Pasa el movil y pulsa Ver solo si eres tú.";
+      ? "Memorize it, then tap Hide / Next."
+      : "Pass the phone and tap Reveal only if this is your turn.";
   impostorReveal.disabled = impostorRound.voting || impostorRevealed;
   impostorNext.disabled = impostorRound.voting;
   dolls.forEach((doll) => {
@@ -1128,12 +1128,11 @@ function updateImpostorCard() {
 
 function getImpostorRoleText(player) {
   const isImpostor = player.person === impostorRound.impostor;
-  const needsEnglish = ["niya", "emma", "mila"].includes(player.person);
   if (isImpostor) {
     const clue = `${impostorRound.topic.category}: ${impostorRound.topic.hint}`;
-    return needsEnglish ? `IMPOSTOR. Clue: ${clue}` : `IMPOSTORA. Pista: ${clue}`;
+    return `IMPOSTOR. Clue: ${clue}`;
   }
-  return needsEnglish ? `WORD: ${impostorRound.topic.word}` : `PALABRA: ${impostorRound.topic.word}`;
+  return `WORD: ${impostorRound.topic.word}`;
 }
 
 function revealImpostorRole() {
@@ -1146,7 +1145,7 @@ function nextImpostorRole() {
   if (activeGame !== "impostor" || !impostorRound || impostorRound.voting) return;
   if (impostorRevealed) {
     impostorRevealed = false;
-    impostorSecret.textContent = "Carta oculta";
+    impostorSecret.textContent = "Hidden card";
   }
   impostorRoleIndex += 1;
   if (impostorRoleIndex >= impostorRound.active.length) {
@@ -1163,7 +1162,7 @@ function beginImpostorVote() {
   impostorRound.active.forEach((player) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = `Votar ${player.name}`;
+    button.textContent = `Vote ${player.name}`;
     button.addEventListener("click", () => finishImpostorVote(player.person));
     impostorVote.appendChild(button);
   });
@@ -1183,17 +1182,17 @@ function finishImpostorVote(votedPerson) {
       impostorScores[player.person] += 1;
       impostorScoreNodes[player.person].textContent = impostorScores[player.person];
     });
-    impostorSecret.textContent = `Pillada: era ${impostorName}.`;
-    impostorSubtitle.textContent = `La palabra era "${impostorRound.topic.word}". Punto para las inocentes.`;
+    impostorSecret.textContent = `Caught: it was ${impostorName}.`;
+    impostorSubtitle.textContent = `The word was "${impostorRound.topic.word}". One point for the innocent players.`;
     sayText(getDoll(impostor), "Me cago", 1500);
-    adminSay(`Han cazado a ${impostorName}. Democracia con gritos, pero funciona.`, 3600);
+    adminSay(`${impostorName} got caught. Loud democracy, but it works.`, 3600);
   } else {
     impostorScores[impostor] += 2;
     impostorScoreNodes[impostor].textContent = impostorScores[impostor];
-    impostorSecret.textContent = `Fallasteis: votasteis a ${votedName}.`;
-    impostorSubtitle.textContent = `${impostorName} era la impostora y se lleva 2 puntos.`;
+    impostorSecret.textContent = `Wrong vote: you chose ${votedName}.`;
+    impostorSubtitle.textContent = `${impostorName} was the impostor and gets 2 points.`;
     sayText(getDoll(impostor), "Yupi", 1500);
-    adminSay(`${impostorName} se ha colado con una cara impecable. Dos puntos.`, 3600);
+    adminSay(`${impostorName} slipped through with a flawless face. Two points.`, 3600);
   }
   impostorReveal.disabled = true;
   impostorNext.disabled = true;

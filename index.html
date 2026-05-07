@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Angel Moment</title>
-    <link rel="stylesheet" href="./styles.css?v=20260507-impostor-words" />
+    <link rel="stylesheet" href="./styles.css?v=20260507-impostor-english" />
   </head>
   <body>
     <main class="stage" aria-label="Escena interactiva con tres figuras">
@@ -396,22 +396,22 @@
           </div>
         </section>
 
-        <section class="impostor-panel" aria-label="Juego del impostor" hidden>
+        <section class="impostor-panel" aria-label="Impostor game" hidden>
           <details class="impostor-rules" open>
             <summary>Normas / Rules</summary>
-            <p>ES: Pasad el movil una a una. Cada persona pulsa Ver, memoriza su carta y pulsa Ocultar. Todas ven la misma palabra menos la impostora, que recibe una pista vaga. Luego debatid y votad. EN: Pass the phone around. Tap Reveal, memorize the card, then Hide. Everyone sees the same word except the impostor, who gets a vague clue. Discuss and vote.</p>
+            <p>Pass the phone around one player at a time. Each player taps Reveal, memorizes the card, then taps Hide / Next. Everyone gets the same English word except the impostor, who only gets a vague clue. Discuss, accuse dramatically, then vote.</p>
           </details>
           <div class="impostor-card">
-            <span id="impostorTurn">Turno de Alba</span>
-            <strong id="impostorSecret">Carta oculta</strong>
-            <em id="impostorSubtitle">No mires si no eres tú.</em>
+            <span id="impostorTurn">Alba's secret turn</span>
+            <strong id="impostorSecret">Hidden card</strong>
+            <em id="impostorSubtitle">Do not look unless it is your turn.</em>
           </div>
           <div class="impostor-actions">
-            <button id="impostorNew" type="button">Nueva ronda</button>
-            <button id="impostorReveal" type="button">Ver</button>
-            <button id="impostorNext" type="button">Ocultar / Siguiente</button>
+            <button id="impostorNew" type="button">New round</button>
+            <button id="impostorReveal" type="button">Reveal</button>
+            <button id="impostorNext" type="button">Hide / Next</button>
           </div>
-          <div id="impostorVote" class="impostor-vote" aria-label="Votacion del impostor"></div>
+          <div id="impostorVote" class="impostor-vote" aria-label="Impostor vote"></div>
           <div class="impostor-scores">
             <span>Alba <strong id="impostorScoreAlba">0</strong></span>
             <span>Laino <strong id="impostorScoreLaino">0</strong></span>
@@ -440,6 +440,6 @@
       </div>
     </main>
 
-    <script src="./app.js?v=20260507-impostor-words"></script>
+    <script src="./app.js?v=20260507-impostor-english"></script>
   </body>
 </html>
