@@ -250,19 +250,45 @@ const adminRulesText = {
   tortilla: "Tortilla: Start, contar hasta 8.00 y girar. La más cercana gana. Ciencia española.",
   impostor: "Impostor: pasad el movil, memorizad la carta secreta y votad a quien huela a teatro barato.",
 };
-const impostorDeck = [
-  { word: "tortilla quemada", hint: "comida espanola en peligro", en: "burnt Spanish omelette" },
-  { word: "piano de VoltaPagina", hint: "algo musical del cafe", en: "VoltaPagina piano" },
-  { word: "Torre de Pisa", hint: "turismo con equilibrio dudoso", en: "Leaning Tower of Pisa" },
-  { word: "Cristo del Otero", hint: "Palencia mirando desde arriba", en: "Cristo del Otero" },
-  { word: "La Concha", hint: "Donosti en modo postal", en: "La Concha bay" },
-  { word: "ladybug", hint: "algo pequeno y cute", en: "ladybug" },
-  { word: "spaventapasseri", hint: "Italia, campo y drama", en: "scarecrow" },
-  { word: "casting sin presupuesto", hint: "cine precario internacional", en: "no-budget casting" },
-  { word: "caca palentina", hint: "arte marron de Alba", en: "Palencia poop art" },
-  { word: "diva teatral", hint: "escenario, drama y mirada intensa", en: "theatre diva" },
-  { word: "mariquita peligrosa", hint: "Emma pero con amenaza suave", en: "dangerous ladybug" },
-  { word: "pintxo sospechoso", hint: "Donosti y misterio comestible", en: "suspicious pintxo" },
+const impostorWordFiles = [
+  "food",
+  "films",
+  "hobbies",
+  "party",
+  "places",
+  "jobs",
+  "music",
+  "buildings",
+];
+const impostorWordCategories = {
+  food: "food",
+  films: "film",
+  hobbies: "hobby",
+  party: "party",
+  places: "place",
+  jobs: "job",
+  music: "music",
+  buildings: "building",
+};
+let impostorDeck = [
+  { word: "Pizza", hint: "Italian dish", category: "food" },
+  { word: "Sushi", hint: "Japanese bites", category: "food" },
+  { word: "Tapas", hint: "Small plates", category: "food" },
+  { word: "Titanic", hint: "Ship that sinks", category: "film" },
+  { word: "Star Wars", hint: "Space saga", category: "film" },
+  { word: "The Matrix", hint: "Red or blue pill", category: "film" },
+  { word: "Photography", hint: "With a camera", category: "hobby" },
+  { word: "Cooking", hint: "In the kitchen", category: "hobby" },
+  { word: "Karaoke", hint: "Singing along", category: "party" },
+  { word: "Wedding", hint: "Big celebration", category: "party" },
+  { word: "Paris", hint: "Capital city", category: "place" },
+  { word: "Cinema", hint: "Big screen place", category: "place" },
+  { word: "Doctor", hint: "Medical professional", category: "job" },
+  { word: "Teacher", hint: "In a classroom", category: "job" },
+  { word: "Piano", hint: "Keys and pedals", category: "music" },
+  { word: "Rock", hint: "Guitar-driven genre", category: "music" },
+  { word: "Library", hint: "Lots of books", category: "building" },
+  { word: "Museum", hint: "Art and history", category: "building" },
 ];
 const carnivalLines = {
   blonde: "Voy de caca palentina. Arte contemporáneo.",
@@ -1047,6 +1073,27 @@ function startMimeTimer() {
   updateTimerButton();
 }
 
+async function loadImpostorDeck() {
+  try {
+    const groups = await Promise.all(
+      impostorWordFiles.map(async (name) => {
+        const response = await fetch(`./data/impostor-source/${name}.json?v=20260507-impostor-words`);
+        if (!response.ok) throw new Error(`words ${name}`);
+        const words = await response.json();
+        return words.map((item) => ({
+          word: item.word,
+          hint: item.hint,
+          category: impostorWordCategories[name],
+        }));
+      }),
+    );
+    const loadedDeck = groups.flat().filter((item) => item.word && item.hint);
+    if (loadedDeck.length > impostorDeck.length) impostorDeck = loadedDeck;
+  } catch {
+    adminSay("Uso el mazo ingles de reserva porque el navegador no ha cargado los JSON.", 3600);
+  }
+}
+
 function startImpostorRound() {
   const active = getActivePeople();
   const topic = impostorDeck[Math.floor(Math.random() * impostorDeck.length)];
@@ -1082,8 +1129,11 @@ function updateImpostorCard() {
 function getImpostorRoleText(player) {
   const isImpostor = player.person === impostorRound.impostor;
   const needsEnglish = ["niya", "emma", "mila"].includes(player.person);
-  if (isImpostor) return needsEnglish ? `IMPOSTOR. Clue: ${impostorRound.topic.hint}` : `IMPOSTORA. Pista: ${impostorRound.topic.hint}`;
-  return needsEnglish ? `WORD: ${impostorRound.topic.en}` : `PALABRA: ${impostorRound.topic.word}`;
+  if (isImpostor) {
+    const clue = `${impostorRound.topic.category}: ${impostorRound.topic.hint}`;
+    return needsEnglish ? `IMPOSTOR. Clue: ${clue}` : `IMPOSTORA. Pista: ${clue}`;
+  }
+  return needsEnglish ? `WORD: ${impostorRound.topic.word}` : `PALABRA: ${impostorRound.topic.word}`;
 }
 
 function revealImpostorRole() {
@@ -1547,6 +1597,7 @@ window.addEventListener("resize", () => {
 resizeCanvas();
 dolls.forEach(updateDoll);
 refreshActivePlayers();
+loadImpostorDeck();
 adminSay("Ángel Pelón preparado. Nadie toca producción sin supervisión.", 3600);
 startHintPopups();
 requestAnimationFrame(animate);
