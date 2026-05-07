@@ -2,7 +2,6 @@ const scene = document.querySelector(".scene");
 const dolls = [...document.querySelectorAll(".doll")];
 const outfitButtons = [...document.querySelectorAll(".outfit-button")];
 const playerToggles = [...document.querySelectorAll(".player-toggle")];
-const mexicanAll = document.querySelector("#mexicanAll");
 const mazeButtons = [...document.querySelectorAll(".maze-pad button")];
 const poopToggle = document.querySelector("#poopToggle");
 const flagToggle = document.querySelector("#flagToggle");
@@ -29,6 +28,7 @@ const admin = document.querySelector(".angel-admin");
 const adminBubble = document.querySelector(".admin-bubble");
 const adminRules = document.querySelector("#adminRules");
 const adminChaos = document.querySelector("#adminChaos");
+const adminCucaracha = document.querySelector("#adminCucaracha");
 const adminShine = document.querySelector("#adminShine");
 const turnName = document.querySelector("#turnName");
 const turnPrompt = document.querySelector("#turnPrompt");
@@ -555,6 +555,7 @@ function adminChaosMode() {
     stage.classList.remove("admin-party");
     admin.classList.remove("commanding");
     adminChaos.classList.remove("active");
+    adminCucaracha.classList.remove("active");
     adminSay("Fiesta cancelada por orden del Pelón.", 2600);
     return;
   }
@@ -574,6 +575,7 @@ function adminChaosMode() {
     stage.classList.remove("admin-party");
     admin.classList.remove("commanding");
     adminChaos.classList.remove("active");
+    adminCucaracha.classList.remove("active");
     adminSay("Fiesta archivada. Vuelve la autoridad.", 2600);
   }, 10000);
 }
@@ -683,8 +685,28 @@ function playCucarachaMusic() {
   });
 }
 
+function launchConfetti(amount = 150) {
+  const colors = ["#1f8f55", "#fff6e6", "#e53242", "#ffd166", "#49d7b8", "#ff6f91"];
+  for (let i = 0; i < amount; i += 1) {
+    particles.push({
+      x: Math.random() * innerWidth,
+      y: -20 - Math.random() * innerHeight * 0.35,
+      vx: -2.2 + Math.random() * 4.4,
+      vy: 2.4 + Math.random() * 4.2,
+      size: 6 + Math.random() * 10,
+      spin: Math.random() * Math.PI,
+      color: colors[i % colors.length],
+    });
+  }
+}
+
 function playCucarachaDance() {
   const activeDolls = getActiveDolls();
+  const stage = document.querySelector(".stage");
+  clearTimeout(adminChaosTimer);
+  stage.classList.add("admin-party");
+  admin.classList.add("commanding");
+  adminCucaracha.classList.add("active");
   activeDolls.forEach((doll, index) => {
     setTimeout(() => {
       doll.classList.remove("cucaracha-dance");
@@ -696,7 +718,17 @@ function playCucarachaDance() {
     }, index * 110);
   });
   playCucarachaMusic();
-  adminSay("La Cucaracha activada: baile grupal, sin cambiarles la ropa.", 3600);
+  launchConfetti(180);
+  for (let i = 0; i < 4; i += 1) {
+    setTimeout(() => launchConfetti(60), 480 + i * 520);
+  }
+  adminSay("La Cucaracha activada: mariachis, música y confeti bajo supervisión pelona.", 3600);
+  adminChaosTimer = setTimeout(() => {
+    stage.classList.remove("admin-party");
+    admin.classList.remove("commanding");
+    adminCucaracha.classList.remove("active");
+    activeDolls.forEach((doll) => doll.classList.remove("cucaracha-dance"));
+  }, 4200);
 }
 
 function showVictoryJumpscare(person) {
@@ -985,6 +1017,7 @@ function setGame(nextGame) {
   document.querySelector(".stage").classList.remove("admin-party");
   admin.classList.remove("commanding");
   adminChaos.classList.remove("active");
+  adminCucaracha.classList.remove("active");
 
   if (isBathroom) {
     schedulePoop();
@@ -1586,9 +1619,6 @@ outfitButtons.forEach((button) => {
   button.addEventListener("click", () => setOutfit(button.dataset.person, button.dataset.outfit));
 });
 
-mexicanAll.addEventListener("pointerdown", (event) => event.stopPropagation());
-mexicanAll.addEventListener("click", playCucarachaDance);
-
 playerToggles.forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
   button.addEventListener("click", () => {
@@ -1624,6 +1654,7 @@ mazeButtons.forEach((button) => {
 });
 adminRules.addEventListener("pointerdown", (event) => event.stopPropagation());
 adminChaos.addEventListener("pointerdown", (event) => event.stopPropagation());
+adminCucaracha.addEventListener("pointerdown", (event) => event.stopPropagation());
 adminShine.addEventListener("pointerdown", (event) => event.stopPropagation());
 poopToggle.addEventListener("click", () => setGame("bathroom"));
 flagToggle.addEventListener("click", () => setGame("flags"));
@@ -1632,6 +1663,7 @@ tortillaToggle.addEventListener("click", () => setGame("tortilla"));
 impostorToggle.addEventListener("click", () => setGame("impostor"));
 adminRules.addEventListener("click", () => adminExplainGame());
 adminChaos.addEventListener("click", adminChaosMode);
+adminCucaracha.addEventListener("click", playCucarachaDance);
 adminShine.addEventListener("click", adminShineBurst);
 skipTurn.addEventListener("click", nextPictionaryTurn);
 timerButton.addEventListener("click", startMimeTimer);
