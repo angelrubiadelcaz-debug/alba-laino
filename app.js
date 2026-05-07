@@ -2,6 +2,7 @@ const scene = document.querySelector(".scene");
 const dolls = [...document.querySelectorAll(".doll")];
 const outfitButtons = [...document.querySelectorAll(".outfit-button")];
 const playerToggles = [...document.querySelectorAll(".player-toggle")];
+const mexicanAll = document.querySelector("#mexicanAll");
 const mazeButtons = [...document.querySelectorAll(".maze-pad button")];
 const poopToggle = document.querySelector("#poopToggle");
 const flagToggle = document.querySelector("#flagToggle");
@@ -564,7 +565,7 @@ function adminChaosMode() {
   adminSay("Fiesta activada. Pulsa Fiesta otra vez para pararla.", 3600);
   getActiveDolls().forEach((doll, index) => {
     setTimeout(() => {
-      const outfits = ["normal", "traditional", "clown", "carnival"];
+      const outfits = ["normal", "traditional", "clown", "carnival", "mexican"];
       setOutfit(doll.dataset.person, outfits[Math.floor(Math.random() * outfits.length)]);
       sayText(doll, lines[doll.dataset.person][Math.floor(Math.random() * lines[doll.dataset.person].length)], 1200);
     }, index * 180);
@@ -647,6 +648,69 @@ function playVictoryMusic(person) {
   bass.connect(bassGain).connect(audioContext.destination);
   bass.start(now);
   bass.stop(now + 1.18);
+}
+
+function playCucarachaMusic() {
+  audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+  audioContext.resume?.();
+  const now = audioContext.currentTime;
+  const notes = [392, 392, 392, 523.25, 659.25, 392, 392, 392, 523.25, 659.25, 523.25, 523.25, 493.88, 493.88, 440, 440, 392];
+  notes.forEach((frequency, index) => {
+    const start = now + index * 0.13;
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.type = index % 3 === 0 ? "square" : "triangle";
+    osc.frequency.setValueAtTime(frequency, start);
+    gain.gain.setValueAtTime(0, start);
+    gain.gain.linearRampToValueAtTime(0.065, start + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.12);
+    osc.connect(gain).connect(audioContext.destination);
+    osc.start(start);
+    osc.stop(start + 0.14);
+  });
+
+  [0, 0.52, 1.04, 1.56, 2.08].forEach((offset) => {
+    const drum = audioContext.createOscillator();
+    const drumGain = audioContext.createGain();
+    drum.type = "sawtooth";
+    drum.frequency.setValueAtTime(92, now + offset);
+    drum.frequency.exponentialRampToValueAtTime(52, now + offset + 0.16);
+    drumGain.gain.setValueAtTime(0.06, now + offset);
+    drumGain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.18);
+    drum.connect(drumGain).connect(audioContext.destination);
+    drum.start(now + offset);
+    drum.stop(now + offset + 0.2);
+  });
+}
+
+function startMexicanDance(person) {
+  const doll = getDoll(person);
+  if (!doll) return;
+  doll.classList.remove("mexican-dance");
+  void doll.offsetWidth;
+  doll.classList.add("mexican-dance");
+  clearTimeout(doll._mexicanDanceTimer);
+  doll._mexicanDanceTimer = setTimeout(() => doll.classList.remove("mexican-dance"), 3600);
+  playCucarachaMusic();
+  sayText(doll, "La Cucaracha", 1400);
+  adminSay(`${getPersonName(person)} activa baile mexicano. Sin letra, con dignidad y zapateo.`, 3200);
+}
+
+function dressAllMexican() {
+  const activeDolls = getActiveDolls();
+  activeDolls.forEach((doll, index) => {
+    setTimeout(() => {
+      setOutfit(doll.dataset.person, "mexican", { skipDance: true });
+      doll.classList.remove("mexican-dance");
+      void doll.offsetWidth;
+      doll.classList.add("mexican-dance");
+      clearTimeout(doll._mexicanDanceTimer);
+      doll._mexicanDanceTimer = setTimeout(() => doll.classList.remove("mexican-dance"), 3800);
+      sayText(doll, "La Cucaracha", 1200);
+    }, index * 110);
+  });
+  playCucarachaMusic();
+  adminSay("Modo mexicano grupal: sombreros fuera y baile de La Cucaracha.", 3600);
 }
 
 function showVictoryJumpscare(person) {
@@ -1372,7 +1436,7 @@ function dropPoop() {
 }
 
 
-function setOutfit(person, outfit) {
+function setOutfit(person, outfit, options = {}) {
   const doll = getDoll(person);
   if (!doll) return;
 
@@ -1380,6 +1444,7 @@ function setOutfit(person, outfit) {
   doll.classList.toggle("outfit-traditional", outfit === "traditional");
   doll.classList.toggle("outfit-clown", outfit === "clown");
   doll.classList.toggle("outfit-carnival", outfit === "carnival");
+  doll.classList.toggle("outfit-mexican", outfit === "mexican");
 
   outfitButtons
     .filter((button) => button.dataset.person === person)
@@ -1395,6 +1460,7 @@ function setOutfit(person, outfit) {
     sayText(doll, carnivalLines[person], 2600);
     adminSay(`${getPersonName(person)} activa Carnaval: ${carnivalLines[person]}`, 3600);
   }
+  if (outfit === "mexican" && !options.skipDance) startMexicanDance(person);
 }
 
 function beginDrag(event, doll) {
@@ -1535,6 +1601,9 @@ outfitButtons.forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());
   button.addEventListener("click", () => setOutfit(button.dataset.person, button.dataset.outfit));
 });
+
+mexicanAll.addEventListener("pointerdown", (event) => event.stopPropagation());
+mexicanAll.addEventListener("click", dressAllMexican);
 
 playerToggles.forEach((button) => {
   button.addEventListener("pointerdown", (event) => event.stopPropagation());

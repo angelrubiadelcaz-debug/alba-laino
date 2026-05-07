@@ -758,6 +758,22 @@ body {
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
 }
 
+.wardrobe-party-button {
+  display: block;
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid rgba(255, 248, 232, 0.2);
+  border-top: 0;
+  background:
+    linear-gradient(90deg, #1f8f55 0 32%, #fff6e6 32% 66%, #e53242 66%);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+}
+
 .wardrobe[open] .wardrobe-card {
   animation: wardrobeOpen 180ms ease-out both;
 }
@@ -853,6 +869,10 @@ body {
 
 .outfit-button[data-outfit="carnival"] {
   min-width: 96px;
+}
+
+.outfit-button[data-outfit="mexican"] {
+  min-width: 98px;
 }
 
 .outfit-button.active {
@@ -3908,6 +3928,135 @@ body {
     linear-gradient(90deg, #7e68ff 0 50%, #ff6f91 50%);
 }
 
+.outfit-mexican::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -24px;
+  z-index: 8;
+  width: 132px;
+  height: 52px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background:
+    linear-gradient(0deg, transparent 0 52%, rgba(25, 23, 22, 0.18) 52% 62%, transparent 62%),
+    radial-gradient(ellipse at 50% 26%, #d9a45f 0 30px, transparent 31px),
+    linear-gradient(90deg, #1f8f55 0 31%, #fff6e6 31% 68%, #e53242 68%);
+  box-shadow: inset 0 -10px 0 rgba(141, 92, 37, 0.25);
+  transform: translateX(-50%) rotate(-4deg);
+}
+
+.outfit-mexican::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 102px;
+  z-index: 1;
+  width: 142px;
+  height: 82px;
+  border: 3px solid var(--ink);
+  border-radius: 10px 10px 48px 48px;
+  background:
+    repeating-linear-gradient(90deg, #1f8f55 0 16px, #fff6e6 16px 30px, #e53242 30px 46px, #ffd166 46px 54px),
+    #fff6e6;
+  clip-path: polygon(8% 0, 92% 0, 100% 70%, 72% 100%, 50% 76%, 28% 100%, 0 70%);
+  transform: translateX(-50%);
+}
+
+.outfit-mexican .torso {
+  background:
+    radial-gradient(circle at 50% 23%, #ffd166 0 8px, transparent 9px),
+    radial-gradient(circle at 50% 48%, #ffd166 0 7px, transparent 8px),
+    linear-gradient(90deg, #191716 0 20%, #fff6e6 20% 80%, #191716 80%);
+}
+
+.outfit-mexican .torso::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -38px;
+  width: 128px;
+  height: 78px;
+  border: 3px solid var(--ink);
+  border-radius: 0 0 36px 36px;
+  background:
+    linear-gradient(0deg, #e53242 0 10%, transparent 10%),
+    repeating-linear-gradient(90deg, #191716 0 14px, #2b3234 14px 28px);
+  transform: translateX(-50%);
+}
+
+.outfit-mexican .torso::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 74px;
+  height: 28px;
+  border: 3px solid var(--ink);
+  border-radius: 0 0 34px 34px;
+  background:
+    radial-gradient(circle at 20% 45%, #1f8f55 0 5px, transparent 6px),
+    radial-gradient(circle at 50% 62%, #e53242 0 5px, transparent 6px),
+    radial-gradient(circle at 80% 45%, #1f8f55 0 5px, transparent 6px),
+    #fff6e6;
+  transform: translateX(-50%);
+}
+
+.outfit-mexican[data-person="blonde"] .torso {
+  background:
+    radial-gradient(circle at 50% 26%, #e53242 0 8px, transparent 9px),
+    linear-gradient(90deg, #1f8f55 0 20%, #fff6e6 20% 80%, #e53242 80%);
+}
+
+.outfit-mexican[data-person="brunette"] .torso {
+  background:
+    radial-gradient(circle at 50% 26%, #ffd166 0 8px, transparent 9px),
+    linear-gradient(90deg, #191716 0 22%, #e53242 22% 78%, #191716 78%);
+}
+
+.outfit-mexican[data-person="niya"] .torso {
+  background:
+    radial-gradient(circle at 50% 26%, #fff6e6 0 8px, transparent 9px),
+    linear-gradient(90deg, #1f8f55 0 22%, #191716 22% 78%, #e53242 78%);
+}
+
+.outfit-mexican[data-person="emma"] .torso {
+  background:
+    radial-gradient(circle at 50% 26%, #ffd166 0 8px, transparent 9px),
+    linear-gradient(90deg, #e53242 0 20%, #fff6e6 20% 80%, #1f8f55 80%);
+}
+
+.outfit-mexican[data-person="mila"] .torso {
+  background:
+    radial-gradient(circle at 50% 26%, #ffd166 0 8px, transparent 9px),
+    linear-gradient(90deg, #191716 0 18%, #1f8f55 18% 52%, #e53242 52% 82%, #191716 82%);
+}
+
+.outfit-mexican .arm {
+  background: repeating-linear-gradient(0deg, #fff6e6 0 13px, #e53242 13px 23px, #1f8f55 23px 33px);
+}
+
+.outfit-mexican .leg {
+  background: linear-gradient(90deg, #191716 0 50%, #2f373a 50%);
+}
+
+.outfit-mexican.mexican-dance {
+  animation: mexicanDance 520ms ease-in-out infinite;
+}
+
+.outfit-mexican.mexican-dance .arm-left {
+  animation: mexicanArmLeft 360ms ease-in-out infinite alternate;
+}
+
+.outfit-mexican.mexican-dance .arm-right {
+  animation: mexicanArmRight 360ms ease-in-out infinite alternate;
+}
+
+.outfit-mexican.mexican-dance .leg-left,
+.outfit-mexican.mexican-dance .leg-right {
+  animation: mexicanFeet 260ms ease-in-out infinite alternate;
+}
+
 .arm,
 .leg {
   position: absolute;
@@ -4870,6 +5019,43 @@ body {
   }
 }
 
+@keyframes mexicanDance {
+  0%,
+  100% {
+    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(calc(var(--r) - 4deg)) scale(var(--scale));
+  }
+
+  25% {
+    transform: translate(calc(-52% + var(--x)), calc(-54% + var(--y))) rotate(calc(var(--r) + 7deg)) scale(var(--scale));
+  }
+
+  50% {
+    transform: translate(calc(-50% + var(--x)), calc(-48% + var(--y))) rotate(var(--r)) scale(var(--scale));
+  }
+
+  75% {
+    transform: translate(calc(-48% + var(--x)), calc(-54% + var(--y))) rotate(calc(var(--r) - 7deg)) scale(var(--scale));
+  }
+}
+
+@keyframes mexicanArmLeft {
+  to {
+    transform: rotate(42deg);
+  }
+}
+
+@keyframes mexicanArmRight {
+  to {
+    transform: rotate(-42deg);
+  }
+}
+
+@keyframes mexicanFeet {
+  to {
+    transform: translateY(-8px) rotate(8deg);
+  }
+}
+
 @keyframes wardrobeOpen {
   from {
     opacity: 0;
@@ -5191,6 +5377,10 @@ body {
 
   .outfit-button[data-outfit="carnival"] {
     min-width: 94px;
+  }
+
+  .outfit-button[data-outfit="mexican"] {
+    min-width: 96px;
   }
 
   .moon {
