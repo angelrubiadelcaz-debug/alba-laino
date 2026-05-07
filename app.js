@@ -270,13 +270,26 @@ const impostorWordCategories = {
   music: "music",
   buildings: "building",
 };
+const impostorBlockedWords = new Set([
+  "Avatar",
+  "Star Wars",
+  "The Matrix",
+  "Jurassic Park",
+  "The Avengers",
+  "Lord of the Rings",
+  "Joker",
+  "The Dark Knight",
+  "Shrek",
+  "Aladdin",
+  "The Hunger Games",
+]);
 let impostorDeck = [
   { word: "Pizza", hint: "Italian dish", category: "food" },
   { word: "Sushi", hint: "Japanese bites", category: "food" },
   { word: "Tapas", hint: "Small plates", category: "food" },
   { word: "Titanic", hint: "Ship that sinks", category: "film" },
-  { word: "Star Wars", hint: "Space saga", category: "film" },
-  { word: "The Matrix", hint: "Red or blue pill", category: "film" },
+  { word: "Harry Potter", hint: "Magical saga", category: "film" },
+  { word: "Mamma Mia", hint: "ABBA musical", category: "film" },
   { word: "Photography", hint: "With a camera", category: "hobby" },
   { word: "Cooking", hint: "In the kitchen", category: "hobby" },
   { word: "Karaoke", hint: "Singing along", category: "party" },
@@ -1087,7 +1100,9 @@ async function loadImpostorDeck() {
         }));
       }),
     );
-    const loadedDeck = groups.flat().filter((item) => item.word && item.hint);
+    const loadedDeck = groups
+      .flat()
+      .filter((item) => item.word && item.hint && !impostorBlockedWords.has(item.word));
     if (loadedDeck.length > impostorDeck.length) impostorDeck = loadedDeck;
   } catch {
     adminSay("Using the backup English deck because the browser did not load the JSON files.", 3600);
